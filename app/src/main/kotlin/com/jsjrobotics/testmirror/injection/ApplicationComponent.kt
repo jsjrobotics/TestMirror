@@ -10,7 +10,8 @@ import javax.inject.Singleton
         AndroidInjectionModule::class,
         ApplicationModule::class,
         ActivityModule::class,
-        FragmentModule::class
+        FragmentModule::class,
+        ServiceModule::class
 ))
 
 interface ApplicationComponent {

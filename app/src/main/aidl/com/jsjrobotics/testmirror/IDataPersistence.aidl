@@ -8,4 +8,5 @@ interface IDataPersistence {
     void getProfileData(String userEmail);
     void registerCallback(IProfileCallback callback);
     void unregisterCallback(IProfileCallback callback);
+    void attempLogin(IProfileCallback callback, String userEmail, String password);
 }

@@ -1,13 +1,10 @@
 package com.jsjrobotics.testmirror.updateInfo
 
-import android.arch.lifecycle.LifecycleObserver
-import io.reactivex.disposables.CompositeDisposable
+import com.jsjrobotics.testmirror.DefaultPresenter
 import javax.inject.Inject
 
-class UpdateInfoPresenter @Inject constructor() : LifecycleObserver{
+class UpdateInfoPresenter @Inject constructor() : DefaultPresenter(){
     private lateinit var view: UpdateInfoView
-
-    private val disposables = CompositeDisposable()
 
     fun init(v: UpdateInfoView) {
         view = v

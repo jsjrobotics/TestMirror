@@ -5,4 +5,6 @@ import com.jsjrobotics.testmirror.dataStructures.Account;
 
 oneway interface IProfileCallback {
     void update(in Account account);
+    void loginSuccess(in Account account);
+    void loginFailure(String userEmail, String password);
 }

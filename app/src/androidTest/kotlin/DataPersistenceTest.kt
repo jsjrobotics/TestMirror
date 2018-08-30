@@ -1,14 +1,13 @@
+import android.content.Intent
+import android.support.test.InstrumentationRegistry
 import android.support.test.rule.ServiceTestRule
 import android.support.test.runner.AndroidJUnit4
-import org.junit.Rule
-import org.junit.runner.RunWith
-import android.support.test.InstrumentationRegistry
-import android.content.Intent
-import android.os.IBinder
 import com.jsjrobotics.testmirror.DataPersistenceService
 import com.jsjrobotics.testmirror.IDataPersistence
 import org.junit.Assert.assertNotNull
+import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4::class)

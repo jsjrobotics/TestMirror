@@ -30,6 +30,8 @@ data class Account(val userEmail: String,
     }
 
     companion object CREATOR : Parcelable.Creator<Account> {
+        val ATTRIBUTES_IN_ACCOUNT: Int = 5
+
         override fun createFromParcel(parcel: Parcel): Account {
             return Account(parcel)
         }

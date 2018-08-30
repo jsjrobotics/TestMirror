@@ -1,6 +1,7 @@
 package com.jsjrobotics.testmirror
 
 import android.app.Activity
+import android.app.Service
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -34,6 +35,10 @@ class Application : android.app.Application(), HasActivityInjector, HasSupportFr
             instance().fragmentInjector.inject(fragment)
         }
 
+        fun inject(service: Service) {
+            instance().serviceInjector.inject(service)
+        }
+
     }
 
     var injector: ApplicationComponent? = null ; private set
@@ -44,9 +49,12 @@ class Application : android.app.Application(), HasActivityInjector, HasSupportFr
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
+    @Inject
+    lateinit var serviceInjector: DispatchingAndroidInjector<Service>
+
     private val serviceConnection = buildServiceConnection()
 
-    private var dataPersistenceService: IDataPersistence? = null
+    var dataPersistenceService: IDataPersistence? = null; private set
 
     private fun buildServiceConnection(): ServiceConnection {
         return object : ServiceConnection {

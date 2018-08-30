@@ -2,13 +2,20 @@ package com.jsjrobotics.testmirror
 
 import android.app.Service
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.IBinder
 import android.os.SystemClock
+import com.jsjrobotics.testmirror.dataStructures.Account
 import com.jsjrobotics.testmirror.dataStructures.CacheSettings
 import com.jsjrobotics.testmirror.dataStructures.CachedProfile
 import java.util.concurrent.Executors
+import javax.inject.Inject
 
 class DataPersistenceService : Service() {
+
+    companion object {
+        const val SHARED_PREFERENCES_FILE : String = "DataPersistenceService.SharedPreferences"
+    }
     private val SERVICE_THREAD_COUNT: Int = Runtime.getRuntime().availableProcessors() *2
     private val SOFT_TIME_TO_LIVE: Long = 10
     private val HARD_TIME_TO_LIVE: Long = 30
@@ -18,7 +25,24 @@ class DataPersistenceService : Service() {
     private val dataToServe: MutableList<String> = mutableListOf()
     private val timeSource: () -> Long = { SystemClock.uptimeMillis() }
     private val executor =  Executors.newFixedThreadPool(SERVICE_THREAD_COUNT)
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
+    override fun onCreate() {
+        super.onCreate()
+        Application.inject(this)
+    }
+
     private val binder = object : IDataPersistence.Stub() {
+        override fun attempLogin(callback: IProfileCallback, userEmail: String?, password: String?) {
+            if (userEmail == null || password == null) {
+                callback.loginFailure(userEmail, password)
+                return
+            }
+            executor.submit{ performLogin(callback, userEmail, password)}
+        }
+
         override fun getProfileData(profile: String?) {
             profile?.let{
                 executor.submit{requestData(it)}
@@ -36,6 +60,37 @@ class DataPersistenceService : Service() {
                 listeners.remove(it)
             }
         }
+
+    }
+
+    private fun performLogin(callback: IProfileCallback, userEmail: String, password: String) {
+        val savedData : CachedProfile? = getPersistentData(userEmail)
+        if (savedData == null) {
+            callback.loginFailure(userEmail, password)
+            return
+        }
+        if (savedData.account.userPassword == password) {
+            callback.loginSuccess(savedData.account)
+        }
+    }
+
+    private fun getPersistentData(loginEmail: String): CachedProfile? {
+        val data = sharedPreferences.getStringSet(loginEmail, emptySet())
+        if (data.isEmpty() || data.size != Account.ATTRIBUTES_IN_ACCOUNT) {
+            return null
+        }
+        val listData = data.toList();
+        val userEmail = listData[0]
+        val userPassword = listData[1]
+        val fullName = listData[2]
+        val birthday = listData[3]
+        val location = listData[4]
+        val account = Account(userEmail,
+                              userPassword,
+                              fullName,
+                              birthday.toLong(),
+                              location)
+        return CachedProfile(account, timeSource.invoke())
 
     }
 

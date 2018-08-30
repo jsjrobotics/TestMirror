@@ -9,4 +9,6 @@
     <string name="enter_birthday">Enter Birthday</string>
     <string name="enter_location">Enter Location</string>
     <string name="save">Save</string>
+    <string name="no_service_connection">No Service Connection</string>
+    <string name="invalid_credentials">Invalid Credentials</string>
 </resources>
