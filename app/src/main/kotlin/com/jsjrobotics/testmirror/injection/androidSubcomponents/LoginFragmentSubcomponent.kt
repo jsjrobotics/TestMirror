@@ -1,6 +1,6 @@
 package com.jsjrobotics.testmirror.injection.androidSubcomponents
 
-import com.jsjrobotics.testmirror.LoginFragment
+import com.jsjrobotics.testmirror.login.LoginFragment
 import dagger.Subcomponent
 import dagger.android.AndroidInjector
 

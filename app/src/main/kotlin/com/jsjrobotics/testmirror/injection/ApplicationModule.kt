@@ -1,8 +1,6 @@
 package com.jsjrobotics.testmirror.injection
 
-import android.content.Context
 import android.content.res.Resources
-import android.net.ConnectivityManager
 import com.jsjrobotics.testmirror.Application
 import dagger.Module
 import dagger.Provides

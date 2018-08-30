@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.jsjrobotics.testmirror">
+
+    <application>
+        <activity android:name=".EspressoTestActivity"
+            android:launchMode="singleTop">
+        </activity>
+    </application>
+</manifest>

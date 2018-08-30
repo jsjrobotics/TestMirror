@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TestMirror</string>
+    <string name="signup">Sign Up</string>
+    <string name="login">Login</string>
 </resources>
