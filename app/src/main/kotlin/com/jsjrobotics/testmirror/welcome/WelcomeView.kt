@@ -9,9 +9,9 @@ import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
 class WelcomeView @Inject constructor(){
-    lateinit var rootXml: ViewGroup
-    lateinit var loginButton: Button
-    lateinit var signUpButton: Button
+    lateinit var rootXml: ViewGroup ; private set
+    lateinit var loginButton: Button ; private set
+    lateinit var signUpButton: Button ; private set
 
     private val onSignupClick : PublishSubject<Unit> = PublishSubject.create()
     private val onLoginClick : PublishSubject<Unit> = PublishSubject.create()

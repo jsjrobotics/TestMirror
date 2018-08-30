@@ -8,11 +8,11 @@ class LoginPresenter @Inject constructor() : LifecycleObserver{
 
     fun init(v: LoginView) {
         view = v
-        v.onSignupClick()
-                .subscribe{ launchSignupActivity()}
+        v.onLoginClick()
+                .subscribe{ attemptLogin()}
     }
 
-    private fun launchSignupActivity() {
+    private fun attemptLogin() {
 
     }
 

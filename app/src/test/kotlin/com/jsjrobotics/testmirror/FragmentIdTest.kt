@@ -2,7 +2,6 @@ package com.jsjrobotics.testmirror
 
 import org.junit.Test
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class FragmentIdTest {
 

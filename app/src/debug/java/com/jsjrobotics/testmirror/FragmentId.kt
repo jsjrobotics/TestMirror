@@ -2,8 +2,8 @@ package com.jsjrobotics.testmirror
 
 import android.support.v4.app.Fragment
 import com.jsjrobotics.testmirror.login.LoginFragment
-import com.jsjrobotics.testmirror.welcome.WelcomeFragment
 import com.jsjrobotics.testmirror.signup.SignUpFragment
+import com.jsjrobotics.testmirror.welcome.WelcomeFragment
 
 enum class FragmentId {
     LOGIN,

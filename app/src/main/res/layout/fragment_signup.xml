@@ -21,18 +21,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/email"
-        app:layout_constraintBottom_toTopOf="@id/submit"
+        app:layout_constraintBottom_toTopOf="@id/full_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:hint="@string/enter_password"
         android:inputType="textPassword"/>
 
+
+    <EditText
+        android:id="@+id/full_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/password"
+        app:layout_constraintBottom_toTopOf="@id/submit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:hint="@string/enter_full_name"
+        android:inputType="textPersonName"/>
+
     <Button
-        android:id="@+id/login"
+        android:id="@+id/submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/login"
-        app:layout_constraintTop_toBottomOf="@id/password"
+        android:text="@string/create_account"
+        app:layout_constraintTop_toBottomOf="@id/full_name"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

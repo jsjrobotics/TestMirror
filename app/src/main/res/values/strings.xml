@@ -2,4 +2,8 @@
     <string name="app_name">TestMirror</string>
     <string name="signup">Sign Up</string>
     <string name="login">Login</string>
+    <string name="enter_email">Enter Email</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="enter_full_name">Enter Full Name</string>
+    <string name="create_account">Create Account</string>
 </resources>

@@ -10,15 +10,15 @@ import android.support.test.runner.AndroidJUnit4
 import android.support.v4.app.Fragment
 import com.jsjrobotics.testmirror.MainActivity
 import com.jsjrobotics.testmirror.R
-import com.jsjrobotics.testmirror.login.LoginFragment
 import com.jsjrobotics.testmirror.signup.SignUpFragment
 import com.jsjrobotics.testmirror.welcome.WelcomeFragment
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.*
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 // Unable to get mockito working here, hence verifying actions by checking displayed fragments
+// Note tests sometimes fails when running all tests but not individually : https://issuetracker.google.com/issues/36932872
+@RunWith(AndroidJUnit4::class)
 class MainActivityTest {
     @JvmField
     @Rule
@@ -41,7 +41,6 @@ class MainActivityTest {
     }
 
     @Test
-    // Note this test sometimes fails when running all tests but not individually : https://issuetracker.google.com/issues/36932872
     fun testSignUpButton(){
         val signupMatcher = ViewMatchers.withText(R.string.signup)
         val assertions = matches(allOf(isDisplayed(), isClickable()))
@@ -49,7 +48,6 @@ class MainActivityTest {
         onView(signupMatcher).perform(click())
         val fragmentFound : Fragment? = getFragmentByTag(SignUpFragment.TAG)
         Assert.assertNotNull("Signup fragment should be present after click", fragmentFound)
-
     }
 
     @Test
