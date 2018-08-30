@@ -1,4 +1,4 @@
-// Account.aidl
+// LoginData.aidl
 package com.jsjrobotics.testmirror.dataStructures;
 
-parcelable Account;
+parcelable LoginData;

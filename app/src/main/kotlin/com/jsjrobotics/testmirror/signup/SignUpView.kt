@@ -4,19 +4,25 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
+import com.jsjrobotics.testmirror.DefaultView
 import com.jsjrobotics.testmirror.R
+import com.jsjrobotics.testmirror.dataStructures.SignUpData
+import com.jsjrobotics.testmirror.runOnUiThread
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
-class SignUpView @Inject constructor(){
+class SignUpView @Inject constructor() : DefaultView(){
     lateinit var rootXml: ViewGroup ; private set
     lateinit var emailInput: EditText ; private set
     lateinit var passwordInput: EditText ; private set
     lateinit var fullNameInput: EditText ; private set
     lateinit var signUpButton: Button ; private set
 
-    private val onSignUpClick : PublishSubject<Unit> = PublishSubject.create()
+    private val onSignUpClick : PublishSubject<SignUpData> = PublishSubject.create()
+
+    override fun getContext() = rootXml.context
 
     fun init(inflater: LayoutInflater, container: ViewGroup) {
         rootXml = inflater.inflate(R.layout.fragment_signup, container, false) as ViewGroup
@@ -24,10 +30,13 @@ class SignUpView @Inject constructor(){
         passwordInput = rootXml.findViewById(R.id.password)
         fullNameInput = rootXml.findViewById(R.id.full_name)
         signUpButton = rootXml.findViewById(R.id.signup)
-        signUpButton.setOnClickListener { onSignUpClick.onNext(Unit) }
+        signUpButton.setOnClickListener {
+            val signUpData = SignUpData(emailInput.text.toString(),
+                                        passwordInput.text.toString(),
+                                        fullNameInput.text.toString())
+            onSignUpClick.onNext(signUpData)
+        }
     }
 
-    fun onSignUpClick(): Observable<Unit> = onSignUpClick
-
-
+    fun onSignUpClick(): Observable<SignUpData> = onSignUpClick
 }

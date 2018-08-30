@@ -5,9 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.IBinder
 import android.os.SystemClock
-import com.jsjrobotics.testmirror.dataStructures.Account
-import com.jsjrobotics.testmirror.dataStructures.CacheSettings
-import com.jsjrobotics.testmirror.dataStructures.CachedProfile
+import com.jsjrobotics.testmirror.dataStructures.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
@@ -35,12 +33,21 @@ class DataPersistenceService : Service() {
     }
 
     private val binder = object : IDataPersistence.Stub() {
-        override fun attempLogin(callback: IProfileCallback, userEmail: String?, password: String?) {
-            if (userEmail == null || password == null) {
-                callback.loginFailure(userEmail, password)
+
+        override fun attemptSignup(callback: IProfileCallback?, data: SignUpData?) {
+            if (data == null || callback == null) {
+                callback?.signUpFailure(application.getString(R.string.invalid_credentials))
                 return
             }
-            executor.submit{ performLogin(callback, userEmail, password)}
+            executor.submit{ performSignUp(callback, data)}
+        }
+
+        override fun attemptLogin(callback: IProfileCallback?, data: LoginData?) {
+            if (data == null || callback == null) {
+                callback?.loginFailure()
+                return
+            }
+            executor.submit{ performLogin(callback, data)}
         }
 
         override fun getProfileData(profile: String?) {
@@ -63,10 +70,26 @@ class DataPersistenceService : Service() {
 
     }
 
-    private fun performLogin(callback: IProfileCallback, userEmail: String, password: String) {
+    private fun performSignUp(callback: IProfileCallback, data: SignUpData) {
+        if (!data.isValid()) {
+            callback.signUpFailure(application.getString(R.string.invalid_credentials))
+            return
+        }
+        if (getPersistentData(data.email) != null) {
+            callback.signUpFailure(application.getString(R.string.email_already_exists))
+            return
+        }
+        val profile = writePersistentData(data)
+        dataStore[data.email] = profile
+        callback.loginSuccess(profile.account)
+    }
+
+    private fun performLogin(callback: IProfileCallback, data: LoginData) {
+        val userEmail = data.userEmail
+        val password = data.password
         val savedData : CachedProfile? = getPersistentData(userEmail)
         if (savedData == null) {
-            callback.loginFailure(userEmail, password)
+            callback.loginFailure()
             return
         }
         if (savedData.account.userPassword == password) {
@@ -90,8 +113,20 @@ class DataPersistenceService : Service() {
                               fullName,
                               birthday.toLong(),
                               location)
-        return CachedProfile(account, timeSource.invoke())
+        val profile = CachedProfile(account, timeSource.invoke())
+        dataStore[loginEmail] = profile
+        return profile
+    }
 
+    private fun writePersistentData(data: SignUpData): CachedProfile {
+        val account = Account(data.email,
+                              data.password,
+                              data.fullName,
+                              Account.UNKNOWN_BIRTHDAY,
+                              Account.UNKNOWN_LOCATION)
+        val profile = CachedProfile(account, timeSource.invoke())
+        dataStore[data.email] = profile
+        return profile
     }
 
     private fun requestData(email: String) {

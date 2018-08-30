@@ -11,4 +11,7 @@
     <string name="save">Save</string>
     <string name="no_service_connection">No Service Connection</string>
     <string name="invalid_credentials">Invalid Credentials</string>
+    <string name="complete_all_fields">Complete All Fields</string>
+    <string name="email_already_exists">Email Address already exists</string>
+    <string name="unknown_error">Unknown Error</string>
 </resources>

@@ -19,8 +19,12 @@ class LoginPresenter @Inject constructor(val application: Application) : Default
     }
 
     private fun attemptLogin(loginData: LoginData) {
+        if (!loginData.isValid()) {
+            view.showEnterAllFields()
+            return
+        }
         application.dataPersistenceService?.let { service ->
-            service.attempLogin(buildLoginListener(), loginData.userEmail, loginData.password)
+            service.attemptLogin(buildLoginListener(), loginData)
             return
         }
         view.showNoServiceConnection()
@@ -28,18 +32,18 @@ class LoginPresenter @Inject constructor(val application: Application) : Default
 
     private fun buildLoginListener(): IProfileCallback {
         return object : IProfileCallback {
-            override fun loginFailure(userEmail: String?, password: String?) {
+
+            override fun loginFailure() {
                 view.showFailedToLogin()
             }
-
-            override fun asBinder(): IBinder? {
-                return null
-            }
-
-            override fun update(account: Account?) {}
-
             override fun loginSuccess(account: Account?) {
+
             }
+
+            override fun signUpFailure(error: String?) {}
+
+            override fun asBinder(): IBinder? = null
+            override fun update(account: Account?) {}
 
         }
     }

@@ -31,6 +31,8 @@ data class Account(val userEmail: String,
 
     companion object CREATOR : Parcelable.Creator<Account> {
         val ATTRIBUTES_IN_ACCOUNT: Int = 5
+        val UNKNOWN_BIRTHDAY = -1L
+        val UNKNOWN_LOCATION: String = "unknown"
 
         override fun createFromParcel(parcel: Parcel): Account {
             return Account(parcel)
