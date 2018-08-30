@@ -7,6 +7,7 @@ import javax.inject.Singleton
 
 @Singleton
 class NavigationController @Inject constructor(){
+    var currentFragment: FragmentId = FragmentId.UPDATE_INFO
 
     private val showLoginFragment: PublishSubject<Unit> = PublishSubject.create()
     val onShowLoginFragment: Observable<Unit> = showLoginFragment
@@ -22,6 +23,5 @@ class NavigationController @Inject constructor(){
         showSignUpFragment.onNext(Unit)
     }
 
-    val currentFragment: FragmentId = FragmentId.WELCOME
 
 }

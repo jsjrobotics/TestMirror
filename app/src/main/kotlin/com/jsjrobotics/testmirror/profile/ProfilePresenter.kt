@@ -1,0 +1,6 @@
+package com.jsjrobotics.testmirror.profile
+
+import javax.inject.Inject
+
+class ProfilePresenter @Inject constructor() {
+}

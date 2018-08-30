@@ -6,4 +6,7 @@
     <string name="enter_password">Enter Password</string>
     <string name="enter_full_name">Enter Full Name</string>
     <string name="create_account">Create Account</string>
+    <string name="enter_birthday">Enter Birthday</string>
+    <string name="enter_location">Enter Location</string>
+    <string name="save">Save</string>
 </resources>
