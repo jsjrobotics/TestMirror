@@ -1,7 +1,6 @@
 package com.jsjrobotics.testmirror.injection
 
 import com.jsjrobotics.testmirror.Application
-import com.jsjrobotics.testmirror.injection.androidSubcomponents.ActivityModule
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import javax.inject.Singleton

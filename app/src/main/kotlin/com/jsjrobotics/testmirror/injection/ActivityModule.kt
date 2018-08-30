@@ -1,7 +1,8 @@
-package com.jsjrobotics.testmirror.injection.androidSubcomponents
+package com.jsjrobotics.testmirror.injection
 
 import android.app.Activity
 import com.jsjrobotics.testmirror.MainActivity
+import com.jsjrobotics.testmirror.injection.androidSubcomponents.MainActivitySubcomponent
 import dagger.Binds
 import dagger.Module
 import dagger.android.ActivityKey
