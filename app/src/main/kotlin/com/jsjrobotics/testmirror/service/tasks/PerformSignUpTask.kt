@@ -1,14 +1,19 @@
 package com.jsjrobotics.testmirror.service.tasks
 
 import android.content.res.Resources
+import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.IProfileCallback
 import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.dataStructures.CachedProfile
 import com.jsjrobotics.testmirror.dataStructures.SignUpData
+import com.jsjrobotics.testmirror.dataStructures.networking.requests.SignUpRequest
+import com.jsjrobotics.testmirror.service.networking.RefineMirrorApi
+import retrofit2.Retrofit
 
 class PerformSignUpTask(private val getPersistentData: (String) -> CachedProfile?,
                         private val writePersistentData: (SignUpData) -> CachedProfile,
                         private val updateDataStore: (String, CachedProfile) -> Unit,
+                        private val backend: RefineMirrorApi,
                         private val resources: Resources,
                         private val callback: IProfileCallback,
                         private val data: SignUpData) : Runnable {
@@ -22,8 +27,23 @@ class PerformSignUpTask(private val getPersistentData: (String) -> CachedProfile
             callback.signUpFailure(resources.getString(R.string.email_already_exists))
             return
         }
-        val profile = writePersistentData(data)
-        updateDataStore(data.email,profile)
-        callback.signUpSuccess()
+        val signUpRequest = SignUpRequest(data)
+        val request = backend.signUp(signUpRequest)
+        try {
+            val result = request.execute()
+            if (result.isSuccessful) {
+                val profile = writePersistentData(data)
+                updateDataStore(data.email,profile)
+                callback.signUpSuccess()
+                return
+            } else {
+                val errorString = result.errorBody()?.string() ?: resources.getString(R.string.unknown_error)
+                callback.signUpFailure(errorString)
+            }
+        } catch (e : Exception) {
+            ERROR("Failed to download recipes: $e")
+            callback.signUpFailure(e.message ?: resources.getString(R.string.unknown_error))
+        }
+
     }
 }

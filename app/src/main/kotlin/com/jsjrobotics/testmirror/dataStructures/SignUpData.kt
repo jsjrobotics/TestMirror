@@ -5,20 +5,26 @@ import android.os.Parcelable
 
 data class SignUpData(val email: String,
                       val password: String,
-                      val fullName: String) : Parcelable {
+                      val confirmPassword: String,
+                      val fullName: String) : Parcelable  {
+
+    fun isValid(): Boolean {
+        val fieldsComplete = !(email.isBlank() || password.isBlank() || fullName.isBlank())
+        val passwordsMatch = password == confirmPassword
+        return fieldsComplete && passwordsMatch
+    }
+
     constructor(parcel: Parcel) : this(
+            parcel.readString(),
             parcel.readString(),
             parcel.readString(),
             parcel.readString()) {
     }
 
-    fun isValid(): Boolean {
-        return !(email.isBlank() || password.isBlank() || fullName.isBlank())
-    }
-
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(email)
         parcel.writeString(password)
+        parcel.writeString(confirmPassword)
         parcel.writeString(fullName)
     }
 
@@ -35,5 +41,6 @@ data class SignUpData(val email: String,
             return arrayOfNulls(size)
         }
     }
+
 
 }

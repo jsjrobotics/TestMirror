@@ -15,6 +15,7 @@ class SignUpView @Inject constructor() : DefaultView(){
     lateinit var rootXml: ViewGroup ; private set
     lateinit var emailInput: EditText ; private set
     lateinit var passwordInput: EditText ; private set
+    lateinit var confirmPasswordInput: EditText ; private set
     lateinit var fullNameInput: EditText ; private set
     lateinit var signUpButton: Button ; private set
 
@@ -26,11 +27,13 @@ class SignUpView @Inject constructor() : DefaultView(){
         rootXml = inflater.inflate(R.layout.fragment_signup, container, false) as ViewGroup
         emailInput = rootXml.findViewById(R.id.email)
         passwordInput = rootXml.findViewById(R.id.password)
+        confirmPasswordInput = rootXml.findViewById(R.id.confirm_password)
         fullNameInput = rootXml.findViewById(R.id.full_name)
         signUpButton = rootXml.findViewById(R.id.signup)
         signUpButton.setOnClickListener {
             val signUpData = SignUpData(emailInput.text.toString(),
                                         passwordInput.text.toString(),
+                                        confirmPasswordInput.text.toString(),
                                         fullNameInput.text.toString())
             onSignUpClick.onNext(signUpData)
         }

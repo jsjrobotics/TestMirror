@@ -12,6 +12,7 @@ import com.jsjrobotics.testmirror.IProfileCallback
 import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.dataStructures.*
 import com.jsjrobotics.testmirror.service.networking.Paths.DOMAIN
+import com.jsjrobotics.testmirror.service.networking.RefineMirrorApi
 import com.jsjrobotics.testmirror.service.tasks.PerformLoginTask
 import com.jsjrobotics.testmirror.service.tasks.PerformSignUpTask
 import com.jsjrobotics.testmirror.service.tasks.PerformUpdateTask
@@ -34,7 +35,7 @@ class DataPersistenceService : Service() {
     private val dataToServe: MutableList<String> = mutableListOf()
     private val timeSource: () -> Long = { SystemClock.uptimeMillis() }
     private val executor =  Executors.newFixedThreadPool(SERVICE_THREAD_COUNT)
-    private lateinit var retrofit: Retrofit
+    private lateinit var backendApi: RefineMirrorApi
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
@@ -43,10 +44,11 @@ class DataPersistenceService : Service() {
     override fun onCreate() {
         super.onCreate()
         Application.inject(this)
-        retrofit = Retrofit.Builder()
+        val retrofit = Retrofit.Builder()
                 .baseUrl(DOMAIN)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
+        backendApi = retrofit.create(RefineMirrorApi::class.java)
     }
 
     private val binder = object : IDataPersistence.Stub() {
@@ -76,6 +78,7 @@ class DataPersistenceService : Service() {
             val task = PerformSignUpTask(::getPersistentData,
                                          ::writePersistentData,
                                          ::updateDataStore,
+                                         backendApi,
                                          application.resources,
                                          callback,
                                          data)
