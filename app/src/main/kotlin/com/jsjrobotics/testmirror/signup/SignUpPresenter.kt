@@ -1,8 +1,6 @@
 package com.jsjrobotics.testmirror.signup
 
-import android.os.IBinder
 import com.jsjrobotics.testmirror.*
-import com.jsjrobotics.testmirror.dataStructures.Account
 import com.jsjrobotics.testmirror.dataStructures.SignUpData
 import javax.inject.Inject
 

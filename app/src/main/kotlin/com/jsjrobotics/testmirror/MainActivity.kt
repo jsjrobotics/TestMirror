@@ -2,11 +2,6 @@ package com.jsjrobotics.testmirror
 
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
-import com.jsjrobotics.testmirror.login.LoginFragment
-import com.jsjrobotics.testmirror.profile.ProfileFragment
-import com.jsjrobotics.testmirror.signup.SignUpFragment
-import com.jsjrobotics.testmirror.updateInfo.UpdateInfoFragment
-import com.jsjrobotics.testmirror.welcome.WelcomeFragment
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
@@ -37,7 +32,7 @@ class MainActivity : FragmentActivity() {
         val transaction = supportFragmentManager.beginTransaction()
         val tag = fragment.tag()
         supportFragmentManager.fragments
-                .filter{ it.tag != tag }
+                .filter{ it.tag != tag  && it.isVisible}
                 .forEach { transaction.hide(it) }
 
         supportFragmentManager.findFragmentByTag(tag)?.let { instantiatedFragment ->

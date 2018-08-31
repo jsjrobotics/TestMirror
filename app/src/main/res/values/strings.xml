@@ -16,4 +16,5 @@
     <string name="unknown_error">Unknown Error</string>
     <string name="signup_success">SignUp Successful. Please Login</string>
     <string name="login_successful">Login Successful</string>
+    <string name="refresh">Refresh</string>
 </resources>

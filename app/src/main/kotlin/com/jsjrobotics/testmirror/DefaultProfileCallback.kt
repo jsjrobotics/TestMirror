@@ -11,4 +11,6 @@ abstract class DefaultProfileCallback : IProfileCallback {
     override fun signUpSuccess() {}
     override fun asBinder(): IBinder? = null
     override fun update(account: Account?) {}
+    override fun updateInfoSuccess() {}
+    override fun updateInfoFailure() {}
 }

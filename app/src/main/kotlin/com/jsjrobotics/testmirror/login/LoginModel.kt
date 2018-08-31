@@ -10,7 +10,7 @@ import javax.inject.Singleton
 class LoginModel @Inject constructor(val profileModel: ProfileModel,
                                      val navigationController: NavigationController) {
     fun successfulLogin(account: Account) {
-        profileModel.setCurrentAccount(account)
+        profileModel.setAccount(account)
         if (account.needsUpdateInfo()) {
             navigationController.showUpdateInfo()
         } else {

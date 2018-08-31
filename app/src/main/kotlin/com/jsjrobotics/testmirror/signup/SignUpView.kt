@@ -4,11 +4,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import com.jsjrobotics.testmirror.DefaultView
 import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.dataStructures.SignUpData
-import com.jsjrobotics.testmirror.runOnUiThread
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject

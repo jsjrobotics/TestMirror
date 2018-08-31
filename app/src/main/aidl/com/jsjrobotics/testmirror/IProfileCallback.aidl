@@ -9,4 +9,6 @@ oneway interface IProfileCallback {
     void loginFailure();
     void signUpFailure(in String error);
     void signUpSuccess();
+    void updateInfoSuccess();
+    void updateInfoFailure();
 }
