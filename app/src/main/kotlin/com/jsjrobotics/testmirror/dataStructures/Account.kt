@@ -29,6 +29,10 @@ data class Account(val userEmail: String,
         return 0
     }
 
+    fun needsUpdateInfo(): Boolean {
+        return birthday == UNKNOWN_BIRTHDAY || location == UNKNOWN_LOCATION
+    }
+
 
     companion object CREATOR : Parcelable.Creator<Account> {
         val ATTRIBUTES_IN_ACCOUNT: Int = 5

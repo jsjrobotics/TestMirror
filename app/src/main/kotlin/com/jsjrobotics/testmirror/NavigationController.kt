@@ -9,18 +9,27 @@ import javax.inject.Singleton
 class NavigationController @Inject constructor(){
     var currentFragment: FragmentId = FragmentId.WELCOME
 
-    private val showLoginFragment: PublishSubject<Unit> = PublishSubject.create()
-    val onShowLoginFragment: Observable<Unit> = showLoginFragment
-
-    private val showSignUpFragment: PublishSubject<Unit> = PublishSubject.create()
-    val onShowSignUpFragment: Observable<Unit> = showSignUpFragment
+    private val showRequest: PublishSubject<FragmentId> = PublishSubject.create()
+    val onShowRequest: Observable<FragmentId> = showRequest
 
     fun showLogin() {
-        showLoginFragment.onNext(Unit)
+        showRequest(FragmentId.LOGIN)
     }
 
+    private fun showRequest(id: FragmentId) {
+        currentFragment = id
+        showRequest.onNext(id)
+    }
     fun showSignUp() {
-        showSignUpFragment.onNext(Unit)
+        showRequest(FragmentId.SIGNUP)
+    }
+
+    fun showUpdateInfo() {
+        showRequest(FragmentId.UPDATE_INFO)
+    }
+
+    fun showProfile() {
+        showRequest(FragmentId.PROFILE)
     }
 
 

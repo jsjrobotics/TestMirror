@@ -6,7 +6,8 @@ import com.jsjrobotics.testmirror.dataStructures.Account
 import com.jsjrobotics.testmirror.dataStructures.LoginData
 import javax.inject.Inject
 
-class LoginPresenter @Inject constructor(val application: Application) : DefaultPresenter(){
+class LoginPresenter @Inject constructor(val application: Application,
+                                         val model: LoginModel) : DefaultPresenter(){
     private lateinit var view: LoginView
     fun init(v: LoginView) {
         view = v
@@ -35,6 +36,9 @@ class LoginPresenter @Inject constructor(val application: Application) : Default
             }
             override fun loginSuccess(account: Account?) {
                 view.showToast(R.string.login_successful)
+                account?.let {
+                    model.successfulLogin(it)
+                }
             }
         }
     }

@@ -95,6 +95,8 @@ class DataPersistenceService : Service() {
         }
         if (savedData.account.userPassword == password) {
             callback.loginSuccess(savedData.account)
+        } else {
+            callback.loginFailure()
         }
     }
 

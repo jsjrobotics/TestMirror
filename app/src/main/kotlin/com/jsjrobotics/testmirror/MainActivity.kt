@@ -2,6 +2,11 @@ package com.jsjrobotics.testmirror
 
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
+import com.jsjrobotics.testmirror.login.LoginFragment
+import com.jsjrobotics.testmirror.profile.ProfileFragment
+import com.jsjrobotics.testmirror.signup.SignUpFragment
+import com.jsjrobotics.testmirror.updateInfo.UpdateInfoFragment
+import com.jsjrobotics.testmirror.welcome.WelcomeFragment
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
@@ -19,15 +24,12 @@ class MainActivity : FragmentActivity() {
             showFragment(fragment, false)
         }
 
-        val loginDisposable = navController.onShowLoginFragment.subscribe {
-            showFragment(FragmentId.LOGIN)
+        val navigationDisposable = navController.onShowRequest
+                .subscribe {
+            showFragment(it)
         }
 
-        val signUpDisposable = navController.onShowSignUpFragment.subscribe {
-            showFragment(FragmentId.SIGNUP)
-        }
-
-        disposables.addAll(loginDisposable, signUpDisposable)
+        disposables.addAll(navigationDisposable)
 
     }
 
