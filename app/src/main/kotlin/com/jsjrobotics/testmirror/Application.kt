@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment
 import com.jsjrobotics.testmirror.injection.ApplicationComponent
 import com.jsjrobotics.testmirror.injection.ApplicationModule
 import com.jsjrobotics.testmirror.injection.DaggerApplicationComponent
+import com.jsjrobotics.testmirror.service.DataPersistenceService
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector

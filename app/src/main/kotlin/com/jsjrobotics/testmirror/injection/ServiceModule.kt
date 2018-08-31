@@ -1,7 +1,7 @@
 package com.jsjrobotics.testmirror.injection
 
 import android.app.Service
-import com.jsjrobotics.testmirror.DataPersistenceService
+import com.jsjrobotics.testmirror.service.DataPersistenceService
 import com.jsjrobotics.testmirror.injection.androidSubcomponents.DataPersistenceSubcomponent
 import dagger.Binds
 import dagger.Module

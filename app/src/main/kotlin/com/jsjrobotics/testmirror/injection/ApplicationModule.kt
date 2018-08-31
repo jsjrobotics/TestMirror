@@ -4,7 +4,7 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.content.res.Resources
 import com.jsjrobotics.testmirror.Application
-import com.jsjrobotics.testmirror.DataPersistenceService
+import com.jsjrobotics.testmirror.service.DataPersistenceService
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

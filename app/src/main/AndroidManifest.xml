@@ -2,6 +2,9 @@
     package="com.jsjrobotics.testmirror"
     >
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".Application"
         android:allowBackup="true"
@@ -18,6 +21,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".DataPersistenceService" />
+        <service android:name=".service.DataPersistenceService" />
     </application>
 </manifest>

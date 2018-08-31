@@ -1,4 +1,4 @@
-package com.jsjrobotics.testmirror
+package com.jsjrobotics.testmirror.service
 
 import android.annotation.SuppressLint
 import android.app.Service
@@ -6,7 +6,14 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.IBinder
 import android.os.SystemClock
+import com.jsjrobotics.testmirror.Application
+import com.jsjrobotics.testmirror.IDataPersistence
+import com.jsjrobotics.testmirror.IProfileCallback
+import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.dataStructures.*
+import com.jsjrobotics.testmirror.service.networking.Paths.DOMAIN
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -25,13 +32,19 @@ class DataPersistenceService : Service() {
     private val dataToServe: MutableList<String> = mutableListOf()
     private val timeSource: () -> Long = { SystemClock.uptimeMillis() }
     private val executor =  Executors.newFixedThreadPool(SERVICE_THREAD_COUNT)
+    private lateinit var retrofit: Retrofit
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
+
     override fun onCreate() {
         super.onCreate()
         Application.inject(this)
+        retrofit = Retrofit.Builder()
+                .baseUrl(DOMAIN)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
     }
 
     private val binder = object : IDataPersistence.Stub() {
