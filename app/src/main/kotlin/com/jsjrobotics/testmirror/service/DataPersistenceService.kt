@@ -12,9 +12,11 @@ import com.jsjrobotics.testmirror.IProfileCallback
 import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.dataStructures.*
 import com.jsjrobotics.testmirror.service.networking.Paths.DOMAIN
+import com.jsjrobotics.testmirror.service.tasks.PerformLoginTask
+import com.jsjrobotics.testmirror.service.tasks.PerformSignUpTask
+import com.jsjrobotics.testmirror.service.tasks.PerformUpdateTask
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
@@ -48,12 +50,22 @@ class DataPersistenceService : Service() {
     }
 
     private val binder = object : IDataPersistence.Stub() {
+        private fun updateDataStore(key: String, value: CachedProfile) {
+            dataStore[key] = value
+        }
+
         override fun attemptUpdateInfo(callback: IProfileCallback?, account: Account?, data: UpdateInfoData?) {
             if (callback == null || data == null || account == null) {
                 callback?.updateInfoFailure()
                 return
             }
-            executor.submit{ performUpdate(callback, account, data)}
+            val task = PerformUpdateTask(::getPersistentData,
+                                         ::writePersistentData,
+                                         callback,
+                                         account,
+                                         data,
+                                         timeSource)
+            executor.submit(task)
         }
 
         override fun attemptSignup(callback: IProfileCallback?, data: SignUpData?) {
@@ -61,15 +73,25 @@ class DataPersistenceService : Service() {
                 callback?.signUpFailure(application.getString(R.string.invalid_credentials))
                 return
             }
-            executor.submit{ performSignUp(callback, data)}
+            val task = PerformSignUpTask(::getPersistentData,
+                                         ::writePersistentData,
+                                         ::updateDataStore,
+                                         application.resources,
+                                         callback,
+                                         data)
+            executor.submit(task)
         }
+
 
         override fun attemptLogin(callback: IProfileCallback?, data: LoginData?) {
             if (data == null || callback == null) {
                 callback?.loginFailure()
                 return
             }
-            executor.submit{ performLogin(callback, data)}
+            val task = PerformLoginTask(::getPersistentData,
+                                        callback,
+                                        data)
+            executor.submit(task)
         }
 
         override fun getProfileData(profile: String?) {
@@ -92,79 +114,6 @@ class DataPersistenceService : Service() {
 
     }
 
-    private fun performUpdate(callback: IProfileCallback, account: Account, data: UpdateInfoData) {
-        if(!data.isValid()){
-            callback.updateInfoFailure()
-            return
-        }
-        val oldData = getPersistentData(account.userEmail)
-        if (oldData == null) {
-            callback.updateInfoFailure()
-            return
-        }
-        val date = Date()
-        date.year
-        val accountUpdate = oldData.account.copy(location = data.location, birthday = data.getTimeMilliseconds())
-        val cacheUpdate = CachedProfile(accountUpdate, timeSource.invoke())
-        writePersistentData(cacheUpdate)
-        callback.updateInfoSuccess()
-    }
-
-    private fun performSignUp(callback: IProfileCallback, data: SignUpData) {
-        if (!data.isValid()) {
-            callback.signUpFailure(application.getString(R.string.invalid_credentials))
-            return
-        }
-        if (getPersistentData(data.email) != null) {
-            callback.signUpFailure(application.getString(R.string.email_already_exists))
-            return
-        }
-        val profile = writePersistentData(data)
-        dataStore[data.email] = profile
-        callback.signUpSuccess()
-    }
-
-    private fun performLogin(callback: IProfileCallback, data: LoginData) {
-        val userEmail = data.userEmail
-        val password = data.password
-        val savedData : CachedProfile? = getPersistentData(userEmail)
-        if (savedData == null) {
-            callback.loginFailure()
-            return
-        }
-        if (savedData.account.userPassword == password) {
-            callback.loginSuccess(savedData.account)
-        } else {
-            callback.loginFailure()
-        }
-    }
-
-    private fun getPersistentData(loginEmail: String): CachedProfile? {
-        val data = sharedPreferences.getStringSet(loginEmail, emptySet())
-        if (data.isEmpty() || data.size != Account.ATTRIBUTES_IN_ACCOUNT) {
-            return null
-        }
-        val account = Account.fromSharedPreferences(data)
-        val profile = CachedProfile(account, timeSource.invoke())
-        updateDataStore(loginEmail, profile)
-        return profile
-    }
-
-    @SuppressLint("ApplySharedPref")
-    private fun writePersistentData(data: SignUpData): CachedProfile {
-        val newAccount = Account(data.email,
-                                 data.password,
-                                 data.fullName,
-                                 Account.UNKNOWN_BIRTHDAY,
-                                 Account.UNKNOWN_LOCATION)
-        val profile = CachedProfile(newAccount, timeSource.invoke())
-        updateDataStore(data.email, profile)
-        val serializedData = Account.toSharedPreferences(newAccount)
-        sharedPreferences.edit()
-                .putStringSet(data.email, serializedData)
-                .commit()
-        return profile
-    }
 
     private fun updateDataStore(email: String, profile: CachedProfile) {
         dataStore[email] = profile
@@ -176,7 +125,7 @@ class DataPersistenceService : Service() {
     }
 
     @SuppressLint("ApplySharedPref")
-    private fun writePersistentData(cached: CachedProfile) {
+    fun writePersistentData(cached: CachedProfile) {
         val account = cached.account
         dataStore[account.userEmail] = cached
         val serializedData = Account.toSharedPreferences(account)
@@ -223,5 +172,32 @@ class DataPersistenceService : Service() {
 
     override fun onBind(intent: Intent): IBinder {
         return binder
+    }
+
+    fun getPersistentData(loginEmail: String): CachedProfile? {
+        val data = sharedPreferences.getStringSet(loginEmail, emptySet())
+        if (data.isEmpty() || data.size != Account.ATTRIBUTES_IN_ACCOUNT) {
+            return null
+        }
+        val account = Account.fromSharedPreferences(data)
+        val profile = CachedProfile(account, timeSource.invoke())
+        updateDataStore(loginEmail, profile)
+        return profile
+    }
+
+    @SuppressLint("ApplySharedPref")
+    fun writePersistentData(data: SignUpData): CachedProfile {
+        val newAccount = Account(data.email,
+                                 data.password,
+                                 data.fullName,
+                                 Account.UNKNOWN_BIRTHDAY,
+                                 Account.UNKNOWN_LOCATION)
+        val profile = CachedProfile(newAccount, timeSource.invoke())
+        updateDataStore(data.email, profile)
+        val serializedData = Account.toSharedPreferences(newAccount)
+        sharedPreferences.edit()
+                .putStringSet(data.email, serializedData)
+                .commit()
+        return profile
     }
 }
