@@ -39,4 +39,9 @@ class SignUpView @Inject constructor() : DefaultView(){
     }
 
     fun onSignUpClick(): Observable<SignUpData> = onSignUpClick
+    fun clearInputFields() {
+        emailInput.setText("")
+        passwordInput.setText("")
+        fullNameInput.setText("")
+    }
 }

@@ -1,15 +1,13 @@
 package com.jsjrobotics.testmirror.signup
 
 import android.os.IBinder
-import com.jsjrobotics.testmirror.Application
-import com.jsjrobotics.testmirror.DefaultPresenter
-import com.jsjrobotics.testmirror.IProfileCallback
-import com.jsjrobotics.testmirror.R
+import com.jsjrobotics.testmirror.*
 import com.jsjrobotics.testmirror.dataStructures.Account
 import com.jsjrobotics.testmirror.dataStructures.SignUpData
 import javax.inject.Inject
 
-class SignUpPresenter @Inject constructor(val application: Application) : DefaultPresenter(){
+class SignUpPresenter @Inject constructor(val application: Application,
+                                          val navigationController: NavigationController) : DefaultPresenter(){
     private lateinit var view: SignUpView
 
     fun init(v: SignUpView) {
@@ -31,24 +29,22 @@ class SignUpPresenter @Inject constructor(val application: Application) : Defaul
     }
 
     private fun buildSignUpCallback(): IProfileCallback {
-        return object : IProfileCallback {
-            override fun loginFailure() {}
+        return object : DefaultProfileCallback() {
 
             override fun signUpFailure(error: String?) {
                 error?.let {
                     view.showToast(it)
                     return
                 }
-                view.showToast(application.getString(R.string.unknown_error))
+                view.showToast(R.string.unknown_error)
             }
 
-            override fun asBinder(): IBinder? {
-                return null
+            override fun signUpSuccess() {
+                view.showToast(R.string.signup_success)
+                view.clearInputFields()
+                navigationController.showLogin()
             }
 
-            override fun update(account: Account?) {}
-
-            override fun loginSuccess(account: Account?) {}
 
         }
     }

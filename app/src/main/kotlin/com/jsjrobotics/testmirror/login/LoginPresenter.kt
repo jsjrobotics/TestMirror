@@ -1,9 +1,7 @@
 package com.jsjrobotics.testmirror.login
 
 import android.os.IBinder
-import com.jsjrobotics.testmirror.Application
-import com.jsjrobotics.testmirror.DefaultPresenter
-import com.jsjrobotics.testmirror.IProfileCallback
+import com.jsjrobotics.testmirror.*
 import com.jsjrobotics.testmirror.dataStructures.Account
 import com.jsjrobotics.testmirror.dataStructures.LoginData
 import javax.inject.Inject
@@ -31,20 +29,13 @@ class LoginPresenter @Inject constructor(val application: Application) : Default
     }
 
     private fun buildLoginListener(): IProfileCallback {
-        return object : IProfileCallback {
-
+        return object : DefaultProfileCallback() {
             override fun loginFailure() {
                 view.showFailedToLogin()
             }
             override fun loginSuccess(account: Account?) {
-
+                view.showToast(R.string.login_successful)
             }
-
-            override fun signUpFailure(error: String?) {}
-
-            override fun asBinder(): IBinder? = null
-            override fun update(account: Account?) {}
-
         }
     }
 

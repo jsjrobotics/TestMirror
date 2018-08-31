@@ -14,4 +14,6 @@
     <string name="complete_all_fields">Complete All Fields</string>
     <string name="email_already_exists">Email Address already exists</string>
     <string name="unknown_error">Unknown Error</string>
+    <string name="signup_success">SignUp Successful. Please Login</string>
+    <string name="login_successful">Login Successful</string>
 </resources>

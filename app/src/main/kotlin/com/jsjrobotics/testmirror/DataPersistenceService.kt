@@ -1,5 +1,6 @@
 package com.jsjrobotics.testmirror
 
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.content.SharedPreferences
@@ -81,7 +82,7 @@ class DataPersistenceService : Service() {
         }
         val profile = writePersistentData(data)
         dataStore[data.email] = profile
-        callback.loginSuccess(profile.account)
+        callback.signUpSuccess()
     }
 
     private fun performLogin(callback: IProfileCallback, data: LoginData) {
@@ -102,30 +103,25 @@ class DataPersistenceService : Service() {
         if (data.isEmpty() || data.size != Account.ATTRIBUTES_IN_ACCOUNT) {
             return null
         }
-        val listData = data.toList();
-        val userEmail = listData[0]
-        val userPassword = listData[1]
-        val fullName = listData[2]
-        val birthday = listData[3]
-        val location = listData[4]
-        val account = Account(userEmail,
-                              userPassword,
-                              fullName,
-                              birthday.toLong(),
-                              location)
+        val account = Account.fromSharedPreferences(data)
         val profile = CachedProfile(account, timeSource.invoke())
         dataStore[loginEmail] = profile
         return profile
     }
 
+    @SuppressLint("ApplySharedPref")
     private fun writePersistentData(data: SignUpData): CachedProfile {
-        val account = Account(data.email,
-                              data.password,
-                              data.fullName,
-                              Account.UNKNOWN_BIRTHDAY,
-                              Account.UNKNOWN_LOCATION)
-        val profile = CachedProfile(account, timeSource.invoke())
+        val newAccount = Account(data.email,
+                                 data.password,
+                                 data.fullName,
+                                 Account.UNKNOWN_BIRTHDAY,
+                                 Account.UNKNOWN_LOCATION)
+        val profile = CachedProfile(newAccount, timeSource.invoke())
         dataStore[data.email] = profile
+        val serializedData = Account.toSharedPreferences(newAccount)
+        sharedPreferences.edit()
+                .putStringSet(data.email, serializedData)
+                .commit()
         return profile
     }
 

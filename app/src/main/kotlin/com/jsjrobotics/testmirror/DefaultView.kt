@@ -1,6 +1,7 @@
 package com.jsjrobotics.testmirror
 
 import android.content.Context
+import android.support.annotation.StringRes
 import android.widget.Toast
 
 abstract class DefaultView {
@@ -31,5 +32,9 @@ abstract class DefaultView {
                            Toast.LENGTH_SHORT)
                     .show()
         }
+    }
+
+    fun showToast(@StringRes id: Int) {
+        showToast(Application.instance().getString(id))
     }
 }

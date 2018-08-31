@@ -8,4 +8,5 @@ oneway interface IProfileCallback {
     void loginSuccess(in Account account);
     void loginFailure();
     void signUpFailure(in String error);
+    void signUpSuccess();
 }
