@@ -16,7 +16,7 @@ interface RefineMirrorApi {
     fun login(@Body loginRequest: LoginRequest): Call<LoginResponse>
 
     @GET(Paths.USER_DATA_PATH)
-    fun getUserData(@Header(Paths.AUTHORIZATION_HEADER) userkey : String) : Call<UserDataResponse>
+    fun getUserData(@Header(Paths.AUTHORIZATION_HEADER) userkey : String) : Call<String>
 
     @PATCH
     fun updateUserData() : Call<UpdateDataResponse>

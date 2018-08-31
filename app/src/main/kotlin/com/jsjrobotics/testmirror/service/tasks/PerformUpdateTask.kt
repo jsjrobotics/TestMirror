@@ -1,12 +1,9 @@
 package com.jsjrobotics.testmirror.service.tasks
 
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.os.IBinder
 import com.jsjrobotics.testmirror.IProfileCallback
-import com.jsjrobotics.testmirror.R
-import com.jsjrobotics.testmirror.dataStructures.*
-import com.jsjrobotics.testmirror.service.DataPersistenceService
+import com.jsjrobotics.testmirror.dataStructures.Account
+import com.jsjrobotics.testmirror.dataStructures.CachedProfile
+import com.jsjrobotics.testmirror.dataStructures.UpdateInfoData
 import java.util.*
 
 class PerformUpdateTask(private val getPersistentData: (String) -> CachedProfile?,

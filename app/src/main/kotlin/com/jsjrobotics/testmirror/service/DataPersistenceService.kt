@@ -18,6 +18,7 @@ import com.jsjrobotics.testmirror.service.tasks.PerformSignUpTask
 import com.jsjrobotics.testmirror.service.tasks.PerformUpdateTask
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
@@ -46,6 +47,7 @@ class DataPersistenceService : Service() {
         Application.inject(this)
         val retrofit = Retrofit.Builder()
                 .baseUrl(DOMAIN)
+                .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
         backendApi = retrofit.create(RefineMirrorApi::class.java)
@@ -92,6 +94,7 @@ class DataPersistenceService : Service() {
                 return
             }
             val task = PerformLoginTask(::getPersistentData,
+                                        backendApi,
                                         callback,
                                         data)
             executor.submit(task)

@@ -8,7 +8,6 @@ import com.jsjrobotics.testmirror.dataStructures.CachedProfile
 import com.jsjrobotics.testmirror.dataStructures.SignUpData
 import com.jsjrobotics.testmirror.dataStructures.networking.requests.SignUpRequest
 import com.jsjrobotics.testmirror.service.networking.RefineMirrorApi
-import retrofit2.Retrofit
 
 class PerformSignUpTask(private val getPersistentData: (String) -> CachedProfile?,
                         private val writePersistentData: (SignUpData) -> CachedProfile,
@@ -41,7 +40,7 @@ class PerformSignUpTask(private val getPersistentData: (String) -> CachedProfile
                 callback.signUpFailure(errorString)
             }
         } catch (e : Exception) {
-            ERROR("Failed to download recipes: $e")
+            ERROR("Failed to signup: $e")
             callback.signUpFailure(e.message ?: resources.getString(R.string.unknown_error))
         }
 

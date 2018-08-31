@@ -1,6 +1,7 @@
 package com.jsjrobotics.testmirror.signup
 
-import com.jsjrobotics.testmirror.*
+import com.jsjrobotics.testmirror.DefaultPresenter
+import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.dataStructures.SignUpData
 import javax.inject.Inject
 
