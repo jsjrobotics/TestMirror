@@ -60,7 +60,7 @@ class DataPersistenceService : Service() {
 
         override fun attemptUpdateInfo(callback: IProfileCallback?, account: Account?, data: UpdateInfoData?) {
             if (callback == null || data == null || account == null) {
-                callback?.updateInfoFailure()
+                callback?.updateInfoFailure(null)
                 return
             }
             val task = PerformUpdateTask(::getPersistentData,

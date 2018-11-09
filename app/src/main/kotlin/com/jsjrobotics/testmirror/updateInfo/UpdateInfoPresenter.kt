@@ -15,7 +15,10 @@ class UpdateInfoPresenter @Inject constructor(val application: Application,
                 .subscribe {
                     performSave(it)
                 }
-        disposables.add(saveClick)
+        val updateFailure = model.onUpdateFailure.subscribe { error ->
+            view.showToast(error)
+        }
+        disposables.addAll(saveClick, updateFailure)
     }
 
     private fun performSave(data: UpdateInfoData) {

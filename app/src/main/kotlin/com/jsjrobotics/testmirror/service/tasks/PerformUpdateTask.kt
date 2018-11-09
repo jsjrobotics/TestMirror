@@ -14,16 +14,14 @@ class PerformUpdateTask(private val getPersistentData: (String) -> CachedProfile
                         private val timeSource: () -> Long) : Runnable {
     override fun run() {
         if (!data.isValid()) {
-            callback.updateInfoFailure()
+            callback.updateInfoFailure("Invalid Data")
             return
         }
         val oldData = getPersistentData(account.userEmail)
         if (oldData == null) {
-            callback.updateInfoFailure()
+            callback.updateInfoFailure("Account data not found. Was signup used?")
             return
         }
-        val date = Date()
-        date.year
         val accountUpdate = oldData.account.copy(location = data.location, birthday = data.getTimeMilliseconds())
         val cacheUpdate = CachedProfile(accountUpdate, timeSource.invoke())
         writePersistentData(cacheUpdate)

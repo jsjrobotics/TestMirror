@@ -16,8 +16,8 @@ class UpdateInfoModel @Inject constructor(val application: Application,
                                           val profileModel: ProfileModel,
                                           val navigationController: NavigationController){
 
-    private val updateFailure : PublishSubject<Unit> = PublishSubject.create()
-    val onUpdateFailure : Observable<Unit> = updateFailure
+    private val updateFailure : PublishSubject<String> = PublishSubject.create()
+    val onUpdateFailure : Observable<String> = updateFailure
 
     fun saveUpdateInfo(data: UpdateInfoData) {
         application.dataPersistenceService?.attemptUpdateInfo(buildUpdateReceiver(),
@@ -30,8 +30,9 @@ class UpdateInfoModel @Inject constructor(val application: Application,
             override fun updateInfoSuccess() {
                 navigationController.showProfile()
             }
-            override fun updateInfoFailure() {
-                updateFailure.onNext(Unit)
+            override fun updateInfoFailure(error: String?) {
+                updateFailure.onNext(error ?: "Unknown Error")
+                navigationController.showProfile()
             }
         }
     }

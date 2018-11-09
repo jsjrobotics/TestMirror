@@ -2,6 +2,8 @@ package com.jsjrobotics.testmirror.dataStructures
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.jsjrobotics.testmirror.dataStructures.networking.responses.UserDataResponse
+import com.jsjrobotics.testmirror.dataStructures.networking.responses.UserDataResponseData
 
 data class Account(val userEmail: String,
                    val userPassword: String,
@@ -16,6 +18,12 @@ data class Account(val userEmail: String,
             parcel.readLong(),
             parcel.readString()) {
     }
+
+    constructor(data: UserDataResponseData) : this(data.email,
+            "",
+            data.publicName,
+            Account.UNKNOWN_BIRTHDAY,
+            Account.UNKNOWN_LOCATION)
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(userEmail)

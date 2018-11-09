@@ -11,4 +11,9 @@ object HttpConstants {
     const val DATA = "data"
     const val API_TOKEN = "api_token"
     const val USER_TOKEN = "user_token"
+    const val UUID = "uuid"
+    const val PUBLIC_NAME = "public_name"
+    const val IS_CHILD = "is_child"
+    const val IS_PARENT = "is_parent"
+    const val IS_PENDING = "is_pending"
 }
