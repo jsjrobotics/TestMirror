@@ -7,27 +7,36 @@ import com.jsjrobotics.testmirror.dataStructures.CachedProfile
 import com.jsjrobotics.testmirror.dataStructures.LoginData
 import com.jsjrobotics.testmirror.dataStructures.networking.requests.LoginRequest
 import com.jsjrobotics.testmirror.dataStructures.networking.responses.LoginResponse
-import com.jsjrobotics.testmirror.dataStructures.networking.responses.UserDataResponse
+import com.jsjrobotics.testmirror.login.LoginModel
 import com.jsjrobotics.testmirror.service.networking.Paths
 import com.jsjrobotics.testmirror.service.networking.RefineMirrorApi
+import kotlin.math.log
 
 class PerformLoginTask(private val getPersistentData: (String) -> CachedProfile?,
                        private val backend: RefineMirrorApi,
                        private val callback: IProfileCallback,
-                       private val data: LoginData) : Runnable {
+                       private val data: LoginData,
+                       private val loginModel: LoginModel) : Runnable {
+    private val offlineLoginEnabled = false
+
     override fun run() {
         val userEmail = data.userEmail
         val password = data.password
-        val savedData: CachedProfile? = getPersistentData(userEmail)
-        if (savedData == null) {
-            handleEmptyCache()
-            return
-        }
-        if (savedData.account.userPassword == password) {
-            callback.loginSuccess(savedData.account)
+        if (offlineLoginEnabled) {
+            val savedData: CachedProfile? = getPersistentData(userEmail)
+            if (savedData == null) {
+                handleEmptyCache()
+                return
+            }
+            if (savedData.account.userPassword == password) {
+                callback.loginSuccess(savedData.account)
+            } else {
+                callback.loginFailure()
+            }
         } else {
-            callback.loginFailure()
+            handleEmptyCache()
         }
+
     }
 
     private fun handleEmptyCache() {
@@ -37,7 +46,9 @@ class PerformLoginTask(private val getPersistentData: (String) -> CachedProfile?
             val result = request.execute()
             val bodyResponse = result.body()
             if (result.isSuccessful && bodyResponse != null) {
-                val account = getUserData(bodyResponse)
+                val requestToken = Paths.buildAuthorizationHeader(bodyResponse.data.apiToken)
+                loginModel.loggedInToken = requestToken
+                val account = getUserData(requestToken)
                 account?.let {
                     callback.loginSuccess(it)
                     return
@@ -52,9 +63,8 @@ class PerformLoginTask(private val getPersistentData: (String) -> CachedProfile?
         }
     }
 
-    private fun getUserData(response: LoginResponse): Account? {
-        val requestToken = Paths.buildAuthorizationHeader(response.data.apiToken)
-        val request = backend.getUserData(requestToken)
+    private fun getUserData(token: String): Account? {
+        val request = backend.getUserData(token)
         try {
             val result = request.execute()
             if (result.isSuccessful) {

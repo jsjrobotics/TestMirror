@@ -11,6 +11,7 @@ import com.jsjrobotics.testmirror.IDataPersistence
 import com.jsjrobotics.testmirror.IProfileCallback
 import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.dataStructures.*
+import com.jsjrobotics.testmirror.login.LoginModel
 import com.jsjrobotics.testmirror.service.networking.Paths.DOMAIN
 import com.jsjrobotics.testmirror.service.networking.RefineMirrorApi
 import com.jsjrobotics.testmirror.service.tasks.PerformLoginTask
@@ -42,6 +43,9 @@ class DataPersistenceService : Service() {
     lateinit var sharedPreferences: SharedPreferences
 
 
+    @Inject
+    lateinit var loginModel: LoginModel
+
     override fun onCreate() {
         super.onCreate()
         Application.inject(this)
@@ -68,7 +72,9 @@ class DataPersistenceService : Service() {
                                          callback,
                                          account,
                                          data,
-                                         timeSource)
+                                         timeSource,
+                                         backendApi,
+                                         loginModel)
             executor.submit(task)
         }
 
@@ -96,7 +102,8 @@ class DataPersistenceService : Service() {
             val task = PerformLoginTask(::getPersistentData,
                                         backendApi,
                                         callback,
-                                        data)
+                                        data,
+                                        loginModel)
             executor.submit(task)
         }
 

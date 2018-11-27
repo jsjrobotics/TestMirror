@@ -9,6 +9,8 @@ import javax.inject.Singleton
 @Singleton
 class LoginModel @Inject constructor(val profileModel: ProfileModel,
                                      val navigationController: NavigationController) {
+    var loggedInToken : String? = null
+
     fun successfulLogin(account: Account) {
         profileModel.setAccount(account)
         if (account.needsUpdateInfo()) {

@@ -38,6 +38,22 @@ data class UpdateInfoData(val year: Int = UNKNOWN_VALUE,
         return calendar.getTimeInMillis()
     }
 
+    fun birthdayString(): String {
+        val monthString : String = if (month < 10) {
+            "0$month"
+        } else {
+            "$month"
+        }
+
+        val dayString = if (dayOfMonth < 10) {
+            "0$dayOfMonth"
+        } else {
+            "$dayOfMonth"
+        }
+
+        return "$year-$monthString-$dayString"
+    }
+
     companion object CREATOR : Parcelable.Creator<UpdateInfoData> {
         val UNKNOWN_VALUE : Int = -1
         val UNKNOWN_LOCATION = ""
