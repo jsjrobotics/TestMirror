@@ -188,7 +188,7 @@ class DataPersistenceService : Service() {
     }
 
     fun getPersistentData(loginEmail: String): CachedProfile? {
-        val data = sharedPreferences.getStringSet(loginEmail, emptySet())
+        val data = sharedPreferences.getStringSet(loginEmail, emptySet())!!
         if (data.isEmpty() || data.size != Account.ATTRIBUTES_IN_ACCOUNT) {
             return null
         }

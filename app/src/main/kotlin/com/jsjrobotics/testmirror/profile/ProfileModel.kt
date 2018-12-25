@@ -21,11 +21,11 @@ class ProfileModel @Inject constructor(val application: Application)  {
 
     private fun buildUpdateCallback(): IProfileCallback {
         return object : DefaultProfileCallback() {
-            override fun update(update: Account?) {
-                update?.let { accountUpdate ->
+            override fun update(account: Account?) {
+                account?.let { accountUpdate ->
                     currentAccount?.let { current ->
                         if (current.userEmail == accountUpdate.userEmail) {
-                            currentAccount = update
+                            currentAccount = accountUpdate
                             profileUpdated.onNext(Unit)
                         }
                     }
