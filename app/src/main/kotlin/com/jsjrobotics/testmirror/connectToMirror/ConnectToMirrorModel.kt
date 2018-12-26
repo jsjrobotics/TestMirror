@@ -2,6 +2,7 @@ package com.jsjrobotics.testmirror.connectToMirror
 
 import android.net.nsd.NsdServiceInfo
 import com.jsjrobotics.testmirror.ERROR
+import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
 import com.jsjrobotics.testmirror.network.DnsServiceListener
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -11,8 +12,8 @@ import javax.inject.Inject
 class ConnectToMirrorModel @Inject constructor(val dnsServiceListener: DnsServiceListener) {
 
     private var mirrorSubscription: Disposable? = null
-    private val savedMirrors : BehaviorSubject<Set<NsdServiceInfo>> = BehaviorSubject.create()
-    val onMirrorDisocvered : Observable<Set<NsdServiceInfo>> = savedMirrors
+    private val savedMirrors : BehaviorSubject<Set<ResolvedMirrorData>> = BehaviorSubject.create()
+    val onMirrorDiscovered : Observable<Set<ResolvedMirrorData>> = savedMirrors
     fun startDiscovery() {
         if (mirrorSubscription == null) {
             mirrorSubscription = dnsServiceListener.onServiceInfoDiscovered.subscribe(this::saveDiscoveredMirrors, this::handleError)
@@ -30,7 +31,7 @@ class ConnectToMirrorModel @Inject constructor(val dnsServiceListener: DnsServic
         ERROR("OnServiceInfoDiscovered threw error: ${error.message}")
     }
 
-    private fun saveDiscoveredMirrors(mirrors :Set<NsdServiceInfo>) {
+    private fun saveDiscoveredMirrors(mirrors : Set<ResolvedMirrorData>) {
         savedMirrors.onNext(mirrors)
     }
 }

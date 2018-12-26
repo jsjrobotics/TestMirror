@@ -4,8 +4,9 @@ import android.annotation.SuppressLint
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.util.Log
-import com.jsjrobotics.testmirror.DEBUG
 import com.jsjrobotics.testmirror.ERROR
+import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
+import com.jsjrobotics.testmirror.service.networking.MirrorPeerToPeerApi
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -13,6 +14,10 @@ import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.Retrofit
+
+
 
 /**
  * A class for receiving found Mirror Services.
@@ -22,27 +27,21 @@ import javax.inject.Singleton
 @Singleton
 class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
 
-    private val serviceInfoDiscovered : PublishSubject<Set<NsdServiceInfo>> = PublishSubject.create()
-    val onServiceInfoDiscovered : Observable<Set<NsdServiceInfo>> = serviceInfoDiscovered
+    private val serviceInfoDiscovered : PublishSubject<Set<ResolvedMirrorData>> = PublishSubject.create()
+    val onServiceInfoDiscovered : Observable<Set<ResolvedMirrorData>> = serviceInfoDiscovered
     private val TAG = javaClass.simpleName
     private val serviceType = "_mirror._tcp."
     private val serviceNameMatcher = Regex("^mirror-.*|^Android$")
     private val resolvedServiceInfo: MutableSet<NsdServiceInfo> = mutableSetOf()
     private val THREE_SECONDS_MS: Long = 3 * 1000
     private var reportResultsDisposable: Disposable? = null
+    private var isDiscovering: Boolean = true
 
-    private var resolving: Boolean = false
     private val servicesToResolve: MutableList<NsdServiceInfo> = mutableListOf()
     private val discoveryListener : NsdManager.DiscoveryListener = object : NsdManager.DiscoveryListener {
         override fun onServiceFound(service: NsdServiceInfo) {
             if (service.serviceType == serviceType && serviceNameMatcher.matches(service.serviceName)) {
-                if (!resolving) {
-                    nsdManager.resolveService(service, buildResolveListener())
-                    resolving = true
-                } else {
-                    synchronized(servicesToResolve) { servicesToResolve.add(service) }
-
-                }
+                servicesToResolve.add(service)
             }
         }
 
@@ -75,39 +74,69 @@ class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
 
             override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
                 resolvedServiceInfo.add(serviceInfo)
-                synchronized(servicesToResolve) {
-                    if (servicesToResolve.size > 0) {
-                        val nextService = servicesToResolve.removeAt(0)
-                        nsdManager.resolveService(nextService, buildResolveListener())
-                    } else {
-                        resolving = false
-                        startReportResultsTimer()
-                    }
-                }
+                resolveServices()
             }
         }
     }
 
-    private fun startReportResultsTimer() {
-        reportResultsDisposable?.dispose()
-        reportResultsDisposable = Observable.timer(THREE_SECONDS_MS, TimeUnit.MILLISECONDS, Schedulers.io())
-                .subscribe{
-                    DEBUG("Notifying of Mirrors found: ${resolvedServiceInfo.size}")
-                    stopDiscovery()
-                    serviceInfoDiscovered.onNext(resolvedServiceInfo)
-                }
+    private fun resolveServices() {
+        if (servicesToResolve.size > 0) {
+            val nextService = servicesToResolve.removeAt(0)
+            nsdManager.resolveService(nextService, buildResolveListener())
+        } else {
+            resolveMirrorData()
+        }
+    }
+
+    private fun resolveMirrorData() {
+        val mirrorDataToResolve : MutableSet<NsdServiceInfo> = mutableSetOf<NsdServiceInfo>().apply {
+            addAll(resolvedServiceInfo)
+        }
+        mirrorDataToResolve.forEach{ requestMirrorData(it) }
+        serviceInfoDiscovered.onNext(mirrorDataResolved.values.toSet())
+
+    }
+
+    private val mirrorDataResolved = mutableMapOf<NsdServiceInfo, ResolvedMirrorData>()
+
+    private fun requestMirrorData(serviceInfo: NsdServiceInfo) {
+        val baseUrl = "http://${serviceInfo.host.hostAddress}:8080/"
+        try {
+            val result = Retrofit.Builder()
+                    .baseUrl(baseUrl)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                    .create(MirrorPeerToPeerApi::class.java)
+                    .getMirrorData()
+                    .execute()
+            val bodyResponse = result.body()
+            mirrorDataResolved[serviceInfo] = ResolvedMirrorData(serviceInfo, bodyResponse)
+        } catch (e: Exception) {
+            ERROR("Failed to download login data: $e")
+            mirrorDataResolved[serviceInfo] = ResolvedMirrorData(serviceInfo)
+        }
     }
 
     @SuppressLint("CheckResult")
     fun discoverServices() {
         resolvedServiceInfo.clear()
         servicesToResolve.clear()
-        resolving = false
+        reportResultsDisposable?.dispose()
+        isDiscovering = true
         nsdManager.discoverServices(serviceType, NsdManager.PROTOCOL_DNS_SD, discoveryListener )
+        reportResultsDisposable = Observable.timer(THREE_SECONDS_MS, TimeUnit.MILLISECONDS, Schedulers.io())
+                .subscribe{
+                    isDiscovering = false
+                    stopDiscovery()
+                    resolveServices()
+                }
 
     }
 
     fun stopDiscovery() {
-        nsdManager.stopServiceDiscovery(discoveryListener)
+        if (isDiscovering) {
+            nsdManager.stopServiceDiscovery(discoveryListener)
+            isDiscovering = false
+        }
     }
 }
