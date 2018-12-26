@@ -12,3 +12,7 @@ fun runOnUiThread(action: () -> Unit) {
 fun Any.ERROR(message: String) {
     Log.e(javaClass.simpleName, message)
 }
+
+fun Any.DEBUG(message: String) {
+    Log.d(javaClass.simpleName, message)
+}

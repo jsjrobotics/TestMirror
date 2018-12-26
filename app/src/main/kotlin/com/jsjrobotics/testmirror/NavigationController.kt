@@ -20,6 +20,7 @@ class NavigationController @Inject constructor(){
         currentFragment = id
         showRequest.onNext(id)
     }
+
     fun showSignUp() {
         showRequest(FragmentId.SIGNUP)
     }
@@ -30,6 +31,10 @@ class NavigationController @Inject constructor(){
 
     fun showProfile() {
         showRequest(FragmentId.PROFILE)
+    }
+
+    fun showConnectToMirror() {
+        showRequest(FragmentId.CONNECT_TO_MIRROR);
     }
 
 

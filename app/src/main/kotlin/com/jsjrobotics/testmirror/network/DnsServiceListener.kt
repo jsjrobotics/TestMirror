@@ -1,12 +1,17 @@
 package com.jsjrobotics.testmirror.network
 
+import android.annotation.SuppressLint
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.util.Log
+import com.jsjrobotics.testmirror.DEBUG
+import com.jsjrobotics.testmirror.ERROR
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
@@ -15,32 +20,29 @@ import javax.inject.Singleton
  * The set of resolved services is broadcast each time one is added or removed.
  */
 @Singleton
-class DnsServiceListener(val nsdManager: NsdManager) {
+class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
 
     private val serviceInfoDiscovered : PublishSubject<Set<NsdServiceInfo>> = PublishSubject.create()
-    val onServiceInfoDiscovered : Observable<Set<NsdServiceInfo>> = serviceInfoDiscovered.throttleLast(200, TimeUnit.MILLISECONDS, Schedulers.io())
+    val onServiceInfoDiscovered : Observable<Set<NsdServiceInfo>> = serviceInfoDiscovered
     private val TAG = javaClass.simpleName
     private val serviceType = "_mirror._tcp."
-    private val serviceNameMatcher = Regex("^mirror-|^Android$")
-    private val resolvedServiceInfo: Set<NsdServiceInfo> = mutableSetOf()
+    private val serviceNameMatcher = Regex("^mirror-.*|^Android$")
+    private val resolvedServiceInfo: MutableSet<NsdServiceInfo> = mutableSetOf()
+    private val THREE_SECONDS_MS: Long = 3 * 1000
+    private var reportResultsDisposable: Disposable? = null
 
-    var resolveListener = object : NsdManager.ResolveListener {
-        override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
-            Log.e(TAG, "Resolve failed: $errorCode")
-            resolvedServiceInfo.minus(serviceInfo)
-            serviceInfoDiscovered.onNext(resolvedServiceInfo)
-        }
-
-        override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-            resolvedServiceInfo.plus(serviceInfo)
-            serviceInfoDiscovered.onNext(resolvedServiceInfo)
-        }
-    }
-
+    private var resolving: Boolean = false
+    private val servicesToResolve: MutableList<NsdServiceInfo> = mutableListOf()
     private val discoveryListener : NsdManager.DiscoveryListener = object : NsdManager.DiscoveryListener {
         override fun onServiceFound(service: NsdServiceInfo) {
             if (service.serviceType == serviceType && serviceNameMatcher.matches(service.serviceName)) {
-                nsdManager.resolveService(service, resolveListener)
+                if (!resolving) {
+                    nsdManager.resolveService(service, buildResolveListener())
+                    resolving = true
+                } else {
+                    synchronized(servicesToResolve) { servicesToResolve.add(service) }
+
+                }
             }
         }
 
@@ -56,7 +58,7 @@ class DnsServiceListener(val nsdManager: NsdManager) {
         }
 
 
-        override fun onDiscoveryStarted(serviceType: String) { /* Do Nothing */ }
+        override fun onDiscoveryStarted(serviceType: String) { Log.e(TAG, "Discovery started") }
 
         override fun onDiscoveryStopped(serviceType: String) { /* Do Nothing */ }
 
@@ -64,8 +66,45 @@ class DnsServiceListener(val nsdManager: NsdManager) {
     }
 
 
+    private fun buildResolveListener(): NsdManager.ResolveListener {
+        return object : NsdManager.ResolveListener {
+            override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
+                Log.e(TAG, "Resolve failed: $errorCode")
+                resolvedServiceInfo.remove(serviceInfo)
+            }
+
+            override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
+                resolvedServiceInfo.add(serviceInfo)
+                synchronized(servicesToResolve) {
+                    if (servicesToResolve.size > 0) {
+                        val nextService = servicesToResolve.removeAt(0)
+                        nsdManager.resolveService(nextService, buildResolveListener())
+                    } else {
+                        resolving = false
+                        startReportResultsTimer()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun startReportResultsTimer() {
+        reportResultsDisposable?.dispose()
+        reportResultsDisposable = Observable.timer(THREE_SECONDS_MS, TimeUnit.MILLISECONDS, Schedulers.io())
+                .subscribe{
+                    DEBUG("Notifying of Mirrors found: ${resolvedServiceInfo.size}")
+                    stopDiscovery()
+                    serviceInfoDiscovered.onNext(resolvedServiceInfo)
+                }
+    }
+
+    @SuppressLint("CheckResult")
     fun discoverServices() {
+        resolvedServiceInfo.clear()
+        servicesToResolve.clear()
+        resolving = false
         nsdManager.discoverServices(serviceType, NsdManager.PROTOCOL_DNS_SD, discoveryListener )
+
     }
 
     fun stopDiscovery() {

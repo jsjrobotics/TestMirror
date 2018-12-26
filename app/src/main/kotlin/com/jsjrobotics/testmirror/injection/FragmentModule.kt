@@ -1,6 +1,7 @@
 package com.jsjrobotics.testmirror.injection
 
 import android.support.v4.app.Fragment
+import com.jsjrobotics.testmirror.connectToMirror.ConnectToMirrorFragment
 import com.jsjrobotics.testmirror.injection.androidSubcomponents.*
 import com.jsjrobotics.testmirror.login.LoginFragment
 import com.jsjrobotics.testmirror.profile.ProfileFragment
@@ -18,7 +19,8 @@ import dagger.multibindings.IntoMap
         WelcomeFragmentSubcomponent::class,
         SignUpFragmentSubcomponent::class,
         ProfileFragmentSubcomponent::class,
-        UpdateInfoFragmentSubcomponent::class
+        UpdateInfoFragmentSubcomponent::class,
+        ConnectToMirrorFragmentSubcomponent::class
 ))
 abstract class FragmentModule {
     @Binds
@@ -45,5 +47,10 @@ abstract class FragmentModule {
     @IntoMap
     @FragmentKey(UpdateInfoFragment::class)
     internal abstract fun bindUpdateInfoFragmentInjectorFactory(builder: UpdateInfoFragmentSubcomponent.Builder): AndroidInjector.Factory<out Fragment>
+
+    @Binds
+    @IntoMap
+    @FragmentKey(ConnectToMirrorFragment::class)
+    internal abstract fun bindConnectToMirrorFragmentInjectorFactory(builder: ConnectToMirrorFragmentSubcomponent.Builder): AndroidInjector.Factory<out Fragment>
 
 }

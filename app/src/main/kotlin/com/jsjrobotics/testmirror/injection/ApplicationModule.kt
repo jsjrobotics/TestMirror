@@ -25,5 +25,5 @@ class ApplicationModule(val application: Application) {
 
     @Provides
     @Singleton
-    fun provideNsdManager(application: Application) = application.getSystemService(Context.NSD_SERVICE)
+    fun provideNsdManager(application: Application) : NsdManager = application.getSystemService(Context.NSD_SERVICE) as NsdManager
 }

@@ -13,11 +13,12 @@ class LoginModel @Inject constructor(val profileModel: ProfileModel,
 
     fun successfulLogin(account: Account) {
         profileModel.setAccount(account)
-        if (account.needsUpdateInfo()) {
+        navigationController.showConnectToMirror()
+        /*if (account.needsUpdateInfo()) {
             navigationController.showUpdateInfo()
         } else {
             navigationController.showProfile()
-        }
+        }*/
 
     }
 

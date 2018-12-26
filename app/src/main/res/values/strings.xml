@@ -18,4 +18,6 @@
     <string name="login_successful">Login Successful</string>
     <string name="refresh">Refresh</string>
     <string name="confirm_password">Confirm Password</string>
+    <string name="searching_for_mirrors">Searching for Mirrors</string>
+    <string name="select_a_mirror">Select a Mirror to connect to</string>
 </resources>

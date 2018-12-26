@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     
-    <ViewFlipper
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+
         <include layout="@layout/fragment_connect_to_mirror_loading" />
         <include layout="@layout/fragment_connect_to_mirror_select_mirror" />
-        <include layout="@layout/fragment_connect_to_mirror_connect" />
+        <include layout="@layout/fragment_connect_to_mirror_connected" />
 
-    </ViewFlipper>
 
-</android.support.constraint.ConstraintLayout>
+</FrameLayout>
