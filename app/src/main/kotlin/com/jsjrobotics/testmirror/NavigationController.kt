@@ -1,5 +1,6 @@
 package com.jsjrobotics.testmirror
 
+import com.jsjrobotics.testmirror.dataStructures.FragmentRequest
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
@@ -9,32 +10,32 @@ import javax.inject.Singleton
 class NavigationController @Inject constructor(){
     var currentFragment: FragmentId = FragmentId.WELCOME
 
-    private val showRequest: PublishSubject<FragmentId> = PublishSubject.create()
-    val onShowRequest: Observable<FragmentId> = showRequest
+    private val showRequest: PublishSubject<FragmentRequest> = PublishSubject.create()
+    val onShowRequest: Observable<FragmentRequest> = showRequest
 
     fun showLogin() {
-        showRequest(FragmentId.LOGIN)
+        showRequest(FragmentRequest(FragmentId.LOGIN, true))
     }
 
-    private fun showRequest(id: FragmentId) {
-        currentFragment = id
-        showRequest.onNext(id)
+    private fun showRequest(fragmentRequest: FragmentRequest) {
+        currentFragment = fragmentRequest.fragmentId
+        showRequest.onNext(fragmentRequest)
     }
 
     fun showSignUp() {
-        showRequest(FragmentId.SIGNUP)
+        showRequest(FragmentRequest(FragmentId.SIGNUP,true))
     }
 
     fun showUpdateInfo() {
-        showRequest(FragmentId.UPDATE_INFO)
+        showRequest(FragmentRequest(FragmentId.UPDATE_INFO, false))
     }
 
     fun showProfile() {
-        showRequest(FragmentId.PROFILE)
+        showRequest(FragmentRequest(FragmentId.PROFILE, true))
     }
 
     fun showConnectToMirror() {
-        showRequest(FragmentId.CONNECT_TO_MIRROR);
+        showRequest(FragmentRequest(FragmentId.CONNECT_TO_MIRROR, false, clearBackStack = true))
     }
 
 
