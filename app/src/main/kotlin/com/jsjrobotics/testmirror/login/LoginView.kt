@@ -12,6 +12,10 @@ import com.jsjrobotics.testmirror.runOnUiThread
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
+import android.app.Activity
+import android.os.IBinder
+import android.view.inputmethod.InputMethodManager
+
 
 class LoginView @Inject constructor() : DefaultView() {
     lateinit var rootXml: ViewGroup ; private set
@@ -27,11 +31,21 @@ class LoginView @Inject constructor() : DefaultView() {
         emailInput = rootXml.findViewById(R.id.email)
         passwordInput = rootXml.findViewById(R.id.password)
         loginButton = rootXml.findViewById(R.id.login)
-        loginButton.setOnClickListener {
-            val loginData = LoginData(emailInput.text.toString(),
-                                      passwordInput.text.toString())
-            onLoginClick.onNext(loginData)
+        loginButton.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                closeKeyboard(v.windowToken)
+            }
         }
+        loginButton.setOnClickListener {
+                val loginData = LoginData(emailInput.text.toString(),
+                        passwordInput.text.toString())
+                onLoginClick.onNext(loginData)
+            }
+        }
+
+    private fun closeKeyboard(windowToken: IBinder) {
+        val imm = rootXml.context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
     }
 
     fun onLoginClick(): Observable<LoginData> = onLoginClick

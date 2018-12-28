@@ -34,6 +34,7 @@ class ConnectToMirrorFragment : DefaultFragment() {
 
     override fun onDestroy() {
         removeLifecycleObserver(presenter)
+        view.onDestroy()
         super.onDestroy()
     }
 }

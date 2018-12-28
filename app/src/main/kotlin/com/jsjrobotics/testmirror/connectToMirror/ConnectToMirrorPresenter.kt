@@ -8,9 +8,10 @@ import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
 import javax.inject.Inject
 
-class ConnectToMirrorPresenter
-    @Inject constructor(val model: ConnectToMirrorModel): DefaultPresenter() {
+class ConnectToMirrorPresenter @Inject constructor(val model: ConnectToMirrorModel): DefaultPresenter() {
     private lateinit var view: ConnectToMirrorView
+    private var displayedMirrors: MutableList<ResolvedMirrorData> = mutableListOf()
+    private var selectedMirror: ResolvedMirrorData? = null
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     protected fun startMirrorDiscovery() {
@@ -26,12 +27,27 @@ class ConnectToMirrorPresenter
     }
 
     private fun displayMirrors(mirrors : Set<ResolvedMirrorData>) {
-        val serviceNames = mirrors.map {it.serviceInfo.serviceName }
+        displayedMirrors.clear()
+        displayedMirrors.addAll(mirrors)
+        val serviceNames = displayedMirrors.map {
+            val mirrorName = it.mirrorData?.name ?: ""
+            if (mirrorName.isNotEmpty()) {
+                return@map mirrorName
+            }
+            return@map it.serviceInfo.serviceName
+        }
         view.displayMirrors(serviceNames)
 
     }
 
-    fun bind(view: ConnectToMirrorView) {
-        this.view = view
+    fun bind(v: ConnectToMirrorView) {
+        view = v
+        val mirrorSelectedDisposable = view.onMirrorSelected.subscribe { selectedMirrorIndex ->
+            selectedMirror = displayedMirrors[selectedMirrorIndex]
+            view.setMirrorSelected(selectedMirrorIndex)
+            view.enableConnectButton()
+        }
+        disposables.add(mirrorSelectedDisposable)
+
     }
 }
