@@ -94,4 +94,8 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
     fun disableConnectButton() {
         connectButton.visibility = View.GONE
     }
+
+    fun unselectMirror(index: Int) {
+        (mirrorList.findViewHolderForAdapterPosition(index) as SelectMirrorViewHolder).setUnselected()
+    }
 }

@@ -28,7 +28,10 @@ class ConnectToMirrorPresenter @Inject constructor(val model: ConnectToMirrorMod
 
     private fun displayMirrors(mirrors : Set<ResolvedMirrorData>) {
         displayedMirrors.clear()
-        displayedMirrors.addAll(mirrors)
+        //displayedMirrors.addAll(mirrors)
+        displayedMirrors.add(ResolvedMirrorData(NsdServiceInfo().apply { serviceName = "testing" }))
+        displayedMirrors.add(ResolvedMirrorData(NsdServiceInfo().apply { serviceName = "monkey" }))
+
         val serviceNames = displayedMirrors.map {
             val mirrorName = it.mirrorData?.name ?: ""
             if (mirrorName.isNotEmpty()) {
@@ -43,9 +46,16 @@ class ConnectToMirrorPresenter @Inject constructor(val model: ConnectToMirrorMod
     fun bind(v: ConnectToMirrorView) {
         view = v
         val mirrorSelectedDisposable = view.onMirrorSelected.subscribe { selectedMirrorIndex ->
-            selectedMirror = displayedMirrors[selectedMirrorIndex]
-            view.setMirrorSelected(selectedMirrorIndex)
-            view.enableConnectButton()
+            val chosenMirror = displayedMirrors[selectedMirrorIndex]
+            if (chosenMirror == selectedMirror) {
+                view.unselectMirror(selectedMirrorIndex)
+                view.disableConnectButton()
+                selectedMirror = null
+            } else {
+                selectedMirror = chosenMirror
+                view.setMirrorSelected(selectedMirrorIndex)
+                view.enableConnectButton()
+            }
         }
         disposables.add(mirrorSelectedDisposable)
 
