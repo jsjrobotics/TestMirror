@@ -204,7 +204,8 @@ class DataPersistenceService : Service() {
                                  data.password,
                                  data.fullName,
                                  Account.UNKNOWN_BIRTHDAY,
-                                 Account.UNKNOWN_LOCATION)
+                                 Account.UNKNOWN_LOCATION,
+                                 Account.UNKNOWN_UUID)
         val profile = CachedProfile(newAccount, timeSource.invoke())
         updateDataStore(data.email, profile)
         val serializedData = Account.toSharedPreferences(newAccount)

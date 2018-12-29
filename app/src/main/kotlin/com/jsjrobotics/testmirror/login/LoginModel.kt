@@ -7,8 +7,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class LoginModel @Inject constructor(val profileModel: ProfileModel,
-                                     val navigationController: NavigationController) {
+class LoginModel @Inject constructor(private val profileModel: ProfileModel,
+                                     private val navigationController: NavigationController) {
     var loggedInToken : String? = null
 
     fun successfulLogin(account: Account) {

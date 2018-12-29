@@ -1,12 +1,21 @@
 package com.jsjrobotics.testmirror.service
 
+import com.jsjrobotics.testmirror.DEBUG
 import com.jsjrobotics.testmirror.ERROR
+import com.jsjrobotics.testmirror.login.LoginModel
+import com.jsjrobotics.testmirror.profile.ProfileModel
+import com.mirror.framework.MessageAdapter
+import com.mirror.proto.user.Environment
+import com.mirror.proto.user.IdentifyRequest
+import com.mirror.proto.user.IdentifyResponse
+import com.squareup.wire.Message
 import io.reactivex.disposables.CompositeDisposable
 import java.lang.Exception
 import java.net.URI
 import javax.inject.Inject
 
-class WebSocketManager @Inject constructor() {
+class WebSocketManager @Inject constructor(private val profileModel: ProfileModel,
+                                           private val loginModel: LoginModel) {
     private var client : WebSocketClient? = null
     private val clientObserverDisposables = CompositeDisposable()
 
@@ -43,6 +52,7 @@ class WebSocketManager @Inject constructor() {
     }
 
     private fun handleMessage(message: String) {
+        DEBUG(message)
     }
 
     private fun reportClientError(functionName: String, error: Throwable) {
@@ -50,7 +60,22 @@ class WebSocketManager @Inject constructor() {
     }
 
     private fun handleOpenEvent() {
+        sendIdentity()
+    }
 
+    private fun sendIdentity() {
+        val request = IdentifyRequest.Builder()
+                .name(profileModel.currentAccount?.fullName)
+                .email(profileModel.currentAccount?.userEmail)
+                .token(loginModel.loggedInToken)
+                .environment(Environment.ENVIRONMENT_UNKNOWN)
+                .id(profileModel.currentAccount?.uuid)
+                .build()
+        send(request)
+    }
+
+    private fun send(message: Message<*, *>) {
+        client?.send(MessageAdapter.encode(message)) ?: ERROR("Failed to send $message to null client")
     }
 
     private fun handleCloseEvent() {

@@ -9,13 +9,15 @@ data class Account(val userEmail: String,
                    val userPassword: String,
                    val fullName: String,
                    val birthday: Long,
-                   val location: String) : Parcelable {
+                   val location: String,
+                   val uuid: String) : Parcelable {
 
     constructor(parcel: Parcel) : this(
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
             parcel.readLong(),
+            parcel.readString(),
             parcel.readString()) {
     }
 
@@ -23,7 +25,8 @@ data class Account(val userEmail: String,
             "",
             data.publicName,
             Account.UNKNOWN_BIRTHDAY,
-            Account.UNKNOWN_LOCATION)
+            Account.UNKNOWN_LOCATION,
+            data.uuid)
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(userEmail)
@@ -31,6 +34,7 @@ data class Account(val userEmail: String,
         parcel.writeString(fullName)
         parcel.writeLong(birthday)
         parcel.writeString(location)
+        parcel.writeString(uuid)
     }
 
     override fun describeContents(): Int {
@@ -46,13 +50,14 @@ data class Account(val userEmail: String,
         val ATTRIBUTES_IN_ACCOUNT: Int = 5
         val UNKNOWN_BIRTHDAY = -1L
         val UNKNOWN_LOCATION: String = "unknown"
+        val UNKNOWN_UUID : String = ""
         val REQUIRED_ENCODING_LENGTH = 1
         val EMAIL_INDEX = 0
         val PASSWORD_INDEX = 1
         val FULL_NAME_INDEX = 2
         val BIRTHDAY_INDEX = 3
         val LOCATION_INDEX = 4
-
+        val UUID_INDEX = 5
         override fun createFromParcel(parcel: Parcel): Account {
             return Account(parcel)
         }
@@ -68,11 +73,14 @@ data class Account(val userEmail: String,
             val fullName = decode(FULL_NAME_INDEX, listData)
             val birthday = decode(BIRTHDAY_INDEX, listData)
             val location = decode(LOCATION_INDEX, listData)
+            val uuid = decode(UUID_INDEX, listData)
+
             return Account(userEmail,
                            userPassword,
                            fullName,
                            birthday.toLong(),
-                           location)
+                           location,
+                            uuid)
         }
 
         fun toSharedPreferences(account: Account): Set<String> {
@@ -81,12 +89,15 @@ data class Account(val userEmail: String,
             val fullName = encode(FULL_NAME_INDEX, account.fullName)
             val birthday = encode(BIRTHDAY_INDEX, account.birthday.toString())
             val location = encode(LOCATION_INDEX, account.location)
+            val uuid = encode(UUID_INDEX, account.uuid)
+
             return setOf(
                     userEmail,
                     userPassword,
                     fullName,
                     birthday,
-                    location
+                    location,
+                    uuid
             )
         }
 
@@ -108,6 +119,8 @@ data class Account(val userEmail: String,
                 return UNKNOWN_BIRTHDAY.toString()
             } else if (index == LOCATION_INDEX) {
                 return UNKNOWN_LOCATION
+            } else if (index == UUID_INDEX) {
+                return UNKNOWN_UUID
             } else {
                 return ""
             }

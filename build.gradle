@@ -20,6 +20,13 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven {
+            url "s3://mirror-artifacts/"
+            credentials(AwsCredentials) {
+                accessKey AWS_ACCESS_KEY
+                secretKey AWS_SECRET_KEY
+            }
+        }
     }
 }
 
