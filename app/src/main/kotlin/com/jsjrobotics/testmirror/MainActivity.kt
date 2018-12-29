@@ -38,7 +38,7 @@ class MainActivity : FragmentActivity() {
                     .forEach { clearTransaction.remove(it)}
             clearTransaction.commit()
         }
-        
+
         val transaction = supportFragmentManager.beginTransaction()
         val fragment = request.fragmentId
         val tag = fragment.tag()

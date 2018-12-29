@@ -24,5 +24,7 @@
             </intent-filter>
         </activity>
         <service android:name=".service.DataPersistenceService" />
+        <service android:name=".service.WebSocketService" />
+
     </application>
 </manifest>

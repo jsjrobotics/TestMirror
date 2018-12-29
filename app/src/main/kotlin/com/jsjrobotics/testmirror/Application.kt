@@ -12,6 +12,7 @@ import com.jsjrobotics.testmirror.injection.ApplicationComponent
 import com.jsjrobotics.testmirror.injection.ApplicationModule
 import com.jsjrobotics.testmirror.injection.DaggerApplicationComponent
 import com.jsjrobotics.testmirror.service.DataPersistenceService
+import com.jsjrobotics.testmirror.service.WebSocketService
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -42,7 +43,6 @@ class Application : android.app.Application(), HasActivityInjector, HasSupportFr
 
     }
 
-    var injector: ApplicationComponent? = null ; private set
 
     @Inject
     lateinit var activityInjector: DispatchingAndroidInjector<Activity>
@@ -53,24 +53,23 @@ class Application : android.app.Application(), HasActivityInjector, HasSupportFr
     @Inject
     lateinit var serviceInjector: DispatchingAndroidInjector<Service>
 
-    private val serviceConnection = buildServiceConnection()
+    private val serviceConnectedMap : MutableMap <ComponentName, ((IBinder) -> Unit)> = mutableMapOf()
+    private val serviceDisconnectedMap : MutableMap <ComponentName, (() -> Unit)> = mutableMapOf()
 
+    var injector: ApplicationComponent? = null ; private set
     var dataPersistenceService: IDataPersistence? = null; private set
+    var webSocketService: IWebSocket? = null; private set
 
-    private fun buildServiceConnection(): ServiceConnection {
-        return object : ServiceConnection {
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(componentName: ComponentName, service: IBinder) {
+            serviceConnectedMap[componentName]?.invoke(service)
+        }
 
-            override fun onServiceConnected(className: ComponentName, service: IBinder) {
-                dataPersistenceService = IDataPersistence.Stub.asInterface(service)
-
-            }
-
-            override fun onServiceDisconnected(p0: ComponentName?) {
-                dataPersistenceService = null
-            }
-
+        override fun onServiceDisconnected(componentName: ComponentName?) {
+            serviceDisconnectedMap[componentName]?.invoke()
         }
     }
+
 
     override fun onCreate() {
         super.onCreate()
@@ -79,7 +78,22 @@ class Application : android.app.Application(), HasActivityInjector, HasSupportFr
                 .applicationModule(ApplicationModule(this))
                 .build()
         injector!!.inject(this)
+        addServiceConnectionListeners()
         startDataPersistence()
+        startWebSocketService()
+    }
+
+    override fun activityInjector(): AndroidInjector<Activity> = activityInjector
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment>  = fragmentInjector
+
+    private fun addServiceConnectionListeners() {
+        val dataComponent = ComponentName(this, DataPersistenceService::class.java)
+        serviceConnectedMap[dataComponent] = ::onDataServiceConnected
+        serviceDisconnectedMap[dataComponent] = ::onDataServiceDisconnected
+        val webComponent = ComponentName(this, WebSocketService::class.java)
+        serviceConnectedMap[webComponent] = ::onWebSocketServiceConnected
+        serviceDisconnectedMap[webComponent] = ::onWebSocketServiceDisconnected
     }
 
     private fun startDataPersistence() {
@@ -87,9 +101,24 @@ class Application : android.app.Application(), HasActivityInjector, HasSupportFr
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
-    override fun activityInjector(): AndroidInjector<Activity> = activityInjector
+    private fun startWebSocketService() {
+        val intent = Intent(this, WebSocketService::class.java)
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+    }
 
-    override fun supportFragmentInjector(): AndroidInjector<Fragment>  = fragmentInjector
+    private fun onWebSocketServiceConnected(service: IBinder) {
+        webSocketService = IWebSocket.Stub.asInterface(service)
+    }
 
+    private fun onDataServiceConnected(service: IBinder) {
+        dataPersistenceService = IDataPersistence.Stub.asInterface(service)
+    }
 
+    private fun onWebSocketServiceDisconnected() {
+        webSocketService = null
+    }
+
+    private fun onDataServiceDisconnected() {
+        dataPersistenceService = null
+    }
 }

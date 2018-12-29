@@ -8,6 +8,4 @@ import dagger.android.AndroidInjector
 interface DataPersistenceSubcomponent : AndroidInjector<DataPersistenceService>{
     @Subcomponent.Builder
     abstract class Builder : AndroidInjector.Builder<DataPersistenceService>()
-
-
 }

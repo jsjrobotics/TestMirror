@@ -40,11 +40,11 @@ class DataPersistenceService : Service() {
     private lateinit var backendApi: RefineMirrorApi
 
     @Inject
-    lateinit var sharedPreferences: SharedPreferences
+    protected lateinit var sharedPreferences: SharedPreferences
 
 
     @Inject
-    lateinit var loginModel: LoginModel
+    protected lateinit var loginModel: LoginModel
 
     override fun onCreate() {
         super.onCreate()
