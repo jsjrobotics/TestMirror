@@ -27,6 +27,8 @@ import retrofit2.Retrofit
 @Singleton
 class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
 
+    private val mirrorDataResolved = mutableMapOf<NsdServiceInfo, ResolvedMirrorData>()
+    private var discoveryListener: NsdManager.DiscoveryListener? = null
     private val serviceInfoDiscovered : PublishSubject<Set<ResolvedMirrorData>> = PublishSubject.create()
     val onServiceInfoDiscovered : Observable<Set<ResolvedMirrorData>> = serviceInfoDiscovered
     private val TAG = javaClass.simpleName
@@ -35,35 +37,8 @@ class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
     private val resolvedServiceInfo: MutableSet<NsdServiceInfo> = mutableSetOf()
     private val THREE_SECONDS_MS: Long = 3 * 1000
     private var reportResultsDisposable: Disposable? = null
-    private var isDiscovering: Boolean = true
 
     private val servicesToResolve: MutableList<NsdServiceInfo> = mutableListOf()
-    private val discoveryListener : NsdManager.DiscoveryListener = object : NsdManager.DiscoveryListener {
-        override fun onServiceFound(service: NsdServiceInfo) {
-            if (service.serviceType == serviceType && serviceNameMatcher.matches(service.serviceName)) {
-                servicesToResolve.add(service)
-            }
-        }
-
-
-        override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
-            Log.e(TAG, "Discovery failed: Error code:$errorCode")
-            nsdManager.stopServiceDiscovery(this)
-        }
-
-        override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
-            Log.e(TAG, "Discovery failed: Error code:$errorCode")
-            nsdManager.stopServiceDiscovery(this)
-        }
-
-
-        override fun onDiscoveryStarted(serviceType: String) { Log.e(TAG, "Discovery started") }
-
-        override fun onDiscoveryStopped(serviceType: String) { /* Do Nothing */ }
-
-        override fun onServiceLost(serviceInfo: NsdServiceInfo) { /* Do Nothing */ }
-    }
-
 
     private fun buildResolveListener(): NsdManager.ResolveListener {
         return object : NsdManager.ResolveListener {
@@ -97,8 +72,6 @@ class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
 
     }
 
-    private val mirrorDataResolved = mutableMapOf<NsdServiceInfo, ResolvedMirrorData>()
-
     private fun requestMirrorData(serviceInfo: NsdServiceInfo) {
         val baseUrl = "http://${serviceInfo.host.hostAddress}:8080/"
         try {
@@ -119,14 +92,14 @@ class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
 
     @SuppressLint("CheckResult")
     fun discoverServices() {
+        stopDiscovery()
         resolvedServiceInfo.clear()
         servicesToResolve.clear()
         reportResultsDisposable?.dispose()
-        isDiscovering = true
+        discoveryListener = buildDiscoveryListener()
         nsdManager.discoverServices(serviceType, NsdManager.PROTOCOL_DNS_SD, discoveryListener )
         reportResultsDisposable = Observable.timer(THREE_SECONDS_MS, TimeUnit.MILLISECONDS, Schedulers.io())
                 .subscribe{
-                    isDiscovering = false
                     stopDiscovery()
                     resolveServices()
                 }
@@ -134,9 +107,33 @@ class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
     }
 
     fun stopDiscovery() {
-        if (isDiscovering) {
-            nsdManager.stopServiceDiscovery(discoveryListener)
-            isDiscovering = false
+        discoveryListener?.let { nsdManager.stopServiceDiscovery(it) }
+        discoveryListener = null
+    }
+
+    private fun buildDiscoveryListener(): NsdManager.DiscoveryListener {
+        return object : NsdManager.DiscoveryListener {
+            override fun onServiceFound(service: NsdServiceInfo) {
+                if (service.serviceType == serviceType && serviceNameMatcher.matches(service.serviceName)) {
+                    servicesToResolve.add(service)
+                }
+            }
+
+            override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
+                Log.e(TAG, "Discovery failed: Error code:$errorCode")
+                nsdManager.stopServiceDiscovery(this)
+            }
+
+            override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
+                Log.e(TAG, "Discovery failed: Error code:$errorCode")
+                nsdManager.stopServiceDiscovery(this)
+            }
+
+            override fun onDiscoveryStarted(serviceType: String) { Log.e(TAG, "Discovery started") }
+
+            override fun onDiscoveryStopped(serviceType: String) { /* Do Nothing */ }
+
+            override fun onServiceLost(serviceInfo: NsdServiceInfo) { /* Do Nothing */ }
         }
     }
 }

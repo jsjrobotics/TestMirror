@@ -27,8 +27,7 @@ class ConnectToMirrorPresenter @Inject constructor(val model: ConnectToMirrorMod
     }
 
     private fun displayMirrors(mirrors : Set<ResolvedMirrorData>) {
-        displayedMirrors.clear()
-        displayedMirrors.addAll(mirrors)
+        displayedMirrors = mirrors.toMutableList()
         val serviceNames = displayedMirrors.map ( this::getMirrorName )
         view.displayMirrors(serviceNames)
 
