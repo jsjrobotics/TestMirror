@@ -1,6 +1,5 @@
 package com.jsjrobotics.testmirror.service
 
-import com.jsjrobotics.testmirror.DEBUG
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.login.LoginModel
 import com.jsjrobotics.testmirror.profile.ProfileModel
@@ -10,25 +9,26 @@ import com.mirror.proto.user.Environment
 import com.mirror.proto.user.IdentifyRequest
 import com.mirror.proto.user.IdentifyResponse
 import com.squareup.wire.Message
-import com.squareup.wire.ProtoAdapter
 import io.reactivex.disposables.CompositeDisposable
 import java.lang.Exception
 import java.net.URI
 import javax.inject.Inject
 
 class WebSocketManager @Inject constructor(private val profileModel: ProfileModel,
-                                           private val loginModel: LoginModel) {
+                                           private val loginModel: LoginModel,
+                                           private val protobufSettings: ProtoBufSettings) {
     private var client : WebSocketClient? = null
     private val clientObserverDisposables = CompositeDisposable()
 
-    private val protoIdentityMap : Map<String, ProtoAdapter<*>> = mapOf(
-            Pair(IdentifyResponse::class.java.canonicalName, IdentifyResponse.ADAPTER)
-    )
-
     private val messageAdapter: MessageAdapter = MessageAdapter.Builder()
-            .apply{ protoIdentityMap.keys.forEach { messageType ->
-                addAdapter(messageType, protoIdentityMap[messageType])
-            }}.build()
+            .apply {
+                val protoIdentityMap = protobufSettings.protoIdentityMap
+                protobufSettings.knownProtobufMessages.forEach { messageType ->
+                    val adapter = protoIdentityMap[messageType]
+                    val envelopeType = messageType::class.java.canonicalName
+                    addAdapter(envelopeType, adapter)
+                }
+            }.build()
 
     fun connectToClient(uri: URI) : Boolean {
         disconnectFromClient()
@@ -63,11 +63,9 @@ class WebSocketManager @Inject constructor(private val profileModel: ProfileMode
     }
 
     private fun handleMessage(envelope: Envelope) {
-        if (protoIdentityMap.keys.contains(envelope.type)) {
+        if (protobufSettings.knownEnvelopeTypes.contains(envelope.type)) {
             val message = messageAdapter.unpack(envelope)
-            when(message) {
-                is IdentifyResponse -> DEBUG("Received Identify Response message")
-            }
+            protobufSettings.dispatchMessageToProtoBufListeners(message)
         } else {
             ERROR("Received unknown message type: $envelope")
         }
