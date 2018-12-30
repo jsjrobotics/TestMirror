@@ -1,34 +1,22 @@
 package com.jsjrobotics.testmirror.service
 
-import com.jsjrobotics.testmirror.DEBUG
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.login.LoginModel
 import com.jsjrobotics.testmirror.profile.ProfileModel
 import com.mirror.framework.MessageAdapter
-import com.mirror.proto.Envelope
 import com.mirror.proto.user.Environment
 import com.mirror.proto.user.IdentifyRequest
-import com.mirror.proto.user.IdentifyResponse
 import com.squareup.wire.Message
-import com.squareup.wire.ProtoAdapter
 import io.reactivex.disposables.CompositeDisposable
-import java.lang.Exception
 import java.net.URI
 import javax.inject.Inject
 
 class WebSocketManager @Inject constructor(private val profileModel: ProfileModel,
-                                           private val loginModel: LoginModel) {
+                                           private val loginModel: LoginModel,
+                                           private val protobufDispatcher : ProtobufDispatcher) {
     private var client : WebSocketClient? = null
     private val clientObserverDisposables = CompositeDisposable()
 
-    private val protoIdentityMap : Map<String, ProtoAdapter<*>> = mapOf(
-            Pair(IdentifyResponse::class.java.canonicalName, IdentifyResponse.ADAPTER)
-    )
-
-    private val messageAdapter: MessageAdapter = MessageAdapter.Builder()
-            .apply{ protoIdentityMap.keys.forEach { messageType ->
-                addAdapter(messageType, protoIdentityMap[messageType])
-            }}.build()
 
     fun connectToClient(uri: URI) : Boolean {
         disconnectFromClient()
@@ -36,7 +24,7 @@ class WebSocketManager @Inject constructor(private val profileModel: ProfileMode
         val openError : (Throwable) -> Unit = { reportClientError("OnOpenEvent", it)}
         val handleClose : (Boolean) -> Unit = { handleCloseEvent() }
         val closeError : (Throwable) -> Unit = { reportClientError("OnCloseEvent", it)}
-        val handleMessage = this::handleMessage
+        val handleMessage = protobufDispatcher::handleMessage
         val messageError : (Throwable) -> Unit = { reportClientError("OnMessageEvent", it)}
         val handleError = this::handleClientError
         val exceptionError : (Throwable) -> Unit = { reportClientError("OnExceptionEvent", it)}
@@ -60,17 +48,6 @@ class WebSocketManager @Inject constructor(private val profileModel: ProfileMode
 
     private fun handleClientError(exception: Exception) {
 
-    }
-
-    private fun handleMessage(envelope: Envelope) {
-        if (protoIdentityMap.keys.contains(envelope.type)) {
-            val message = messageAdapter.unpack(envelope)
-            when(message) {
-                is IdentifyResponse -> DEBUG("Received Identify Response message")
-            }
-        } else {
-            ERROR("Received unknown message type: $envelope")
-        }
     }
 
     private fun reportClientError(functionName: String, error: Throwable) {

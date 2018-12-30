@@ -27,17 +27,17 @@ import retrofit2.Retrofit
 @Singleton
 class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
 
-    private val mirrorDataResolved = mutableMapOf<NsdServiceInfo, ResolvedMirrorData>()
     private var discoveryListener: NsdManager.DiscoveryListener? = null
     private val serviceInfoDiscovered : PublishSubject<Set<ResolvedMirrorData>> = PublishSubject.create()
     val onServiceInfoDiscovered : Observable<Set<ResolvedMirrorData>> = serviceInfoDiscovered
     private val TAG = javaClass.simpleName
     private val serviceType = "_mirror._tcp."
     private val serviceNameMatcher = Regex("^mirror-.*|^Android$")
-    private val resolvedServiceInfo: MutableSet<NsdServiceInfo> = mutableSetOf()
     private val THREE_SECONDS_MS: Long = 3 * 1000
     private var reportResultsDisposable: Disposable? = null
 
+    private val mirrorDataResolved = mutableMapOf<NsdServiceInfo, ResolvedMirrorData>()
+    private val resolvedServiceInfo: MutableSet<NsdServiceInfo> = mutableSetOf()
     private val servicesToResolve: MutableList<NsdServiceInfo> = mutableListOf()
 
     private fun buildResolveListener(): NsdManager.ResolveListener {
@@ -93,9 +93,7 @@ class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
     @SuppressLint("CheckResult")
     fun discoverServices() {
         stopDiscovery()
-        resolvedServiceInfo.clear()
-        servicesToResolve.clear()
-        reportResultsDisposable?.dispose()
+        clearCachedServiceData()
         discoveryListener = buildDiscoveryListener()
         nsdManager.discoverServices(serviceType, NsdManager.PROTOCOL_DNS_SD, discoveryListener )
         reportResultsDisposable = Observable.timer(THREE_SECONDS_MS, TimeUnit.MILLISECONDS, Schedulers.io())
@@ -104,6 +102,13 @@ class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
                     resolveServices()
                 }
 
+    }
+
+    private fun clearCachedServiceData() {
+        resolvedServiceInfo.clear()
+        servicesToResolve.clear()
+        mirrorDataResolved.clear()
+        reportResultsDisposable?.dispose()
     }
 
     fun stopDiscovery() {
