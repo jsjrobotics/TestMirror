@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pairing_input"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditText
+        android:id="@+id/first_digit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:maxLength="1"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/second_digit"/>
+
+    <EditText
+        android:id="@+id/second_digit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:maxLength="1"
+        app:layout_constraintTop_toTopOf="@id/first_digit"
+        app:layout_constraintBottom_toBottomOf="@id/first_digit"
+        app:layout_constraintLeft_toRightOf="@id/first_digit"
+        app:layout_constraintRight_toLeftOf="@id/third_digit"/>
+
+    <EditText
+        android:id="@+id/third_digit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:maxLength="1"
+        app:layout_constraintTop_toTopOf="@id/first_digit"
+        app:layout_constraintBottom_toBottomOf="@id/first_digit"
+        app:layout_constraintLeft_toRightOf="@id/second_digit"
+        app:layout_constraintRight_toLeftOf="@id/fourth_digit"/>
+
+    <EditText
+        android:id="@+id/fourth_digit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:maxLength="1"
+        app:layout_constraintTop_toTopOf="@id/first_digit"
+        app:layout_constraintBottom_toBottomOf="@id/first_digit"
+        app:layout_constraintLeft_toRightOf="@id/third_digit"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <Button
+        android:id="@+id/send_pairing_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/send_pairing_code"
+        app:layout_constraintTop_toBottomOf="@id/fourth_digit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+
+</android.support.constraint.ConstraintLayout>

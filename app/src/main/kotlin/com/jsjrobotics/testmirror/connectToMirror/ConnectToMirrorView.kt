@@ -27,9 +27,11 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
 
     private lateinit var loadingRoot: ViewGroup
     private lateinit var selectMirrorRoot: ViewGroup
+    private lateinit var pairingInputRoot: ViewGroup
     private lateinit var connectedRoot: ViewGroup
     private lateinit var loadingMessage: TextView
     private lateinit var connectButton: Button
+    private lateinit var sendMessageButton: Button
     private var mirrorSelectedDisposable: Disposable? = null
     private val mirrorSelected : PublishSubject<Int> = PublishSubject.create()
     val onMirrorSelected: Observable<Int> = mirrorSelected
@@ -37,18 +39,23 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
     private val connectButtonClicked : PublishSubject<Boolean> = PublishSubject.create()
     val onConnectButtonClicked: Observable<Boolean> = connectButtonClicked
 
+    private val sendMessageButtonClicked : PublishSubject<Boolean> = PublishSubject.create()
+    val onSendMessageButtonClicked: Observable<Boolean> = connectButtonClicked
+
 
     fun init(inflater: LayoutInflater, container: ViewGroup) {
         rootXml = inflater.inflate(R.layout.fragment_connect_to_mirror, container, false) as ViewGroup
         loadingRoot = rootXml.findViewById(R.id.loading)
         loadingMessage = loadingRoot.findViewById(R.id.loading_message)
-
+        pairingInputRoot = rootXml.findViewById(R.id.pairing_input)
+        sendMessageButton = pairingInputRoot.findViewById(R.id.send_pairing_code)
         selectMirrorRoot = rootXml.findViewById(R.id.select_mirror)
         connectedRoot = rootXml.findViewById(R.id.connected)
         mirrorList = rootXml.findViewById(R.id.mirror_list)
         connectButton = rootXml.findViewById(R.id.connect)
         connectButton.setOnClickListener { connectButtonClicked.onNext(true) }
         connectButton.setText(R.string.connect)
+        sendMessageButton.setOnClickListener { sendMessageButtonClicked.onNext(true) }
         disableConnectButton()
         displayLoading()
     }
@@ -59,15 +66,18 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
     }
 
     private fun display(toDisplay: ViewGroup) {
-        arrayListOf(
-                loadingRoot,
-                selectMirrorRoot,
-                connectedRoot
-        ).forEach {
-            if (it == toDisplay) {
-                it.visibility = View.VISIBLE
-            } else {
-                it.visibility = View.GONE
+        runOnUiThread {
+            arrayListOf(
+                    loadingRoot,
+                    selectMirrorRoot,
+                    connectedRoot,
+                    pairingInputRoot
+            ).forEach {
+                if (it == toDisplay) {
+                    it.visibility = View.VISIBLE
+                } else {
+                    it.visibility = View.GONE
+                }
             }
         }
     }
@@ -114,5 +124,9 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
     fun showConnecting(mirrorName: String) {
         loadingMessage.text = getContext().getString(R.string.connecting_to, mirrorName)
         display(loadingRoot)
+    }
+
+    fun showPairingInput() {
+        display(pairingInputRoot)
     }
 }

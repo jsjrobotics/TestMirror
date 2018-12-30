@@ -6,9 +6,13 @@ import android.net.nsd.NsdServiceInfo
 import com.jsjrobotics.testmirror.DefaultPresenter
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
+import com.jsjrobotics.testmirror.service.ProtoBufMessageBroker
+import com.mirror.proto.user.IdentifyResponse
 import javax.inject.Inject
 
-class ConnectToMirrorPresenter @Inject constructor(val model: ConnectToMirrorModel): DefaultPresenter() {
+class ConnectToMirrorPresenter @Inject constructor(
+        private val model: ConnectToMirrorModel,
+        private val protoBufMessageBroker: ProtoBufMessageBroker): DefaultPresenter() {
     private lateinit var view: ConnectToMirrorView
     private var displayedMirrors: MutableList<ResolvedMirrorData> = mutableListOf()
     private var selectedMirror: ResolvedMirrorData? = null
@@ -62,6 +66,13 @@ class ConnectToMirrorPresenter @Inject constructor(val model: ConnectToMirrorMod
             }
 
         }
-        disposables.addAll(mirrorSelectedDisposable, connectDisposable)
+        val identityDisposable = protoBufMessageBroker.onIdentifyResponse.subscribe(this::onIdentityResponse)
+        disposables.addAll(mirrorSelectedDisposable, connectDisposable, identityDisposable)
+    }
+
+    private fun onIdentityResponse(response: IdentifyResponse) {
+        if (response.pairingRequired) {
+            view.showPairingInput()
+        }
     }
 }
