@@ -43,4 +43,8 @@ class ConnectToMirrorModel @Inject constructor(private val application: Applicat
     fun connectToClient(host: InetAddress) {
         application.webSocketService?.connectToClient(host.hostAddress)
     }
+
+    fun sendPairingCode(code: String) {
+        application.webSocketService?.sendPairingCode(code)
+    }
 }

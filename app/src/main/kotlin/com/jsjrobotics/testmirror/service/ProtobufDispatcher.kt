@@ -5,6 +5,7 @@ import com.jsjrobotics.testmirror.ERROR
 import com.mirror.framework.MessageAdapter
 import com.mirror.proto.Envelope
 import com.mirror.proto.navigation.MirrorScreenRequest
+import com.mirror.proto.oobe.PairResponse
 import com.mirror.proto.user.IdentifyResponse
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
@@ -20,6 +21,12 @@ class ProtobufDispatcher @Inject constructor(messageHandlers : ProtoBufMessageBr
             IdentifyResponse::class.java.canonicalName!!,
             IdentifyResponse.ADAPTER,
             messageHandlers::dispatchIdentityResponse
+    )
+
+    private val pairResponseHandle = ProtoBufAdapterHandler(
+            PairResponse::class.java.canonicalName!!,
+            PairResponse.ADAPTER,
+            messageHandlers::dispatchPairResponse
     )
     private val mirrorScreenRequestHandle = ProtoBufAdapterHandler(
             MirrorScreenRequest::class.java.canonicalName!!,

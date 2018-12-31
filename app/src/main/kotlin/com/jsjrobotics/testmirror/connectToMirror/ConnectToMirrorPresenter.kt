@@ -67,7 +67,12 @@ class ConnectToMirrorPresenter @Inject constructor(
 
         }
         val identityDisposable = protoBufMessageBroker.onIdentifyResponse.subscribe(this::onIdentityResponse)
-        disposables.addAll(mirrorSelectedDisposable, connectDisposable, identityDisposable)
+        val pariingCodeDisposable = view.onSendPairingButtonClicked.subscribe(this::receivePairingCode)
+        disposables.addAll(mirrorSelectedDisposable, connectDisposable, identityDisposable, pariingCodeDisposable)
+    }
+
+    private fun receivePairingCode(code: String) {
+        model.sendPairingCode(code)
     }
 
     private fun onIdentityResponse(response: IdentifyResponse) {

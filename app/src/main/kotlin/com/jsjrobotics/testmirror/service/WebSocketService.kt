@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import com.jsjrobotics.testmirror.Application
 import com.jsjrobotics.testmirror.IWebSocket
+import com.mirror.proto.oobe.PairRequest
 import java.net.URI
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -21,6 +22,15 @@ class WebSocketService : Service() {
     }
 
     private val binder = object : IWebSocket.Stub() {
+        override fun sendPairingCode(code: String) {
+            executor.execute {
+                val pairRequest = PairRequest.Builder()
+                        .code(code)
+                        .build()
+                socketManager.send(pairRequest)
+            }
+        }
+
         override fun connectToClient(ipAddress: String) {
             executor.execute {
                 val uri = URI(buildWebSocketAddress(ipAddress))

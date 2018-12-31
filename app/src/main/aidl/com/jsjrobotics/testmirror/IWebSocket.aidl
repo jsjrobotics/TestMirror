@@ -6,4 +6,5 @@ package com.jsjrobotics.testmirror;
 
 interface IWebSocket {
     void connectToClient(String ipAddress);
+    void sendPairingCode(String code);
 }

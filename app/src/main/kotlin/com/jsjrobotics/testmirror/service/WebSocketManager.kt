@@ -69,7 +69,7 @@ class WebSocketManager @Inject constructor(private val profileModel: ProfileMode
         send(request)
     }
 
-    private fun send(message: Message<*, *>) {
+    fun send(message: Message<*, *>) {
         client?.send(MessageAdapter.encode(message)) ?: ERROR("Failed to send $message to null client")
     }
 

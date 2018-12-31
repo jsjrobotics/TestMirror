@@ -3,10 +3,13 @@ package com.jsjrobotics.testmirror.connectToMirror
 import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import com.jsjrobotics.testmirror.DefaultView
 import com.jsjrobotics.testmirror.R
@@ -31,7 +34,13 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
     private lateinit var connectedRoot: ViewGroup
     private lateinit var loadingMessage: TextView
     private lateinit var connectButton: Button
-    private lateinit var sendMessageButton: Button
+    private lateinit var sendPairingCodeButton: Button
+
+    private lateinit var firstPairingCode : EditText
+    private lateinit var secondPairingCode : EditText
+    private lateinit var thirdPairingCode : EditText
+    private lateinit var fourthPairingCode : EditText
+
     private var mirrorSelectedDisposable: Disposable? = null
     private val mirrorSelected : PublishSubject<Int> = PublishSubject.create()
     val onMirrorSelected: Observable<Int> = mirrorSelected
@@ -39,8 +48,8 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
     private val connectButtonClicked : PublishSubject<Boolean> = PublishSubject.create()
     val onConnectButtonClicked: Observable<Boolean> = connectButtonClicked
 
-    private val sendMessageButtonClicked : PublishSubject<Boolean> = PublishSubject.create()
-    val onSendMessageButtonClicked: Observable<Boolean> = connectButtonClicked
+    private val sendPairingButtonClicked : PublishSubject<String> = PublishSubject.create()
+    val onSendPairingButtonClicked: Observable<String> = sendPairingButtonClicked
 
 
     fun init(inflater: LayoutInflater, container: ViewGroup) {
@@ -48,16 +57,41 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
         loadingRoot = rootXml.findViewById(R.id.loading)
         loadingMessage = loadingRoot.findViewById(R.id.loading_message)
         pairingInputRoot = rootXml.findViewById(R.id.pairing_input)
-        sendMessageButton = pairingInputRoot.findViewById(R.id.send_pairing_code)
+        sendPairingCodeButton = pairingInputRoot.findViewById(R.id.send_pairing_code)
+        firstPairingCode = pairingInputRoot.findViewById(R.id.first_digit)
+        secondPairingCode = pairingInputRoot.findViewById(R.id.second_digit)
+        thirdPairingCode = pairingInputRoot.findViewById(R.id.third_digit)
+        fourthPairingCode = pairingInputRoot.findViewById(R.id.fourth_digit)
+
         selectMirrorRoot = rootXml.findViewById(R.id.select_mirror)
         connectedRoot = rootXml.findViewById(R.id.connected)
         mirrorList = rootXml.findViewById(R.id.mirror_list)
         connectButton = rootXml.findViewById(R.id.connect)
         connectButton.setOnClickListener { connectButtonClicked.onNext(true) }
         connectButton.setText(R.string.connect)
-        sendMessageButton.setOnClickListener { sendMessageButtonClicked.onNext(true) }
+        sendPairingCodeButton.setOnClickListener { sendPairingButtonClicked.onNext(buildPairingCode()) }
+        setupPairingCodeInputs()
         disableConnectButton()
         displayLoading()
+    }
+
+    private fun buildPairingCode(): String {
+        return "${firstPairingCode.text}${secondPairingCode.text}${thirdPairingCode.text}${fourthPairingCode.text}"
+    }
+
+    private fun setupPairingCodeInputs() {
+        val pairingInputs = listOf( firstPairingCode, secondPairingCode, thirdPairingCode, fourthPairingCode)
+        val enablePairingCodeButton = object : TextWatcher{
+            override fun afterTextChanged(s: Editable?) {
+                val emptyCodes = pairingInputs.map { it.text.toString().isEmpty() }
+                sendPairingCodeButton.isEnabled = emptyCodes.none { it }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        }
+        pairingInputs.forEach { it.addTextChangedListener(enablePairingCodeButton) }
     }
 
     private fun displayLoading() {
@@ -127,6 +161,9 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
     }
 
     fun showPairingInput() {
-        display(pairingInputRoot)
+        runOnUiThread {
+            sendPairingCodeButton.isEnabled = false
+            display(pairingInputRoot)
+        }
     }
 }
