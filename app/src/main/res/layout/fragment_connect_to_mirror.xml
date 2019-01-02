@@ -6,9 +6,12 @@
     
 
         <include layout="@layout/fragment_connect_to_mirror_loading" />
-        <include layout="@layout/fragment_connect_to_mirror_select_mirror" />
-        <include layout="@layout/fragment_connect_to_mirror_connected" />
-        <include layout="@layout/fragment_connect_to_mirror_pairing_input" />
+        <include layout="@layout/fragment_connect_to_mirror_select_mirror"
+            android:visibility="gone"/>
+        <include layout="@layout/fragment_connect_to_mirror_connected"
+            android:visibility="gone"/>
+        <include layout="@layout/fragment_connect_to_mirror_pairing_input"
+            android:visibility="gone"/>
 
 
 </FrameLayout>

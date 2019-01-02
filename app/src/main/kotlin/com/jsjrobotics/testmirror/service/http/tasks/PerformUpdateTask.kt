@@ -1,4 +1,4 @@
-package com.jsjrobotics.testmirror.service.tasks
+package com.jsjrobotics.testmirror.service.http.tasks
 
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.IProfileCallback
@@ -7,7 +7,7 @@ import com.jsjrobotics.testmirror.dataStructures.CachedProfile
 import com.jsjrobotics.testmirror.dataStructures.UpdateInfoData
 import com.jsjrobotics.testmirror.dataStructures.networking.UpdateUserDataRequest
 import com.jsjrobotics.testmirror.login.LoginModel
-import com.jsjrobotics.testmirror.service.networking.RefineMirrorApi
+import com.jsjrobotics.testmirror.service.http.RefineMirrorApi
 import java.io.IOException
 
 class PerformUpdateTask(private val getPersistentData: (String) -> CachedProfile?,

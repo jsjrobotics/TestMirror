@@ -1,4 +1,4 @@
-package com.jsjrobotics.testmirror.service.networking
+package com.jsjrobotics.testmirror.service.http
 
 import com.jsjrobotics.testmirror.dataStructures.networking.UpdateUserDataRequest
 import com.jsjrobotics.testmirror.dataStructures.networking.requests.LoginRequest

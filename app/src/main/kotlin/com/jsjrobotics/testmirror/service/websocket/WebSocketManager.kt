@@ -1,7 +1,8 @@
-package com.jsjrobotics.testmirror.service
+package com.jsjrobotics.testmirror.service.websocket
 
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.login.LoginModel
+import com.jsjrobotics.testmirror.network.ProtobufDispatcher
 import com.jsjrobotics.testmirror.profile.ProfileModel
 import com.mirror.framework.MessageAdapter
 import com.mirror.proto.user.Environment

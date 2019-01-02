@@ -1,4 +1,4 @@
-package com.jsjrobotics.testmirror.service.networking
+package com.jsjrobotics.testmirror.service.http
 
 object Paths {
     const val DOMAIN: String = "https://dev.refinemirror.com/api/v1/"

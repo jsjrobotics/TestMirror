@@ -1,7 +1,7 @@
 package com.jsjrobotics.testmirror.dataStructures.networking.responses
 
 import com.google.gson.annotations.SerializedName
-import com.jsjrobotics.testmirror.service.networking.HttpConstants
+import com.jsjrobotics.testmirror.service.http.HttpConstants
 
 class UserDataResponseData (@SerializedName(HttpConstants.UUID) val uuid: String,
                             @SerializedName(HttpConstants.NAME) val name: String,

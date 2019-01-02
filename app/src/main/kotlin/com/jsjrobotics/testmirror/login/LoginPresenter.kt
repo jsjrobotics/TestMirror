@@ -11,7 +11,10 @@ class LoginPresenter @Inject constructor(val application: Application,
     fun init(v: LoginView) {
         view = v
         val loginDisposable = v.onLoginClick()
-                .subscribe{ attemptLogin(it)}
+                .subscribe{
+                    view.disableLogin()
+                    attemptLogin(it)
+                }
 
         disposables.add(loginDisposable)
     }
@@ -32,6 +35,7 @@ class LoginPresenter @Inject constructor(val application: Application,
         return object : DefaultProfileCallback() {
             override fun loginFailure() {
                 view.showFailedToLogin()
+                view.enableLogin()
             }
             override fun loginSuccess(account: Account?) {
                 view.showToast(R.string.login_successful)

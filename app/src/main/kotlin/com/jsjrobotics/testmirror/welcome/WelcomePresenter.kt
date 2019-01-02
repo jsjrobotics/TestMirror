@@ -1,6 +1,7 @@
 package com.jsjrobotics.testmirror.welcome
 
 import com.jsjrobotics.testmirror.DefaultPresenter
+import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.NavigationController
 import javax.inject.Inject
 
@@ -19,6 +20,7 @@ class WelcomePresenter @Inject constructor(private val navigationController: Nav
     }
 
     private fun launchLoginActivity() {
+        ERROR("Launching login activity")
         navigationController.showLogin()
     }
 

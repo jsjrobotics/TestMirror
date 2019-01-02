@@ -16,15 +16,15 @@ class ProfileView @Inject constructor() : DefaultView(){
     lateinit var rootXml: ViewGroup; private set
     lateinit var refreshButton: Button; private set
 
-    private val onRefreshClick : PublishSubject<Unit> = PublishSubject.create()
+    private val refreshClick : PublishSubject<Unit> = PublishSubject.create()
+    val onRefreshClick: Observable<Unit> = refreshClick
 
     fun init(inflater: LayoutInflater, container: ViewGroup) {
         rootXml = inflater.inflate(R.layout.fragment_profile, container, false) as ViewGroup
         refreshButton = rootXml.findViewById(R.id.refresh)
         refreshButton.setOnClickListener {
-            onRefreshClick.onNext(Unit)
+            refreshClick.onNext(Unit)
         }
     }
 
-    fun onRefreshClick(): Observable<Unit> = onRefreshClick
 }

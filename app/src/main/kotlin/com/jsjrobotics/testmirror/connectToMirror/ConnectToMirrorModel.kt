@@ -1,11 +1,9 @@
 package com.jsjrobotics.testmirror.connectToMirror
 
-import android.net.nsd.NsdServiceInfo
 import com.jsjrobotics.testmirror.Application
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
 import com.jsjrobotics.testmirror.network.DnsServiceListener
-import com.jsjrobotics.testmirror.service.ProtoBufMessageBroker
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject

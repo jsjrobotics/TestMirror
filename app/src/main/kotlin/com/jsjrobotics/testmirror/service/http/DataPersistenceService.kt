@@ -1,4 +1,4 @@
-package com.jsjrobotics.testmirror.service
+package com.jsjrobotics.testmirror.service.http
 
 import android.annotation.SuppressLint
 import android.app.Service
@@ -12,11 +12,10 @@ import com.jsjrobotics.testmirror.IProfileCallback
 import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.dataStructures.*
 import com.jsjrobotics.testmirror.login.LoginModel
-import com.jsjrobotics.testmirror.service.networking.Paths.DOMAIN
-import com.jsjrobotics.testmirror.service.networking.RefineMirrorApi
-import com.jsjrobotics.testmirror.service.tasks.PerformLoginTask
-import com.jsjrobotics.testmirror.service.tasks.PerformSignUpTask
-import com.jsjrobotics.testmirror.service.tasks.PerformUpdateTask
+import com.jsjrobotics.testmirror.service.http.Paths.DOMAIN
+import com.jsjrobotics.testmirror.service.http.tasks.PerformLoginTask
+import com.jsjrobotics.testmirror.service.http.tasks.PerformSignUpTask
+import com.jsjrobotics.testmirror.service.http.tasks.PerformUpdateTask
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -68,13 +67,13 @@ class DataPersistenceService : Service() {
                 return
             }
             val task = PerformUpdateTask(::getPersistentData,
-                                         ::writePersistentData,
-                                         callback,
-                                         account,
-                                         data,
-                                         timeSource,
-                                         backendApi,
-                                         loginModel)
+                    ::writePersistentData,
+                    callback,
+                    account,
+                    data,
+                    timeSource,
+                    backendApi,
+                    loginModel)
             executor.submit(task)
         }
 
@@ -84,12 +83,12 @@ class DataPersistenceService : Service() {
                 return
             }
             val task = PerformSignUpTask(::getPersistentData,
-                                         ::writePersistentData,
-                                         ::updateDataStore,
-                                         backendApi,
-                                         application.resources,
-                                         callback,
-                                         data)
+                    ::writePersistentData,
+                    ::updateDataStore,
+                    backendApi,
+                    application.resources,
+                    callback,
+                    data)
             executor.submit(task)
         }
 
@@ -100,10 +99,10 @@ class DataPersistenceService : Service() {
                 return
             }
             val task = PerformLoginTask(::getPersistentData,
-                                        backendApi,
-                                        callback,
-                                        data,
-                                        loginModel)
+                    backendApi,
+                    callback,
+                    data,
+                    loginModel)
             executor.submit(task)
         }
 

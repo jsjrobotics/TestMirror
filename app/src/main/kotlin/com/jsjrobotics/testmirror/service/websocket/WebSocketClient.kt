@@ -1,17 +1,11 @@
-package com.jsjrobotics.testmirror.service
+package com.jsjrobotics.testmirror.service.websocket
 
-import com.jsjrobotics.testmirror.ERROR
 import com.mirror.framework.MessageAdapter
 import com.mirror.proto.Envelope
-import com.mirror.proto.user.IdentifyRequest
-import com.mirror.proto.user.IdentifyResponse
-import com.squareup.wire.Message
-import com.squareup.wire.ProtoAdapter
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
-import java.lang.Exception
 import java.net.URI
 import java.nio.ByteBuffer
 

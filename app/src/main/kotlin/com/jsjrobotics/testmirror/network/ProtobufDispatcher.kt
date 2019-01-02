@@ -1,6 +1,5 @@
-package com.jsjrobotics.testmirror.service
+package com.jsjrobotics.testmirror.network
 
-import com.jsjrobotics.testmirror.BuildConfig
 import com.jsjrobotics.testmirror.ERROR
 import com.mirror.framework.MessageAdapter
 import com.mirror.proto.Envelope
@@ -9,35 +8,45 @@ import com.mirror.proto.oobe.PairResponse
 import com.mirror.proto.user.IdentifyResponse
 import com.squareup.wire.Message
 import com.squareup.wire.ProtoAdapter
-import java.lang.IllegalStateException
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ProtobufDispatcher @Inject constructor(messageHandlers : ProtoBufMessageBroker) {
+class ProtobufDispatcher @Inject constructor(messageBroker : ProtoBufMessageBroker) {
 
-    private class ProtoBufAdapterHandler<T>(val messageType: String, val adapter: ProtoAdapter<T>, val handler : (T) -> Unit )
+    private class ProtoBufAdapterHandler<T>(val messageClazz: Class<out Message<*,*>>, val adapter: ProtoAdapter<T>, val handler : (T) -> Unit ) {
+        val messageType : String = messageClazz.canonicalName!!
+    }
+
     private val identityResponseHandle = ProtoBufAdapterHandler(
-            IdentifyResponse::class.java.canonicalName!!,
+            IdentifyResponse::class.java,
             IdentifyResponse.ADAPTER,
-            messageHandlers::dispatchIdentityResponse
+            messageBroker::dispatchIdentityResponse
     )
 
     private val pairResponseHandle = ProtoBufAdapterHandler(
-            PairResponse::class.java.canonicalName!!,
+            PairResponse::class.java,
             PairResponse.ADAPTER,
-            messageHandlers::dispatchPairResponse
+            messageBroker::dispatchPairResponse
     )
     private val mirrorScreenRequestHandle = ProtoBufAdapterHandler(
-            MirrorScreenRequest::class.java.canonicalName!!,
+            MirrorScreenRequest::class.java,
             MirrorScreenRequest.ADAPTER,
-            messageHandlers::dispatchMirrorScreenRequest
+            messageBroker::dispatchMirrorScreenRequest
+    )
+    private val handlers : List<ProtoBufAdapterHandler<*>> = listOf(
+            identityResponseHandle,
+            pairResponseHandle,
+            mirrorScreenRequestHandle
     )
 
-    private val protoIdentityMap : Map<Class<out Message<*, *>>, ProtoBufAdapterHandler<*>> = mapOf(
-            Pair(IdentifyResponse::class.java, identityResponseHandle),
-            Pair(MirrorScreenRequest::class.java, mirrorScreenRequestHandle)
-    )
+
+    @Suppress("UNCHECKED_CAST")
+    private val protoIdentityMap : MutableMap<Class<out Message<*, *>>, ProtoBufAdapterHandler<*>> = mutableMapOf<Class<out Message<*, *>>, ProtoBufAdapterHandler<*>>().apply{
+        handlers.forEach {
+            this[it.messageClazz] = it
+        }
+    }
 
     private val messageAdapter: MessageAdapter = MessageAdapter.Builder()
             .apply{
@@ -46,17 +55,6 @@ class ProtobufDispatcher @Inject constructor(messageHandlers : ProtoBufMessageBr
                 }
             }.build()
 
-    init {
-        // Runtime check to verify all messages covered
-        if (BuildConfig.DEBUG) {
-            protoIdentityMap.keys.forEach {
-                val keyNameEqualsMessageType = protoIdentityMap[it]!!.messageType == it.canonicalName
-                if (!keyNameEqualsMessageType) {
-                    throw IllegalStateException("$it has an invalid adapterHandle")
-                }
-            }
-        }
-    }
 
     @Suppress("UNCHECKED_CAST")
     fun handleMessage(envelope: Envelope) {

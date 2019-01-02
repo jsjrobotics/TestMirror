@@ -31,7 +31,7 @@ class NavigationController @Inject constructor(){
     }
 
     fun showProfile() {
-        showRequest(FragmentRequest(FragmentId.PROFILE, true))
+        showRequest(FragmentRequest(FragmentId.PROFILE, false, clearBackStack = true))
     }
 
     fun showConnectToMirror() {

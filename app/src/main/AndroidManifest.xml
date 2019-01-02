@@ -23,8 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".service.DataPersistenceService" />
-        <service android:name=".service.WebSocketService" />
+        <service android:name=".service.http.DataPersistenceService" />
+        <service android:name=".service.websocket.WebSocketService" />
 
     </application>
 </manifest>

@@ -6,7 +6,7 @@ import android.net.nsd.NsdServiceInfo
 import android.util.Log
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
-import com.jsjrobotics.testmirror.service.networking.MirrorPeerToPeerApi
+import com.jsjrobotics.testmirror.service.http.MirrorPeerToPeerApi
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers

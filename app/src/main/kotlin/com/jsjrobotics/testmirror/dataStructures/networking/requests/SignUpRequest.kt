@@ -2,7 +2,7 @@ package com.jsjrobotics.testmirror.dataStructures.networking.requests
 
 import com.google.gson.annotations.SerializedName
 import com.jsjrobotics.testmirror.dataStructures.SignUpData
-import com.jsjrobotics.testmirror.service.networking.HttpConstants
+import com.jsjrobotics.testmirror.service.http.HttpConstants
 
 class SignUpRequest(@SerializedName(HttpConstants.EMAIL) val email: String,
                     @SerializedName(HttpConstants.PASSWORD) val password: String,

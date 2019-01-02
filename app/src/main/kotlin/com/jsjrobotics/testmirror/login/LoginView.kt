@@ -57,4 +57,12 @@ class LoginView @Inject constructor() : DefaultView() {
                     .show()
         }
     }
+
+    fun disableLogin() {
+        loginButton.isEnabled = false
+    }
+
+    fun enableLogin() {
+        loginButton.isEnabled = true
+    }
 }

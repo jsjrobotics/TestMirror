@@ -1,4 +1,4 @@
-package com.jsjrobotics.testmirror.service.tasks
+package com.jsjrobotics.testmirror.service.http.tasks
 
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.IProfileCallback
@@ -6,11 +6,9 @@ import com.jsjrobotics.testmirror.dataStructures.Account
 import com.jsjrobotics.testmirror.dataStructures.CachedProfile
 import com.jsjrobotics.testmirror.dataStructures.LoginData
 import com.jsjrobotics.testmirror.dataStructures.networking.requests.LoginRequest
-import com.jsjrobotics.testmirror.dataStructures.networking.responses.LoginResponse
 import com.jsjrobotics.testmirror.login.LoginModel
-import com.jsjrobotics.testmirror.service.networking.Paths
-import com.jsjrobotics.testmirror.service.networking.RefineMirrorApi
-import kotlin.math.log
+import com.jsjrobotics.testmirror.service.http.Paths
+import com.jsjrobotics.testmirror.service.http.RefineMirrorApi
 
 class PerformLoginTask(private val getPersistentData: (String) -> CachedProfile?,
                        private val backend: RefineMirrorApi,

@@ -1,4 +1,4 @@
-package com.jsjrobotics.testmirror.service.networking
+package com.jsjrobotics.testmirror.service.http
 
 import android.net.ConnectivityManager
 import javax.inject.Inject

@@ -1,4 +1,4 @@
-package com.jsjrobotics.testmirror.service.networking
+package com.jsjrobotics.testmirror.service.http
 
 object HttpConstants {
     const val NAME  = "name"

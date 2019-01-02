@@ -1,4 +1,4 @@
-package com.jsjrobotics.testmirror.service.tasks
+package com.jsjrobotics.testmirror.service.http.tasks
 
 import android.content.res.Resources
 import com.jsjrobotics.testmirror.ERROR
@@ -7,7 +7,7 @@ import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.dataStructures.CachedProfile
 import com.jsjrobotics.testmirror.dataStructures.SignUpData
 import com.jsjrobotics.testmirror.dataStructures.networking.requests.SignUpRequest
-import com.jsjrobotics.testmirror.service.networking.RefineMirrorApi
+import com.jsjrobotics.testmirror.service.http.RefineMirrorApi
 
 class PerformSignUpTask(private val getPersistentData: (String) -> CachedProfile?,
                         private val writePersistentData: (SignUpData) -> CachedProfile,

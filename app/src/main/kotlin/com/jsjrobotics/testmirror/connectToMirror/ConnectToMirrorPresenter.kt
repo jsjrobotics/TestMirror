@@ -2,17 +2,18 @@ package com.jsjrobotics.testmirror.connectToMirror
 
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.OnLifecycleEvent
-import android.net.nsd.NsdServiceInfo
 import com.jsjrobotics.testmirror.DefaultPresenter
 import com.jsjrobotics.testmirror.ERROR
+import com.jsjrobotics.testmirror.NavigationController
 import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
-import com.jsjrobotics.testmirror.service.ProtoBufMessageBroker
+import com.jsjrobotics.testmirror.network.ProtoBufMessageBroker
 import com.mirror.proto.user.IdentifyResponse
 import javax.inject.Inject
 
 class ConnectToMirrorPresenter @Inject constructor(
         private val model: ConnectToMirrorModel,
-        private val protoBufMessageBroker: ProtoBufMessageBroker): DefaultPresenter() {
+        private val protoBufMessageBroker: ProtoBufMessageBroker,
+        private val navigationController: NavigationController): DefaultPresenter() {
     private lateinit var view: ConnectToMirrorView
     private var displayedMirrors: MutableList<ResolvedMirrorData> = mutableListOf()
     private var selectedMirror: ResolvedMirrorData? = null
@@ -78,6 +79,8 @@ class ConnectToMirrorPresenter @Inject constructor(
     private fun onIdentityResponse(response: IdentifyResponse) {
         if (response.pairingRequired) {
             view.showPairingInput()
+        } else {
+            navigationController.showProfile()
         }
     }
 }

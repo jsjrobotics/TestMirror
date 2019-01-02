@@ -1,6 +1,6 @@
 package com.jsjrobotics.testmirror.injection.androidSubcomponents
 
-import com.jsjrobotics.testmirror.service.WebSocketService
+import com.jsjrobotics.testmirror.service.websocket.WebSocketService
 import dagger.Subcomponent
 import dagger.android.AndroidInjector
 

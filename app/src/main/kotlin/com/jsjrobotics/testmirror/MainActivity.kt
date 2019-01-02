@@ -31,28 +31,30 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun showFragment(request: FragmentRequest) {
-        if (request.clearBackStack) {
-            supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-            val clearTransaction = supportFragmentManager.beginTransaction()
+        runOnUiThread{
+            if (request.clearBackStack) {
+                val clearTransaction = supportFragmentManager.beginTransaction()
+                supportFragmentManager.fragments
+                        .forEach { clearTransaction.remove(it)}
+                clearTransaction.commit()
+                supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            }
+
+            val transaction = supportFragmentManager.beginTransaction()
+            val fragment = request.fragmentId
+            val tag = fragment.tag()
+
             supportFragmentManager.fragments
-                    .forEach { clearTransaction.remove(it)}
-            clearTransaction.commit()
+                    .filter{ it.tag != tag  && it.isVisible}
+                    .forEach { transaction.hide(it) }
+
+            supportFragmentManager.findFragmentByTag(tag)?.let { instantiatedFragment ->
+                transaction.show(instantiatedFragment)
+            } ?: transaction.add(android.R.id.content, fragment.instantiate(), fragment.tag() )
+            if (request.addToBackstack) {
+                transaction.addToBackStack(request.backstackTag)
+            }
+            transaction.commit()
         }
-
-        val transaction = supportFragmentManager.beginTransaction()
-        val fragment = request.fragmentId
-        val tag = fragment.tag()
-
-        supportFragmentManager.fragments
-                .filter{ it.tag != tag  && it.isVisible}
-                .forEach { transaction.hide(it) }
-
-        supportFragmentManager.findFragmentByTag(tag)?.let { instantiatedFragment ->
-            transaction.show(instantiatedFragment)
-        } ?: transaction.add(android.R.id.content, fragment.instantiate(), fragment.tag() )
-        if (request.addToBackstack) {
-            transaction.addToBackStack(request.backstackTag)
-        }
-        transaction.commit()
     }
 }

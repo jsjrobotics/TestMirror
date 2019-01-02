@@ -2,7 +2,7 @@ import android.content.Intent
 import android.support.test.InstrumentationRegistry
 import android.support.test.rule.ServiceTestRule
 import android.support.test.runner.AndroidJUnit4
-import com.jsjrobotics.testmirror.service.DataPersistenceService
+import com.jsjrobotics.testmirror.service.http.DataPersistenceService
 import com.jsjrobotics.testmirror.IDataPersistence
 import org.junit.Assert.assertNotNull
 import org.junit.Rule

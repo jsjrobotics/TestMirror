@@ -1,4 +1,4 @@
-package com.jsjrobotics.testmirror.service
+package com.jsjrobotics.testmirror.network
 
 import com.mirror.proto.navigation.MirrorScreenRequest
 import com.mirror.proto.navigation.PairingScreenResponse

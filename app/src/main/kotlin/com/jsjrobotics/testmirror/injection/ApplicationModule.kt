@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.nsd.NsdManager
 import com.jsjrobotics.testmirror.Application
-import com.jsjrobotics.testmirror.service.DataPersistenceService
+import com.jsjrobotics.testmirror.service.http.DataPersistenceService
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
