@@ -18,13 +18,6 @@ class ConnectToMirrorPresenter @Inject constructor(
     private var displayedMirrors: MutableList<ResolvedMirrorData> = mutableListOf()
     private var selectedMirror: ResolvedMirrorData? = null
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    protected fun startMirrorDiscovery() {
-        val displayMirrorDisposable = model.onMirrorDiscovered.subscribe(this::displayMirrors, { ERROR("Failed to load mirrors")})
-        disposables.add(displayMirrorDisposable)
-        model.startDiscovery()
-    }
-
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     protected fun stopMirrorDiscovery () {
         model.stopDiscovery()
@@ -65,11 +58,14 @@ class ConnectToMirrorPresenter @Inject constructor(
                 view.showConnecting(getMirrorName(it))
                 model.connectToClient(it.serviceInfo.host)
             }
-
         }
         val identityDisposable = protoBufMessageBroker.onIdentifyResponse.subscribe(this::onIdentityResponse)
         val pariingCodeDisposable = view.onSendPairingButtonClicked.subscribe(this::receivePairingCode)
-        disposables.addAll(mirrorSelectedDisposable, connectDisposable, identityDisposable, pariingCodeDisposable)
+        val displayMirrorDisposable = model.onMirrorDiscovered.subscribe(this::displayMirrors, { ERROR("Failed to load mirrors")})
+        disposables.addAll(displayMirrorDisposable, mirrorSelectedDisposable, connectDisposable, identityDisposable, pariingCodeDisposable)
+        model.startDiscovery()
+        view.disableConnectButton()
+        view.displayLoading()
     }
 
     private fun receivePairingCode(code: String) {

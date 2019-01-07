@@ -18,6 +18,11 @@ class ConnectToMirrorFragment : DefaultFragment() {
     @Inject
     lateinit var view : ConnectToMirrorView
 
+    override fun onStart() {
+        super.onStart()
+        presenter.bind(view)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addLifecycleObserver(presenter)
@@ -26,7 +31,6 @@ class ConnectToMirrorFragment : DefaultFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         container?.let {
             view.init(inflater, it)
-            presenter.bind(view)
             return view.rootXml
         }
         return super.onCreateView(inflater, container, savedInstanceState)

@@ -14,10 +14,14 @@ class ProfileFragment : DefaultFragment() {
     @Inject
     lateinit var presenter: ProfilePresenter
 
+    override fun onStart() {
+        super.onStart()
+        presenter.init(view)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         container?.let {parent ->
             view.init(inflater, parent)
-            presenter.init(view)
             return view.rootXml
         }
         return super.onCreateView(inflater, container, savedInstanceState)

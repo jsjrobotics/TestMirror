@@ -20,6 +20,11 @@ class LoginFragment : DefaultFragment() {
         addLifecycleObserver(presenter)
     }
 
+    override fun onStart() {
+        super.onStart()
+        presenter.init(view)
+    }
+
     override fun onDestroy() {
         removeLifecycleObserver(presenter)
         super.onDestroy()
@@ -28,7 +33,6 @@ class LoginFragment : DefaultFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         container?.let {parent ->
             view.init(inflater, parent)
-            presenter.init(view)
             return view.rootXml
         }
         return super.onCreateView(inflater, container, savedInstanceState)

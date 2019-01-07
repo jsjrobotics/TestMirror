@@ -71,8 +71,6 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
         connectButton.setText(R.string.connect)
         sendPairingCodeButton.setOnClickListener { sendPairingButtonClicked.onNext(buildPairingCode()) }
         setupPairingCodeInputs()
-        disableConnectButton()
-        displayLoading()
     }
 
     private fun buildPairingCode(): String {
@@ -81,20 +79,51 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
 
     private fun setupPairingCodeInputs() {
         val pairingInputs = listOf( firstPairingCode, secondPairingCode, thirdPairingCode, fourthPairingCode)
-        val enablePairingCodeButton = object : TextWatcher{
+        val enablePairingCodeButton = buildPairingCodeTextWatcher(pairingInputs)
+        val pairingInputFocusListener = buildPairingCodeFocusListener(pairingInputs)
+        pairingInputs.forEach { it.addTextChangedListener(enablePairingCodeButton) }
+        pairingInputs.forEach { it.setOnFocusChangeListener(pairingInputFocusListener) }
+    }
+
+    private fun buildPairingCodeFocusListener(pairingInputs: List<EditText>): View.OnFocusChangeListener {
+        return object : View.OnFocusChangeListener {
+            override fun onFocusChange(v: View, hasFocus: Boolean) {
+                if (!hasFocus) return
+                val nextInput = getNextPairingInput(pairingInputs)
+                if (nextInput != -1) {
+                    val isEmpty = (v as EditText).text.isEmpty()
+                    if (pairingInputs[nextInput] != v && isEmpty) {
+                        pairingInputs[nextInput].requestFocus()
+                    }
+                }
+            }
+
+        }
+    }
+
+    private fun buildPairingCodeTextWatcher(pairingInputs: List<EditText>): TextWatcher {
+        return object : TextWatcher{
             override fun afterTextChanged(s: Editable?) {
                 val emptyCodes = pairingInputs.map { it.text.toString().isEmpty() }
                 sendPairingCodeButton.isEnabled = emptyCodes.none { it }
+
+                val nextInput = getNextPairingInput(pairingInputs)
+                if (nextInput != -1) {
+                    pairingInputs[nextInput].requestFocus()
+                }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }
-        pairingInputs.forEach { it.addTextChangedListener(enablePairingCodeButton) }
     }
 
-    private fun displayLoading() {
+    private fun getNextPairingInput(pairingInputs: List<EditText>): Int {
+        return pairingInputs.indexOfFirst { it.text.toString().isEmpty() }
+    }
+
+    fun displayLoading() {
         loadingMessage.text = getContext().getString(R.string.searching_for_mirrors)
         display(loadingRoot)
     }
