@@ -1,67 +1,59 @@
 package com.jsjrobotics.testmirror.service.websocket
 
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.IBinder
 import com.jsjrobotics.testmirror.Application
-import com.jsjrobotics.testmirror.ERROR
-import com.jsjrobotics.testmirror.IWebSocket
-import com.mirror.proto.navigation.MirrorScreen
-import com.mirror.proto.navigation.MirrorScreenRequest
-import com.mirror.proto.oobe.PairRequest
-import java.net.URI
-import java.util.concurrent.Executors
+import com.jsjrobotics.testmirror.BuildConfig
+import com.squareup.wire.Message
 import javax.inject.Inject
 
 class WebSocketService : Service() {
-    private val executor =  Executors.newSingleThreadExecutor()
-
     @Inject
     protected lateinit var socketManager : WebSocketManager
+
+    @Inject
+    protected lateinit var application: Application
+
+    private lateinit var  binder : WebSocketBinder
 
     override fun onCreate() {
         super.onCreate()
         Application.inject(this)
+        binder = WebSocketBinder(socketManager)
+        if (BuildConfig.DEBUG) {
+            application.registerReceiver(buildDebugReceiver(), buildDebugIntentFilter())
+        }
     }
 
-    private val binder = object : IWebSocket.Stub() {
-        override fun sendPairingCode(code: String) {
-            executor.execute {
-                val pairRequest = PairRequest.Builder()
-                        .code(code)
-                        .build()
-                socketManager.send(pairRequest)
-            }
-        }
+    private fun buildDebugIntentFilter(): IntentFilter {
+        return IntentFilter(DEBUG_INTENT)
+    }
 
-        override fun connectToClient(ipAddress: String) {
-            executor.execute {
-                val uri = URI(buildWebSocketAddress(ipAddress))
-                socketManager.connectToClient(uri)
-            }
-        }
-
-        override fun sendScreenRequest(screenName: String) {
-            executor.execute {
-                val screen = MirrorScreen.values().firstOrNull { it.name == screenName }
-                if (screen == null) {
-                    ERROR("Send Screen request with null screen name")
-                    return@execute
+    private fun buildDebugReceiver(): BroadcastReceiver {
+        return object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                if (intent.hasExtra(EXTRA_PROTO_MESSAGE)) {
+                    val protoMessage = intent.getSerializableExtra(EXTRA_PROTO_MESSAGE) as Message<*, *>
+                    socketManager.send(protoMessage)
                 }
-                val screenRequest = MirrorScreenRequest.Builder()
-                        .screen(screen)
-                        .build()
-                socketManager.send(screenRequest)
             }
         }
     }
 
-    private fun buildWebSocketAddress(ipAddress: String): String {
-        return "ws://$ipAddress:7000/socket"
-    }
+
     override fun onBind(intent: Intent?): IBinder {
         return binder
     }
+
+    companion object {
+        const val DEBUG_INTENT = "com.jsjrobotics.testmirror.service.websocket.WebSocketService.DEBUG"
+        const val EXTRA_PROTO_MESSAGE = "com.jsjrobotics.testmirror.service.websocket.WebSocketService.Proto_Message"
+    }
+
 }
 
 

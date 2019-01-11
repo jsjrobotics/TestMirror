@@ -64,7 +64,7 @@ class WebSocketManager @Inject constructor(private val profileModel: ProfileMode
                 .name(profileModel.currentAccount?.fullName)
                 .email(profileModel.currentAccount?.userEmail)
                 .token(loginModel.loggedInToken)
-                .environment(Environment.ENVIRONMENT_UNKNOWN)
+                .environment(Environment.STAGING)
                 .id(profileModel.currentAccount?.uuid)
                 .build()
         send(request)

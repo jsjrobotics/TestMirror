@@ -1,8 +1,10 @@
 package com.jsjrobotics.testmirror.profile
 
 import com.jsjrobotics.testmirror.Application
+import com.jsjrobotics.testmirror.DEBUG
 import com.jsjrobotics.testmirror.DefaultPresenter
 import com.mirror.proto.navigation.MirrorScreen
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class ProfilePresenter @Inject constructor(val application: Application) : DefaultPresenter(){
@@ -10,7 +12,11 @@ class ProfilePresenter @Inject constructor(val application: Application) : Defau
 
     fun init(v: ProfileView) {
         view = v
-        disposables.add(view.onRefreshClick.subscribe{ sendScreenRequest()})
+        disposables.add(view.onRefreshClick
+                .observeOn(Schedulers.io())
+                .subscribe{
+                    sendScreenRequest()
+                })
     }
 
     fun sendScreenRequest() {

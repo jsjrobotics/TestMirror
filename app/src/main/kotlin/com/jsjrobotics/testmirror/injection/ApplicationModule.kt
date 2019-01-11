@@ -15,7 +15,7 @@ import javax.inject.Singleton
 class ApplicationModule(val application: Application) {
     @Provides
     @Singleton
-    fun provideApplication() = application
+    fun provideApplication() : Application = application
 
     @Provides
     fun provideResources(application: Application) : Resources = application.resources

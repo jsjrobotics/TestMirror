@@ -10,4 +10,7 @@ object Paths {
         return "Bearer $apiToken"
     }
 
+    fun buildWebSocketAddress(ipAddress: String): String {
+        return "ws://$ipAddress:7000/socket"
+    }
 }

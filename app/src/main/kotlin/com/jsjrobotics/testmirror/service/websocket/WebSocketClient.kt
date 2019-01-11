@@ -1,5 +1,7 @@
 package com.jsjrobotics.testmirror.service.websocket
 
+import android.util.Log
+import com.jsjrobotics.testmirror.DEBUG
 import com.mirror.framework.MessageAdapter
 import com.mirror.proto.Envelope
 import io.reactivex.Observable
@@ -32,6 +34,7 @@ class WebSocketClient(uri: URI) : WebSocketClient(uri) {
 
     override fun onMessage(bytes: ByteBuffer) {
         val envelope = MessageAdapter.decode(bytes.array())
+        DEBUG(envelope.toString())
         messageEvent.onNext(envelope)
     }
 
