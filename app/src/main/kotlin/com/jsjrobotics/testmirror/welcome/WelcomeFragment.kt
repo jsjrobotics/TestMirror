@@ -31,8 +31,8 @@ class WelcomeFragment : DefaultFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        container?.let {parent ->
-            view.init(inflater, parent)
+        container?.let { parent ->
+            view.init(inflater, parent, savedInstanceState)
             return view.rootXml
         }
         return super.onCreateView(inflater, container, savedInstanceState)

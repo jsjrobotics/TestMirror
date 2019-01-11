@@ -1,5 +1,6 @@
 package com.jsjrobotics.testmirror.welcome
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button
@@ -16,13 +17,13 @@ class WelcomeView @Inject constructor(){
     private val onSignupClick : PublishSubject<Unit> = PublishSubject.create()
     private val onLoginClick : PublishSubject<Unit> = PublishSubject.create()
 
-    fun init(inflater: LayoutInflater, container: ViewGroup) {
+    fun init(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?) {
         rootXml = inflater.inflate(R.layout.fragment_welcome, container, false) as ViewGroup
         loginButton = rootXml.findViewById(R.id.login)
         signUpButton = rootXml.findViewById(R.id.signup)
 
         loginButton.setOnClickListener { onLoginClick.onNext(Unit) }
-        signUpButton.setOnClickListener{ onSignupClick.onNext(Unit) }
+        signUpButton.setOnClickListener { onSignupClick.onNext(Unit) }
     }
 
     fun onSignupClick(): Observable<Unit> = onSignupClick

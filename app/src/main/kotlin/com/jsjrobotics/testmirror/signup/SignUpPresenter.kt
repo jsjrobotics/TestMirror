@@ -1,12 +1,16 @@
 package com.jsjrobotics.testmirror.signup
 
+import android.arch.lifecycle.Lifecycle
+import android.arch.lifecycle.OnLifecycleEvent
 import com.jsjrobotics.testmirror.DefaultPresenter
 import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.dataStructures.SignUpData
+import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 class SignUpPresenter @Inject constructor(val model: SignUpModel) : DefaultPresenter(){
     private lateinit var view: SignUpView
+    private val disposables = CompositeDisposable()
 
     fun init(v: SignUpView) {
         view = v
@@ -40,5 +44,9 @@ class SignUpPresenter @Inject constructor(val model: SignUpModel) : DefaultPrese
         }
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    protected fun clearDisposables() {
+        disposables.clear()
+    }
 
 }

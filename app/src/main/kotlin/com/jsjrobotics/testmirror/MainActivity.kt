@@ -20,14 +20,21 @@ class MainActivity : FragmentActivity() {
             val fragment = navController.currentFragment
             showFragment(FragmentRequest(fragment, false))
         }
+    }
 
+    override fun onStart() {
+        super.onStart()
         val navigationDisposable = navController.onShowRequest
                 .subscribe {
-            showFragment(it)
-        }
+                    showFragment(it)
+                }
 
         disposables.addAll(navigationDisposable)
+    }
 
+    override fun onStop() {
+        super.onStop()
+        disposables.clear()
     }
 
     private fun showFragment(request: FragmentRequest) {

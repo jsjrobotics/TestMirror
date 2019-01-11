@@ -8,20 +8,22 @@ import com.jsjrobotics.testmirror.NavigationController
 import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
 import com.jsjrobotics.testmirror.network.ProtoBufMessageBroker
 import com.mirror.proto.user.IdentifyResponse
+import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 class ConnectToMirrorPresenter @Inject constructor(
         private val model: ConnectToMirrorModel,
         private val protoBufMessageBroker: ProtoBufMessageBroker,
         private val navigationController: NavigationController): DefaultPresenter() {
+
     private lateinit var view: ConnectToMirrorView
     private var displayedMirrors: MutableList<ResolvedMirrorData> = mutableListOf()
     private var selectedMirror: ResolvedMirrorData? = null
+    private val disposables = CompositeDisposable()
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     protected fun stopMirrorDiscovery () {
         model.stopDiscovery()
-        disposables.dispose()
     }
 
     private fun displayMirrors(mirrors : Set<ResolvedMirrorData>) {
@@ -78,5 +80,10 @@ class ConnectToMirrorPresenter @Inject constructor(
         } else {
             navigationController.showProfile()
         }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    protected fun clearDisposables() {
+        disposables.clear()
     }
 }
