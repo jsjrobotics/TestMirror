@@ -4,18 +4,12 @@ import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.OnLifecycleEvent
 import com.jsjrobotics.testmirror.DefaultPresenter
 import com.jsjrobotics.testmirror.ERROR
-import com.jsjrobotics.testmirror.NavigationController
 import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
-import com.jsjrobotics.testmirror.network.ProtoBufMessageDispatcher
-import com.mirror.proto.oobe.PairResponse
-import com.mirror.proto.user.IdentifyResponse
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 class ConnectToMirrorPresenter @Inject constructor(
-        private val model: ConnectToMirrorModel,
-        private val protoBufMessageDispatcher: ProtoBufMessageDispatcher,
-        private val navigationController: NavigationController): DefaultPresenter() {
+        private val model: ConnectToMirrorModel): DefaultPresenter() {
 
     private lateinit var view: ConnectToMirrorView
     private var displayedMirrors: MutableList<ResolvedMirrorData> = mutableListOf()
@@ -26,7 +20,7 @@ class ConnectToMirrorPresenter @Inject constructor(
     private fun displayMirrors(mirrors : Set<ResolvedMirrorData>) {
         displayedMirrors = mirrors.toMutableList()
         val serviceNames = displayedMirrors.map ( this::getMirrorName )
-        view.displayMirrors(serviceNames)
+        view.displayMirrorsScreen(serviceNames)
 
     }
 
@@ -40,16 +34,22 @@ class ConnectToMirrorPresenter @Inject constructor(
 
     fun bind(v: ConnectToMirrorView) {
         view = v
+        val displayPairingDisposable = model.onPairingNeeded.subscribe { view.showPairingInput() }
+        val pairingErrorDisposable = model.onPairingError.subscribe { view.showPairingError()}
+        val displayMirrorDisposable = model.onMirrorDiscovered.subscribe(this::displayMirrors, { ERROR("Failed to load mirrors")})
+        val rescanDisposable = view.onRescanButtonClicked.subscribe {
+            startMirrorSearch()
+        }
         val mirrorSelectedDisposable = view.onMirrorSelected.subscribe { selectedMirrorIndex ->
             val chosenMirror = displayedMirrors[selectedMirrorIndex]
             if (chosenMirror == selectedMirror) {
                 view.unselectMirror(selectedMirrorIndex)
-                view.disableConnectButton()
+                view.toggleConnectRescanButton(true)
                 selectedMirror = null
             } else {
                 selectedMirror = chosenMirror
                 view.setMirrorSelected(selectedMirrorIndex)
-                view.enableConnectButton()
+                view.toggleConnectRescanButton(false)
             }
         }
         val connectDisposable = view.onConnectButtonClicked.subscribe { ignored ->
@@ -58,40 +58,22 @@ class ConnectToMirrorPresenter @Inject constructor(
                 model.connectToClient(it.serviceInfo.host)
             }
         }
-        val identityDisposable = protoBufMessageDispatcher.onIdentifyResponse.subscribe(this::onIdentityResponse)
-        val pariingCodeDisposable = view.onSendPairingButtonClicked.subscribe(this::receivePairingCode)
-        val pairResponseDisposable = protoBufMessageDispatcher.onPairResponseEvent.subscribe(this::onPairResponse)
-        val displayMirrorDisposable = model.onMirrorDiscovered.subscribe(this::displayMirrors, { ERROR("Failed to load mirrors")})
+        val pariingCodeDisposable = view.onSendPairingButtonClicked.subscribe(model::sendPairingCode)
         disposables.addAll(displayMirrorDisposable,
                 mirrorSelectedDisposable,
                 connectDisposable,
-                identityDisposable,
+                displayPairingDisposable,
                 pariingCodeDisposable,
-                pairResponseDisposable)
+                pairingErrorDisposable,
+                rescanDisposable)
+        startMirrorSearch()
+    }
+
+    private fun startMirrorSearch() {
         model.startDiscovery()
-        view.disableConnectButton()
-        view.displayLoading()
+        view.displayLoadingScreen()
     }
 
-    private fun receivePairingCode(code: String) {
-        model.sendPairingCode(code)
-    }
-
-    private fun onIdentityResponse(response: IdentifyResponse) {
-        if (response.pairingRequired) {
-            view.showPairingInput()
-        } else {
-            navigationController.showProfile()
-        }
-    }
-
-    private fun onPairResponse(response: PairResponse) {
-        if (response.success) {
-            navigationController.showProfile()
-        } else {
-            view.showPairingError()
-        }
-    }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     protected fun clearDisposables() {

@@ -34,9 +34,9 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
     private lateinit var pairingInputRoot: ViewGroup
     private lateinit var connectedRoot: ViewGroup
     private lateinit var loadingMessage: TextView
-    private lateinit var connectButton: Button
+    private lateinit var connectRescanButton: Button
     private lateinit var sendPairingCodeButton: Button
-
+    private lateinit var rescanButton: Button
     private lateinit var firstPairingCode : EditText
     private lateinit var secondPairingCode : EditText
     private lateinit var thirdPairingCode : EditText
@@ -48,6 +48,9 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
 
     private val connectButtonClicked : PublishSubject<Boolean> = PublishSubject.create()
     val onConnectButtonClicked: Observable<Boolean> = connectButtonClicked
+
+    private val rescanButtonClicked : PublishSubject<Boolean> = PublishSubject.create()
+    val onRescanButtonClicked: Observable<Boolean> = rescanButtonClicked
 
     private val sendPairingButtonClicked : PublishSubject<String> = PublishSubject.create()
     val onSendPairingButtonClicked: Observable<String> = sendPairingButtonClicked
@@ -67,13 +70,21 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
         selectMirrorRoot = rootXml.findViewById(R.id.select_mirror)
         connectedRoot = rootXml.findViewById(R.id.connected)
         mirrorList = rootXml.findViewById(R.id.mirror_list)
-        connectButton = rootXml.findViewById(R.id.connect)
-        connectButton.setOnClickListener { connectButtonClicked.onNext(true) }
-        connectButton.setText(R.string.connect)
+        connectRescanButton = rootXml.findViewById(R.id.connect)
         sendPairingCodeButton.setOnClickListener { sendPairingButtonClicked.onNext(buildPairingCode()) }
         setupPairingCodeInputs()
+        toggleConnectRescanButton(true)
     }
 
+    fun toggleConnectRescanButton(rescanEnabled : Boolean) {
+        if (rescanEnabled) {
+            connectRescanButton.setText(R.string.rescan)
+            connectRescanButton.setOnClickListener { rescanButtonClicked.onNext(true) }
+        } else {
+            connectRescanButton.setText(R.string.connect)
+            connectRescanButton.setOnClickListener { connectButtonClicked.onNext(true) }
+        }
+    }
     private fun buildPairingCode(): String {
         return "${firstPairingCode.text}${secondPairingCode.text}${thirdPairingCode.text}${fourthPairingCode.text}"
     }
@@ -124,7 +135,7 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
         return pairingInputs.indexOfFirst { it.text.toString().isEmpty() }
     }
 
-    fun displayLoading() {
+    fun displayLoadingScreen() {
         loadingMessage.text = getContext().getString(R.string.searching_for_mirrors)
         display(loadingRoot)
     }
@@ -146,7 +157,7 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
         }
     }
 
-    fun displayMirrors(serviceNames: List<String>) {
+    fun displayMirrorsScreen(serviceNames: List<String>) {
         val adapter = SelectMirrorAdapter(serviceNames)
         mirrorSelectedDisposable = adapter.onMirrorSelected.subscribe{ mirrorSelected.onNext(it) }
         runOnUiThread {
@@ -171,14 +182,6 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
                     }
                 }
 
-    }
-
-    fun enableConnectButton() {
-        connectButton.visibility = View.VISIBLE
-    }
-
-    fun disableConnectButton() {
-        connectButton.visibility = View.GONE
     }
 
     fun unselectMirror(index: Int) {
