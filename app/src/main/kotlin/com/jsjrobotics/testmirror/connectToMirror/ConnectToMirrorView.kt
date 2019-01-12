@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import com.jsjrobotics.testmirror.DefaultView
 import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.runOnUiThread
@@ -194,5 +195,9 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
             sendPairingCodeButton.isEnabled = false
             display(pairingInputRoot)
         }
+    }
+
+    fun showPairingError() {
+        Toast.makeText(rootXml.context, R.string.invalid_pairing_code, Toast.LENGTH_SHORT).show()
     }
 }

@@ -6,4 +6,5 @@ interface IWebSocket {
     void connectToClient(String ipAddress);
     void sendPairingCode(String code);
     void sendScreenRequest(String screenName);
+    void sendIdentifyRequest();
 }

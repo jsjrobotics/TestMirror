@@ -1,73 +1,66 @@
 package com.jsjrobotics.testmirror.service.websocket
 
 import com.jsjrobotics.testmirror.ERROR
-import com.jsjrobotics.testmirror.login.LoginModel
-import com.jsjrobotics.testmirror.network.ProtobufDispatcher
-import com.jsjrobotics.testmirror.profile.ProfileModel
+import com.jsjrobotics.testmirror.network.ProtobufEnvelopeHandler
 import com.mirror.framework.MessageAdapter
-import com.mirror.proto.user.Environment
-import com.mirror.proto.user.IdentifyRequest
 import com.squareup.wire.Message
 import io.reactivex.disposables.CompositeDisposable
 import java.net.URI
 import javax.inject.Inject
 
-class WebSocketManager @Inject constructor(private val profileModel: ProfileModel,
-                                           private val loginModel: LoginModel,
-                                           private val protobufDispatcher : ProtobufDispatcher) {
+/**
+ * Enforces connection to only one client at a time
+ * Is not a singleton so multiple instances can be created, however state callbacks are passed along
+ * to Singleton dispatchers
+ */
+class WebSocketManager @Inject constructor(private val protobufEnvelopeHandler : ProtobufEnvelopeHandler,
+                                           private val clientStateDispatcher : ClientStateDispatcher) {
     private var client : WebSocketClient? = null
     private val clientObserverDisposables = CompositeDisposable()
 
 
     fun connectToClient(uri: URI) : Boolean {
         disconnectFromClient()
-        val handleOpen : (Boolean) -> Unit = { handleOpenEvent() }
+        val handleOpen : (Boolean) -> Unit = { clientStateDispatcher.handleOpenEvent() }
         val openError : (Throwable) -> Unit = { reportClientError("OnOpenEvent", it)}
-        val handleClose : (Boolean) -> Unit = { handleCloseEvent() }
+        val handleClose : (Boolean) -> Unit = {
+            handleCloseEvent()
+            clientStateDispatcher.handleCloseEvent()
+        }
         val closeError : (Throwable) -> Unit = { reportClientError("OnCloseEvent", it)}
-        val handleMessage = protobufDispatcher::handleMessage
         val messageError : (Throwable) -> Unit = { reportClientError("OnMessageEvent", it)}
         val handleError = this::handleClientError
         val exceptionError : (Throwable) -> Unit = { reportClientError("OnExceptionEvent", it)}
 
-        client = WebSocketClient(uri)
-        client?.apply {
+        client = WebSocketClient(uri).apply {
             val openDisposable = onOpenEvent.subscribe( handleOpen , openError)
             val closeDisposable = onCloseEvent.subscribe( handleClose , closeError)
-            val messageDisposable = onMessageEvent.subscribe( handleMessage, messageError)
+            val messageDisposable = onMessageEvent.subscribe( protobufEnvelopeHandler::handleMessage, messageError)
             val errorDisposable = onErrorEvent.subscribe ( handleError, exceptionError )
-            clientObserverDisposables.addAll(openDisposable, closeDisposable, messageDisposable, errorDisposable)
-        } ?: ERROR("Failed to create websocket client")
 
-        return client?.connectBlocking() ?: false
+            clientObserverDisposables.addAll(openDisposable,
+                    closeDisposable,
+                    messageDisposable,
+                    errorDisposable)
+        }
+        val connected = client?.connectBlocking() ?: false
+        if (!connected) {
+            disconnectFromClient()
+        }
+        return connected
     }
 
     private fun disconnectFromClient() {
         client?.closeBlocking()
-        clientObserverDisposables.clear()
+        handleCloseEvent()
     }
 
     private fun handleClientError(exception: Exception) {
-
+        handleCloseEvent()
     }
 
     private fun reportClientError(functionName: String, error: Throwable) {
         ERROR("$functionName error -> ${error.message}")
-    }
-
-    private fun handleOpenEvent() {
-        sendIdentity()
-    }
-
-    private fun sendIdentity() {
-        val request = IdentifyRequest.Builder()
-                .name(profileModel.currentAccount?.fullName)
-                .email(profileModel.currentAccount?.userEmail)
-                .token(loginModel.loggedInToken)
-                .environment(Environment.STAGING)
-                .id(profileModel.currentAccount?.uuid)
-                .build()
-        send(request)
     }
 
     fun send(message: Message<*, *>) {
@@ -75,6 +68,10 @@ class WebSocketManager @Inject constructor(private val profileModel: ProfileMode
     }
 
     private fun handleCloseEvent() {
+        clientObserverDisposables.clear()
+    }
 
+    fun isConnected(): Boolean {
+        return client?.isOpen ?: false
     }
 }

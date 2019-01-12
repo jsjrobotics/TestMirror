@@ -6,14 +6,15 @@ import com.jsjrobotics.testmirror.DefaultPresenter
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.NavigationController
 import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
-import com.jsjrobotics.testmirror.network.ProtoBufMessageBroker
+import com.jsjrobotics.testmirror.network.ProtoBufMessageDispatcher
+import com.mirror.proto.oobe.PairResponse
 import com.mirror.proto.user.IdentifyResponse
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 class ConnectToMirrorPresenter @Inject constructor(
         private val model: ConnectToMirrorModel,
-        private val protoBufMessageBroker: ProtoBufMessageBroker,
+        private val protoBufMessageDispatcher: ProtoBufMessageDispatcher,
         private val navigationController: NavigationController): DefaultPresenter() {
 
     private lateinit var view: ConnectToMirrorView
@@ -21,10 +22,6 @@ class ConnectToMirrorPresenter @Inject constructor(
     private var selectedMirror: ResolvedMirrorData? = null
     private val disposables = CompositeDisposable()
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    protected fun stopMirrorDiscovery () {
-        model.stopDiscovery()
-    }
 
     private fun displayMirrors(mirrors : Set<ResolvedMirrorData>) {
         displayedMirrors = mirrors.toMutableList()
@@ -61,10 +58,16 @@ class ConnectToMirrorPresenter @Inject constructor(
                 model.connectToClient(it.serviceInfo.host)
             }
         }
-        val identityDisposable = protoBufMessageBroker.onIdentifyResponse.subscribe(this::onIdentityResponse)
+        val identityDisposable = protoBufMessageDispatcher.onIdentifyResponse.subscribe(this::onIdentityResponse)
         val pariingCodeDisposable = view.onSendPairingButtonClicked.subscribe(this::receivePairingCode)
+        val pairResponseDisposable = protoBufMessageDispatcher.onPairResponseEvent.subscribe(this::onPairResponse)
         val displayMirrorDisposable = model.onMirrorDiscovered.subscribe(this::displayMirrors, { ERROR("Failed to load mirrors")})
-        disposables.addAll(displayMirrorDisposable, mirrorSelectedDisposable, connectDisposable, identityDisposable, pariingCodeDisposable)
+        disposables.addAll(displayMirrorDisposable,
+                mirrorSelectedDisposable,
+                connectDisposable,
+                identityDisposable,
+                pariingCodeDisposable,
+                pairResponseDisposable)
         model.startDiscovery()
         view.disableConnectButton()
         view.displayLoading()
@@ -82,8 +85,22 @@ class ConnectToMirrorPresenter @Inject constructor(
         }
     }
 
+    private fun onPairResponse(response: PairResponse) {
+        if (response.success) {
+            navigationController.showProfile()
+        } else {
+            view.showPairingError()
+        }
+    }
+
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     protected fun clearDisposables() {
         disposables.clear()
+        model.unsubscribe()
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    protected fun stopMirrorDiscovery () {
+        model.stopDiscovery()
     }
 }

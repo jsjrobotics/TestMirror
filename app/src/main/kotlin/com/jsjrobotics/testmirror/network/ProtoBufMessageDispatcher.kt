@@ -1,7 +1,6 @@
 package com.jsjrobotics.testmirror.network
 
 import com.mirror.proto.navigation.MirrorScreenRequest
-import com.mirror.proto.navigation.PairingScreenResponse
 import com.mirror.proto.oobe.PairResponse
 import com.mirror.proto.user.IdentifyResponse
 import io.reactivex.Observable
@@ -10,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ProtoBufMessageBroker @Inject constructor(){
+class ProtoBufMessageDispatcher @Inject constructor(){
 
     private val identifyResponseEvent:  PublishSubject<IdentifyResponse> = PublishSubject.create()
     val onIdentifyResponse : Observable<IdentifyResponse> = identifyResponseEvent

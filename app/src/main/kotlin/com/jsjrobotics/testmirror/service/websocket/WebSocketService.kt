@@ -8,6 +8,8 @@ import android.content.IntentFilter
 import android.os.IBinder
 import com.jsjrobotics.testmirror.Application
 import com.jsjrobotics.testmirror.BuildConfig
+import com.jsjrobotics.testmirror.login.LoginModel
+import com.jsjrobotics.testmirror.profile.ProfileModel
 import com.squareup.wire.Message
 import javax.inject.Inject
 
@@ -18,12 +20,20 @@ class WebSocketService : Service() {
     @Inject
     protected lateinit var application: Application
 
+    @Inject
+    protected lateinit var profileModel: ProfileModel
+
+    @Inject
+    protected lateinit var loginModel: LoginModel
+
     private lateinit var  binder : WebSocketBinder
 
     override fun onCreate() {
         super.onCreate()
         Application.inject(this)
-        binder = WebSocketBinder(socketManager)
+        binder = WebSocketBinder(socketManager,
+                profileModel,
+                loginModel)
         if (BuildConfig.DEBUG) {
             application.registerReceiver(buildDebugReceiver(), buildDebugIntentFilter())
         }

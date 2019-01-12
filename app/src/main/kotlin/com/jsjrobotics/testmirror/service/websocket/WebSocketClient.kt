@@ -1,6 +1,5 @@
 package com.jsjrobotics.testmirror.service.websocket
 
-import android.util.Log
 import com.jsjrobotics.testmirror.DEBUG
 import com.mirror.framework.MessageAdapter
 import com.mirror.proto.Envelope

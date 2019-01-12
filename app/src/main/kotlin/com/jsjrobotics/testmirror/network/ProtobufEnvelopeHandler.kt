@@ -12,34 +12,37 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ProtobufDispatcher @Inject constructor(messageBroker : ProtoBufMessageBroker) {
+class ProtobufEnvelopeHandler @Inject constructor(messageDispatcher : ProtoBufMessageDispatcher) {
 
-    private class ProtoBufAdapterHandler<T>(val messageClazz: Class<out Message<*,*>>, val adapter: ProtoAdapter<T>, val handler : (T) -> Unit ) {
+    private class ProtoBufAdapterHandler<T : Message<*,*>>(val messageClazz: Class<T>,
+                                                           val adapter: ProtoAdapter<T>,
+                                                           val handler : (T) -> Unit ) {
         val messageType : String = messageClazz.canonicalName!!
     }
 
     private val identityResponseHandle = ProtoBufAdapterHandler(
             IdentifyResponse::class.java,
             IdentifyResponse.ADAPTER,
-            messageBroker::dispatchIdentityResponse
+            messageDispatcher::dispatchIdentityResponse
     )
 
     private val pairResponseHandle = ProtoBufAdapterHandler(
             PairResponse::class.java,
             PairResponse.ADAPTER,
-            messageBroker::dispatchPairResponse
+            messageDispatcher::dispatchPairResponse
     )
     private val mirrorScreenRequestHandle = ProtoBufAdapterHandler(
             MirrorScreenRequest::class.java,
             MirrorScreenRequest.ADAPTER,
-            messageBroker::dispatchMirrorScreenRequest
+            messageDispatcher::dispatchMirrorScreenRequest
     )
+
+    /* To add a Protobuf message, add a handle here */
     private val handlers : List<ProtoBufAdapterHandler<*>> = listOf(
             identityResponseHandle,
             pairResponseHandle,
             mirrorScreenRequestHandle
     )
-
 
     @Suppress("UNCHECKED_CAST")
     private val protoIdentityMap : MutableMap<Class<out Message<*, *>>, ProtoBufAdapterHandler<*>> = mutableMapOf<Class<out Message<*, *>>, ProtoBufAdapterHandler<*>>().apply{
