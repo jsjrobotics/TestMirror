@@ -1,7 +1,9 @@
 package com.jsjrobotics.testmirror.service.websocket
 
+import android.net.nsd.NsdServiceInfo
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.network.ProtobufEnvelopeHandler
+import com.jsjrobotics.testmirror.service.http.Paths
 import com.mirror.framework.MessageAdapter
 import com.squareup.wire.Message
 import io.reactivex.disposables.CompositeDisposable
@@ -17,15 +19,17 @@ class WebSocketManager @Inject constructor(private val protobufEnvelopeHandler :
                                            private val clientStateDispatcher : ClientStateDispatcher) {
     private var client : WebSocketClient? = null
     private val clientObserverDisposables = CompositeDisposable()
+    var serviceInfo: NsdServiceInfo? = null ; private set
 
-
-    fun connectToClient(uri: URI) : Boolean {
+    fun connectToClient(info: NsdServiceInfo) : Boolean {
         disconnectFromClient()
-        val handleOpen : (Boolean) -> Unit = { clientStateDispatcher.handleOpenEvent() }
+        serviceInfo = info
+        val uri = URI(Paths.buildWebSocketAddress(info.host.hostAddress))
+        val handleOpen : (Boolean) -> Unit = { clientStateDispatcher.handleOpenEvent(this) }
         val openError : (Throwable) -> Unit = { reportClientError("OnOpenEvent", it)}
         val handleClose : (Boolean) -> Unit = {
             handleCloseEvent()
-            clientStateDispatcher.handleCloseEvent()
+            clientStateDispatcher.handleCloseEvent(this)
         }
         val closeError : (Throwable) -> Unit = { reportClientError("OnCloseEvent", it)}
         val messageError : (Throwable) -> Unit = { reportClientError("OnMessageEvent", it)}
@@ -69,6 +73,7 @@ class WebSocketManager @Inject constructor(private val protobufEnvelopeHandler :
 
     private fun handleCloseEvent() {
         clientObserverDisposables.clear()
+        serviceInfo = null
     }
 
     fun isConnected(): Boolean {

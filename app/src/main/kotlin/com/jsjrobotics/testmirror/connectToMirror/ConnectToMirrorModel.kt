@@ -1,5 +1,6 @@
 package com.jsjrobotics.testmirror.connectToMirror
 
+import android.net.nsd.NsdServiceInfo
 import com.jsjrobotics.testmirror.Application
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.MirrorStateDispatcher
@@ -8,6 +9,7 @@ import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
 import com.jsjrobotics.testmirror.network.DnsServiceListener
 import com.jsjrobotics.testmirror.network.ProtoBufMessageDispatcher
 import com.jsjrobotics.testmirror.service.websocket.ClientStateDispatcher
+import com.jsjrobotics.testmirror.service.websocket.tasks.ClientState
 import com.mirror.proto.oobe.PairResponse
 import com.mirror.proto.user.IdentifyResponse
 import io.reactivex.Observable
@@ -15,7 +17,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
-import java.net.InetAddress
 import javax.inject.Inject
 
 class ConnectToMirrorModel @Inject constructor(private val application: Application,
@@ -71,26 +72,28 @@ class ConnectToMirrorModel @Inject constructor(private val application: Applicat
         savedMirrors.onNext(mirrors)
     }
 
-    fun connectToClient(host: InetAddress) {
-        connectDisposable = clientStateDispatcher.onOpenEvent.subscribe { connected ->
-            if (connected) {
-                handleConnected()
-            } else {
-                handleDisconnected()
-            }
+    fun connectToClient(info: NsdServiceInfo) {
+        connectDisposable = clientStateDispatcher.onOpenEvent
+                .filter{ info == it.socketManager.serviceInfo }
+                .subscribe { state ->
+                    if (state.isConnected) {
+                        handleConnected(state)
+                    } else {
+                        handleDisconnected()
+                    }
         }
-        application.webSocketService?.connectToClient(host.hostAddress)
+        application.webSocketService?.connectToClient(info)
     }
 
     private fun handleDisconnected() {
         unsubscribe()
     }
 
-    private fun handleConnected() {
+    private fun handleConnected(state: ClientState) {
         val identityDisposable = protoBufMessageDispatcher.onIdentifyResponse.subscribe(this::onIdentityResponse)
         val pairResponseDisposable = protoBufMessageDispatcher.onPairResponseEvent.subscribe(this::onPairResponse)
         connectingDisposables.addAll(identityDisposable, pairResponseDisposable)
-        application.webSocketService?.sendIdentifyRequest()
+        application.webSocketService?.sendIdentifyRequest(state.socketManager.serviceInfo)
     }
 
     private fun onIdentityResponse(response: IdentifyResponse) {
@@ -101,8 +104,8 @@ class ConnectToMirrorModel @Inject constructor(private val application: Applicat
         }
     }
 
-    fun sendPairingCode(code: String) {
-        application.webSocketService?.sendPairingCode(code)
+    fun sendPairingCode(serviceInfo: NsdServiceInfo, code: String) {
+        application.webSocketService?.sendPairingCode(serviceInfo, code)
     }
 
     private fun onPairResponse(response: PairResponse) {

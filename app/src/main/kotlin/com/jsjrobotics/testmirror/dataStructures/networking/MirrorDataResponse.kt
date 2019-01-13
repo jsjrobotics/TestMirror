@@ -9,6 +9,6 @@ data class MirrorDataResponse (@SerializedName("name") val name: String,
                                @SerializedName("ethernet") val isEthernet: Boolean,
                                @SerializedName("wifi") val isWifi: Boolean,
                                @SerializedName("ssid") val ssid : String,
-                               @SerializedName("band") val band : Int,
+                               @SerializedName("band") val band : Float,
                                @SerializedName("proto_version") val protoVersion : String,
                                @SerializedName("client_id") val clientId : String)

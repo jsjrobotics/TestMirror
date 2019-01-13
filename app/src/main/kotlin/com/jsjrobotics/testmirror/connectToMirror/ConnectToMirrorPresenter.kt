@@ -55,10 +55,14 @@ class ConnectToMirrorPresenter @Inject constructor(
         val connectDisposable = view.onConnectButtonClicked.subscribe { ignored ->
             selectedMirror?.let {
                 view.showConnecting(getMirrorName(it))
-                model.connectToClient(it.serviceInfo.host)
+                model.connectToClient(it.serviceInfo)
             }
         }
-        val pariingCodeDisposable = view.onSendPairingButtonClicked.subscribe(model::sendPairingCode)
+        val pariingCodeDisposable = view.onSendPairingButtonClicked.subscribe{ pairingCode ->
+            selectedMirror?.let {
+                model.sendPairingCode(it.serviceInfo, pairingCode)
+            } ?: ERROR("Failed to send pairing code request, no selected mirror")
+        }
         disposables.addAll(displayMirrorDisposable,
                 mirrorSelectedDisposable,
                 connectDisposable,

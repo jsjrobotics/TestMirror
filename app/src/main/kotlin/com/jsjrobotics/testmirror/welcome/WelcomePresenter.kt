@@ -1,9 +1,6 @@
 package com.jsjrobotics.testmirror.welcome
 
-import android.arch.lifecycle.Lifecycle
-import android.arch.lifecycle.OnLifecycleEvent
 import com.jsjrobotics.testmirror.DefaultPresenter
-import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.NavigationController
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
@@ -24,7 +21,6 @@ class WelcomePresenter @Inject constructor(private val navigationController: Nav
     }
 
     private fun launchLoginActivity() {
-        ERROR("Launching login activity")
         navigationController.showLogin()
     }
 

@@ -1,5 +1,6 @@
 package com.jsjrobotics.testmirror.service.websocket
 
+import com.jsjrobotics.testmirror.service.websocket.tasks.ClientState
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
@@ -7,15 +8,15 @@ import javax.inject.Singleton
 
 @Singleton
 class ClientStateDispatcher @Inject constructor(){
-    private val openEvent : PublishSubject<Boolean> = PublishSubject.create()
-    val onOpenEvent : Observable<Boolean> = openEvent
+    private val clientStateEvent : PublishSubject<ClientState> = PublishSubject.create()
+    val onOpenEvent : Observable<ClientState> = clientStateEvent
 
-    fun handleOpenEvent() {
-        openEvent.onNext(true)
+    fun handleOpenEvent(webSocketManager: WebSocketManager) {
+        clientStateEvent.onNext(ClientState(webSocketManager, true))
     }
 
-    fun handleCloseEvent() {
-        openEvent.onNext(false)
+    fun handleCloseEvent(webSocketManager: WebSocketManager) {
+        clientStateEvent.onNext(ClientState(webSocketManager, false))
     }
 
 }

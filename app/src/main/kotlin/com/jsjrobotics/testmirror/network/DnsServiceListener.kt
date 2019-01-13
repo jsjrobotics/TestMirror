@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.util.Log
+import com.jsjrobotics.testmirror.DEBUG
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
 import com.jsjrobotics.testmirror.service.http.MirrorPeerToPeerApi
@@ -11,11 +12,11 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.Retrofit
 
 
 
@@ -85,7 +86,7 @@ class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
             val bodyResponse = result.body()
             mirrorDataResolved[serviceInfo] = ResolvedMirrorData(serviceInfo, bodyResponse)
         } catch (e: Exception) {
-            ERROR("Failed to download login data: $e")
+            ERROR("Failed to download mirror data: $e")
             mirrorDataResolved[serviceInfo] = ResolvedMirrorData(serviceInfo)
         }
     }
@@ -134,9 +135,9 @@ class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
                 nsdManager.stopServiceDiscovery(this)
             }
 
-            override fun onDiscoveryStarted(serviceType: String) { Log.e(TAG, "Discovery started") }
+            override fun onDiscoveryStarted(serviceType: String) { DEBUG("Discovery started") }
 
-            override fun onDiscoveryStopped(serviceType: String) { /* Do Nothing */ }
+            override fun onDiscoveryStopped(serviceType: String) { DEBUG("Discovery stopped")}
 
             override fun onServiceLost(serviceInfo: NsdServiceInfo) { /* Do Nothing */ }
         }
