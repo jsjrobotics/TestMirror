@@ -11,7 +11,7 @@ import java.util.concurrent.Executors
 
 class WebSocketBinder(private val newWebsocketManager: () -> WebSocketManager,
                       private val clientLookUp: (NsdServiceInfo) -> WebSocketManager?,
-                      private val allClients : () -> List<WebSocketManager>,
+                      private val allConnectedClients : () -> List<WebSocketManager>,
                       private val profileModel: ProfileModel,
                       private val loginModel: LoginModel) : IWebSocket.Stub() {
     private val executor =  Executors.newSingleThreadExecutor()
@@ -52,7 +52,7 @@ class WebSocketBinder(private val newWebsocketManager: () -> WebSocketManager,
 
     override fun sendScreenRequest(screenName: String) {
         executor.execute {
-            allClients.invoke().forEach {
+            allConnectedClients.invoke().forEach {
                 ScreenRequestTask(it, screenName)
                         .run()
             }

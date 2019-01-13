@@ -39,7 +39,7 @@ class WebSocketService : Service() {
         Application.inject(this)
         binder = WebSocketBinder( ::buildWebSocketManager,
                 ::lookupClient,
-                ::getAllSocketManagers,
+                ::getConnectedSocketManagers,
                 profileModel,
                 loginModel)
         if (BuildConfig.DEBUG) {
@@ -47,7 +47,7 @@ class WebSocketService : Service() {
         }
     }
 
-    private fun getAllSocketManagers(): List<WebSocketManager> = socketManagers
+    private fun getConnectedSocketManagers(): List<WebSocketManager> = socketManagers.filter { it.isConnected() }
 
     private fun buildWebSocketManager(): WebSocketManager {
         val manager = WebSocketManager(protobufEnvelopeHandler, clientStateDispatcher)

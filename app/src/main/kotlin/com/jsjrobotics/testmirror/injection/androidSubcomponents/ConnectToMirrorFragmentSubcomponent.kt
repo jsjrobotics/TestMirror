@@ -8,5 +8,4 @@ import dagger.android.AndroidInjector
 interface ConnectToMirrorFragmentSubcomponent : AndroidInjector<ConnectToMirrorFragment> {
     @Subcomponent.Builder
     abstract class Builder : AndroidInjector.Builder<ConnectToMirrorFragment>()
-
 }

@@ -10,6 +10,8 @@ import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 class MainActivity : FragmentActivity() {
+    private val NAVIGATION_BAR_VISIBILITY: String = "NavigationBarVisibility"
+
     @Inject
     lateinit var navController: NavigationController
 
@@ -17,15 +19,29 @@ class MainActivity : FragmentActivity() {
 
     private lateinit var navigationBar: BottomNavigationView
 
+    private lateinit var bottomNavigation: BottomNavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Application.inject(this)
         setContentView(R.layout.activity_main)
+        bottomNavigation = findViewById(R.id.navigation_bar)
+        bottomNavigation.setOnNavigationItemSelectedListener(navController)
         navigationBar = findViewById(R.id.navigation_bar)
         if (savedInstanceState == null) {
             val fragment = navController.currentFragment
             showFragment(FragmentRequest(fragment, false))
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(NAVIGATION_BAR_VISIBILITY, bottomNavigation.visibility)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        bottomNavigation.visibility = savedInstanceState.getInt(NAVIGATION_BAR_VISIBILITY)
     }
 
     override fun onStart() {

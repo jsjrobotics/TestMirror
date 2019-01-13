@@ -28,11 +28,11 @@ class UpdateInfoModel @Inject constructor(val application: Application,
     private fun buildUpdateReceiver(): IProfileCallback {
         return object: DefaultProfileCallback() {
             override fun updateInfoSuccess() {
-                navigationController.showProfile()
+                navigationController.showProfile(true)
             }
             override fun updateInfoFailure(error: String?) {
                 updateFailure.onNext(error ?: "Unknown Error")
-                navigationController.showProfile()
+                navigationController.showProfile(true)
             }
         }
     }

@@ -119,7 +119,7 @@ class ConnectToMirrorModel @Inject constructor(private val application: Applicat
     private fun notifyConnected() {
         connectionSuccess.onNext(true)
         mirrorStateDispatcher.onConnectedToMirror()
-        navigationController.showProfile()
+        navigationController.showProfile(true)
     }
 
 
