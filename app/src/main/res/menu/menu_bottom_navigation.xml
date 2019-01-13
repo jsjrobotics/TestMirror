@@ -1,0 +1,34 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/tab_home"
+        android:title="@string/home"
+        android:enabled="true"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_home_black_24dp"
+         />
+    <item android:id="@+id/tab_on_demand"
+        android:title="@string/on_demand"
+        android:enabled="true"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_bookmark_border_black_24dp"
+        />
+    <item android:id="@+id/tab_live"
+        android:title="@string/live"
+        android:enabled="true"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_event_black_24dp"
+        />
+    <item android:id="@+id/tab_progress"
+        android:title="@string/progress"
+        android:enabled="true"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_trending_up_black_24dp"
+        />
+    <item android:id="@+id/tab_settings"
+        android:title="@string/settings"
+        android:enabled="true"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_settings_black_24dp"
+        />
+</menu>

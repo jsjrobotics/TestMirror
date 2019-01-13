@@ -25,4 +25,9 @@
     <string name="send_pairing_code">Send Pairing Code</string>
     <string name="invalid_pairing_code">Invalid Pairing Code</string>
     <string name="rescan">Rescan</string>
+    <string name="home">Home</string>
+    <string name="on_demand">On Demand</string>
+    <string name="live">Live</string>
+    <string name="progress">Progress</string>
+    <string name="settings">Settings</string>
 </resources>

@@ -37,4 +37,11 @@ enum class FragmentId {
             CONNECT_TO_MIRROR -> ConnectToMirrorFragment.TAG
         }
     }
+
+    fun isNavBarVisible(): Boolean {
+        return when(this) {
+            PROFILE -> true
+            else -> false
+        }
+    }
 }
