@@ -36,7 +36,6 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
     private lateinit var loadingMessage: TextView
     private lateinit var connectRescanButton: Button
     private lateinit var sendPairingCodeButton: Button
-    private lateinit var rescanButton: Button
     private lateinit var firstPairingCode : EditText
     private lateinit var secondPairingCode : EditText
     private lateinit var thirdPairingCode : EditText

@@ -30,8 +30,8 @@ class ConnectToMirrorModel @Inject constructor(private val application: Applicat
     private var mirrorSubscription: Disposable? = null
     private val connectingDisposables : CompositeDisposable = CompositeDisposable()
 
-    private val savedMirrors : BehaviorSubject<Set<ResolvedMirrorData>> = BehaviorSubject.create()
-    val onMirrorDiscovered : Observable<Set<ResolvedMirrorData>> = savedMirrors
+    private val savedUnconnectedMirrors : BehaviorSubject<Set<ResolvedMirrorData>> = BehaviorSubject.create()
+    val onMirrorDiscovered : Observable<Set<ResolvedMirrorData>> = savedUnconnectedMirrors
 
     private val pairingNeeded : PublishSubject<Boolean> = PublishSubject.create()
     val onPairingNeeded : Observable<Boolean> = pairingNeeded
@@ -69,11 +69,13 @@ class ConnectToMirrorModel @Inject constructor(private val application: Applicat
     }
 
     private fun saveDiscoveredMirrors(mirrors : Set<ResolvedMirrorData>) {
-        savedMirrors.onNext(mirrors)
+        val connectedMirrors = application.webSocketService?.connectedMirrors?.keys as Set<NsdServiceInfo>? ?: emptySet()
+        val unconnectedMirrors = mirrors.filter { !connectedMirrors.contains(it.serviceInfo) }
+        savedUnconnectedMirrors.onNext(unconnectedMirrors.toSet())
     }
 
     fun connectToClient(info: NsdServiceInfo) {
-        val mirrorToConnect = savedMirrors.value.firstOrNull{ it.serviceInfo == info}
+        val mirrorToConnect = savedUnconnectedMirrors.value.firstOrNull{ it.serviceInfo == info}
         if (mirrorToConnect == null) {
             ERROR("Unable to find saved mirror to connect to")
             return

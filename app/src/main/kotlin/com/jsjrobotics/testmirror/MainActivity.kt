@@ -50,8 +50,10 @@ class MainActivity : FragmentActivity() {
                 .subscribe {
                     showFragment(it)
                 }
-
-        disposables.addAll(navigationDisposable)
+        val showNavBarDisposable = navController.onShowNavBarRequest.subscribe {
+            setNavigationBarVisibility(it)
+        }
+        disposables.addAll(navigationDisposable, showNavBarDisposable)
     }
 
     override fun onStop() {

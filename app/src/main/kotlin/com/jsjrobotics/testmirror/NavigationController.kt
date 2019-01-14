@@ -15,6 +15,9 @@ class NavigationController @Inject constructor() : BottomNavigationView.OnNaviga
     private val showRequest: PublishSubject<FragmentRequest> = PublishSubject.create()
     val onShowRequest: Observable<FragmentRequest> = showRequest
 
+    private val showNavBarRequest: PublishSubject<Boolean> = PublishSubject.create()
+    val onShowNavBarRequest: Observable<Boolean> = showNavBarRequest
+
     fun showLogin() {
         showRequest(FragmentRequest(FragmentId.LOGIN, true))
     }
@@ -36,24 +39,24 @@ class NavigationController @Inject constructor() : BottomNavigationView.OnNaviga
         showRequest(FragmentRequest(FragmentId.HOME, false, clearBackStack = clearBackstack))
     }
 
-    fun showConnectToMirror() {
-        showRequest(FragmentRequest(FragmentId.CONNECT_TO_MIRROR, false, clearBackStack = true))
+    fun showConnectToMirror(addToBackstack: Boolean, clearBackstack: Boolean) {
+        showRequest(FragmentRequest(FragmentId.CONNECT_TO_MIRROR, addToBackstack = addToBackstack, clearBackStack = clearBackstack))
     }
 
     fun showLive() {
-        showRequest(FragmentRequest(FragmentId.LIVE, true))
+        showRequest(FragmentRequest(FragmentId.LIVE, false))
     }
 
     fun showOnDemand() {
-        showRequest(FragmentRequest(FragmentId.ON_DEMAND, true))
+        showRequest(FragmentRequest(FragmentId.ON_DEMAND, false))
     }
 
     fun showProgress() {
-        showRequest(FragmentRequest(FragmentId.PROGRESS, true))
+        showRequest(FragmentRequest(FragmentId.PROGRESS, false))
     }
 
     fun showSettings() {
-        showRequest(FragmentRequest(FragmentId.SETTINGS, true))
+        showRequest(FragmentRequest(FragmentId.SETTINGS, false))
     }
 
     fun selectBottonNavigationItemId(itemId: Int): Boolean {
@@ -80,5 +83,9 @@ class NavigationController @Inject constructor() : BottomNavigationView.OnNaviga
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         selectBottonNavigationItemId(item.itemId)
         return true
+    }
+
+    fun setNavigationBarVisibility(isVisible: Boolean) {
+        showNavBarRequest.onNext(isVisible)
     }
 }

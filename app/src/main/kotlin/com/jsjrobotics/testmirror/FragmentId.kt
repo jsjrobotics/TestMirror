@@ -24,6 +24,12 @@ enum class FragmentId {
     PROGRESS,
     SETTINGS;
 
+    companion object {
+        fun isNavBarVisibleFromTag(tag: String?): Boolean? {
+            return FragmentId.values().firstOrNull{ it.tag() == tag}?.isNavBarVisible()
+        }
+
+    }
     fun instantiate(): Fragment {
         return when(this) {
             LOGIN -> LoginFragment()
