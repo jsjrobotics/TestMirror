@@ -5,15 +5,23 @@ import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.IWebSocket
 import com.jsjrobotics.testmirror.login.LoginModel
 import com.jsjrobotics.testmirror.profile.ProfileModel
+import com.jsjrobotics.testmirror.service.RemoteMirrorState
 import com.jsjrobotics.testmirror.service.websocket.tasks.ScreenRequestTask
 import com.jsjrobotics.testmirror.service.websocket.tasks.SendIdentifyRequestTask
 import java.util.concurrent.Executors
 
-class WebSocketBinder(private val newWebsocketManager: () -> WebSocketManager,
-                      private val clientLookUp: (NsdServiceInfo) -> WebSocketManager?,
-                      private val allConnectedClients : () -> List<WebSocketManager>,
+class WebSocketBinder(private val service: WebSocketService,
                       private val profileModel: ProfileModel,
                       private val loginModel: LoginModel) : IWebSocket.Stub() {
+
+    override fun getConnectedMirrors(): MutableMap<NsdServiceInfo, RemoteMirrorState> {
+        val map: MutableMap<NsdServiceInfo, RemoteMirrorState> = mutableMapOf()
+        service.getConnectedSocketManagers().map { Pair(it.serviceInfo, it.mirrorState.copy()) }
+                .filter { it.first != null }
+                .forEach { map[it.first!!] = it.second }
+        return map
+    }
+
     private val executor =  Executors.newSingleThreadExecutor()
 
     override fun sendIdentifyRequest(nsdServiceInfo: NsdServiceInfo) {
@@ -41,21 +49,22 @@ class WebSocketBinder(private val newWebsocketManager: () -> WebSocketManager,
 
     override fun connectToClient(nsdServiceInfo: NsdServiceInfo) {
         executor.execute {
-                ConnectToClientTask(newWebsocketManager(), nsdServiceInfo)
+                ConnectToClientTask(service.buildWebSocketManager(), nsdServiceInfo)
                         .run()
         }
     }
 
     private fun lookupClientAndRun(nsdServiceInfo: NsdServiceInfo, toRun : (WebSocketManager) -> Unit) {
-        clientLookUp(nsdServiceInfo)?.apply(toRun) ?: reportError(nsdServiceInfo)
+        service.lookupClient(nsdServiceInfo)?.apply(toRun) ?: reportError(nsdServiceInfo)
     }
 
     override fun sendScreenRequest(screenName: String) {
         executor.execute {
-            allConnectedClients.invoke().forEach {
-                ScreenRequestTask(it, screenName)
-                        .run()
-            }
+            service.getConnectedSocketManagers()
+                    .forEach {
+                        ScreenRequestTask(it, screenName)
+                                .run()
+                    }
         }
     }
 }

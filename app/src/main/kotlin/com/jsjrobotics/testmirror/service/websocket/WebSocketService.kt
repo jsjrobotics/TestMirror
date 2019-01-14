@@ -10,9 +10,11 @@ import android.os.IBinder
 import com.jsjrobotics.testmirror.Application
 import com.jsjrobotics.testmirror.BuildConfig
 import com.jsjrobotics.testmirror.login.LoginModel
+import com.jsjrobotics.testmirror.network.ProtoBufMessageDispatcher
 import com.jsjrobotics.testmirror.network.ProtobufEnvelopeHandler
 import com.jsjrobotics.testmirror.profile.ProfileModel
 import com.squareup.wire.Message
+import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 class WebSocketService : Service() {
@@ -26,6 +28,9 @@ class WebSocketService : Service() {
     protected lateinit var application: Application
 
     @Inject
+    protected lateinit var messageDispatcher: ProtoBufMessageDispatcher
+
+    @Inject
     protected lateinit var profileModel: ProfileModel
 
     @Inject
@@ -34,29 +39,41 @@ class WebSocketService : Service() {
     private lateinit var  binder : WebSocketBinder
     private val socketManagers : MutableList<WebSocketManager> = mutableListOf()
 
+    private val disposables = CompositeDisposable()
+
     override fun onCreate() {
         super.onCreate()
         Application.inject(this)
-        binder = WebSocketBinder( ::buildWebSocketManager,
-                ::lookupClient,
-                ::getConnectedSocketManagers,
+        binder = WebSocketBinder( this,
                 profileModel,
                 loginModel)
+        val identifyResponseDisposable = messageDispatcher.onIdentifyResponse.subscribe { identifyResponse ->
+            socketManagers.firstOrNull { it.identityRequestSent }?.let {
+                it.receivedMessage(identifyResponse)
+                it.identityRequestSent = false
+            }
+        }
+        disposables.add(identifyResponseDisposable)
         if (BuildConfig.DEBUG) {
             application.registerReceiver(buildDebugReceiver(), buildDebugIntentFilter())
         }
     }
 
-    private fun getConnectedSocketManagers(): List<WebSocketManager> = socketManagers.filter { it.isConnected() }
+    internal fun getConnectedSocketManagers(): List<WebSocketManager> = socketManagers.filter { it.isConnected() }
 
-    private fun buildWebSocketManager(): WebSocketManager {
+    internal fun buildWebSocketManager(): WebSocketManager {
         val manager = WebSocketManager(protobufEnvelopeHandler, clientStateDispatcher)
         socketManagers.add(manager)
         return manager
     }
 
-    private fun lookupClient(nsdServiceInfo: NsdServiceInfo): WebSocketManager? {
+    internal fun lookupClient(nsdServiceInfo: NsdServiceInfo): WebSocketManager? {
         return socketManagers.firstOrNull { it.serviceInfo == nsdServiceInfo }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposables.dispose()
     }
 
     private fun buildDebugIntentFilter(): IntentFilter {

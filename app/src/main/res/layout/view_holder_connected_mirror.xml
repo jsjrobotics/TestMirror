@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <TextView
+        android:id="@+id/mirror_header_text"
+        android:text="@string/mirror"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/name_label"
+        android:text="@string/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        app:layout_constraintTop_toBottomOf="@id/mirror_header_text"
+        app:layout_constraintBottom_toTopOf="@id/wifi_label"
+        app:layout_constraintStart_toStartOf="@id/mirror_header_text"/>
+
+    <TextView
+        android:id="@+id/wifi_label"
+        android:text="@string/wifi_network"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/name_label"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/mirror_header_text"/>
+
+
+    <TextView
+        android:id="@+id/name_value"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/name_label"
+        app:layout_constraintBottom_toBottomOf="@id/name_label"/>
+
+    <TextView
+        android:id="@+id/wifi_value"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/wifi_label"
+        app:layout_constraintBottom_toBottomOf="@id/wifi_label"/>
+
+</android.support.constraint.ConstraintLayout>

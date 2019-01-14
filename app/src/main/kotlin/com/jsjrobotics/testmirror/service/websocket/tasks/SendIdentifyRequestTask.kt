@@ -25,5 +25,6 @@ class SendIdentifyRequestTask(private val socketManager: WebSocketManager,
                 .id(profileModel.currentAccount?.uuid)
                 .build()
         socketManager.send(request)
+        socketManager.identityRequestSent = true
     }
 }

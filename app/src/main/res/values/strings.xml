@@ -30,4 +30,7 @@
     <string name="live">Live</string>
     <string name="progress">Progress</string>
     <string name="settings">Settings</string>
+    <string name="mirror">Mirror</string>
+    <string name="name">Name</string>
+    <string name="wifi_network">WiFi Network</string>
 </resources>

@@ -17,6 +17,14 @@ class SettingsFragment : DefaultFragment() {
     override fun onStart() {
         super.onStart()
         presenter.init(view)
+        presenter.loadData()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            presenter.loadData()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

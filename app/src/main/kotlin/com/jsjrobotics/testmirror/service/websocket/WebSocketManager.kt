@@ -3,6 +3,7 @@ package com.jsjrobotics.testmirror.service.websocket
 import android.net.nsd.NsdServiceInfo
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.network.ProtobufEnvelopeHandler
+import com.jsjrobotics.testmirror.service.RemoteMirrorState
 import com.jsjrobotics.testmirror.service.http.Paths
 import com.mirror.framework.MessageAdapter
 import com.squareup.wire.Message
@@ -18,8 +19,10 @@ import javax.inject.Inject
 class WebSocketManager @Inject constructor(private val protobufEnvelopeHandler : ProtobufEnvelopeHandler,
                                            private val clientStateDispatcher : ClientStateDispatcher) {
     private var client : WebSocketClient? = null
+    var identityRequestSent: Boolean = false
     private val clientObserverDisposables = CompositeDisposable()
     var serviceInfo: NsdServiceInfo? = null ; private set
+    var mirrorState = RemoteMirrorState() ; private set
 
     fun connectToClient(info: NsdServiceInfo) : Boolean {
         disconnectFromClient()
@@ -78,5 +81,9 @@ class WebSocketManager @Inject constructor(private val protobufEnvelopeHandler :
 
     fun isConnected(): Boolean {
         return client?.isOpen ?: false
+    }
+
+    fun receivedMessage(message: Message<*,*>) {
+        mirrorState = mirrorState.updateState(message)
     }
 }
