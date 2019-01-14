@@ -3,6 +3,7 @@ package com.jsjrobotics.testmirror.service.websocket
 import android.net.nsd.NsdServiceInfo
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.IWebSocket
+import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
 import com.jsjrobotics.testmirror.login.LoginModel
 import com.jsjrobotics.testmirror.profile.ProfileModel
 import com.jsjrobotics.testmirror.service.RemoteMirrorState
@@ -47,9 +48,9 @@ class WebSocketBinder(private val service: WebSocketService,
         }
     }
 
-    override fun connectToClient(nsdServiceInfo: NsdServiceInfo) {
+    override fun connectToClient(resolvedMirrorData: ResolvedMirrorData) {
         executor.execute {
-                ConnectToClientTask(service.buildWebSocketManager(), nsdServiceInfo)
+                ConnectToClientTask(service.buildWebSocketManager(resolvedMirrorData), resolvedMirrorData.serviceInfo)
                         .run()
         }
     }

@@ -19,17 +19,9 @@ class ConnectToMirrorPresenter @Inject constructor(
 
     private fun displayMirrors(mirrors : Set<ResolvedMirrorData>) {
         displayedMirrors = mirrors.toMutableList()
-        val serviceNames = displayedMirrors.map ( this::getMirrorName )
+        val serviceNames = displayedMirrors.map { it.getMirrorName() }
         view.displayMirrorsScreen(serviceNames)
 
-    }
-
-    private fun getMirrorName(resolvedMirror: ResolvedMirrorData) : String {
-        val mirrorName = resolvedMirror.mirrorData?.name ?: ""
-        if (mirrorName.isNotEmpty()) {
-            return mirrorName
-        }
-        return resolvedMirror.serviceInfo.serviceName
     }
 
     fun bind(v: ConnectToMirrorView) {
@@ -43,18 +35,16 @@ class ConnectToMirrorPresenter @Inject constructor(
         val mirrorSelectedDisposable = view.onMirrorSelected.subscribe { selectedMirrorIndex ->
             val chosenMirror = displayedMirrors[selectedMirrorIndex]
             if (chosenMirror == selectedMirror) {
-                view.unselectMirror(selectedMirrorIndex)
                 view.toggleConnectRescanButton(true)
                 selectedMirror = null
             } else {
                 selectedMirror = chosenMirror
-                view.setMirrorSelected(selectedMirrorIndex)
                 view.toggleConnectRescanButton(false)
             }
         }
         val connectDisposable = view.onConnectButtonClicked.subscribe { ignored ->
             selectedMirror?.let {
-                view.showConnecting(getMirrorName(it))
+                view.showConnecting(it.getMirrorName())
                 model.connectToClient(it.serviceInfo)
             }
         }

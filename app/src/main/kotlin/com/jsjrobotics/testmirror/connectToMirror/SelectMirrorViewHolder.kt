@@ -15,19 +15,29 @@ class SelectMirrorViewHolder(view : View) : RecyclerView.ViewHolder(view) {
 
     private val UNKNOWN_INDEX: Int = -1
     private var mirrorIndex: Int = UNKNOWN_INDEX
+    private var selected : Boolean = false
 
     fun setMirrorName(name: String, index: Int) {
         mirrorName.text = name
         mirrorIndex = index
-        mirrorName.setOnClickListener { mirrorSelected.onNext(mirrorIndex) }
+        mirrorName.setOnClickListener {
+            if (selected) {
+                setUnselected()
+            } else {
+                setSelected()
+            }
+            mirrorSelected.onNext(mirrorIndex)
+        }
     }
 
 
-    fun setSelected() {
+    private fun setSelected() {
+        selected = true
         mirrorName.setBackgroundColor(getColor(R.color.selected_background))
     }
 
-    fun setUnselected() {
+    private fun setUnselected() {
+        selected = false
         mirrorName.setBackgroundColor(getColor(R.color.unselected_background))
     }
 

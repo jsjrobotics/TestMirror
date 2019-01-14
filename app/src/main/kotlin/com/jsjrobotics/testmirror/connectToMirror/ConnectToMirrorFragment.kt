@@ -23,6 +23,12 @@ class ConnectToMirrorFragment : DefaultFragment() {
         presenter.bind(view)
     }
 
+    override fun onStop() {
+        super.onStop()
+        view.unsubscribe()
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addLifecycleObserver(presenter)
@@ -38,7 +44,6 @@ class ConnectToMirrorFragment : DefaultFragment() {
 
     override fun onDestroy() {
         removeLifecycleObserver(presenter)
-        view.onDestroy()
         super.onDestroy()
     }
 }

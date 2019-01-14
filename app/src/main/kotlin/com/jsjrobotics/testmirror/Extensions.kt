@@ -1,8 +1,12 @@
 package com.jsjrobotics.testmirror
 
+import android.net.nsd.NsdServiceInfo
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.jsjrobotics.testmirror.service.RemoteMirrorState
+
+typealias ConnectedMirrorMap = Map<NsdServiceInfo, RemoteMirrorState>
 
 fun runOnUiThread(action: () -> Unit) {
     Handler(Looper.getMainLooper())

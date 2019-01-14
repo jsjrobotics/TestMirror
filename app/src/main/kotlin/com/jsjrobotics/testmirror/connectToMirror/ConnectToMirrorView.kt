@@ -167,25 +167,8 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
         }
     }
 
-    fun onDestroy() {
+    fun unsubscribe() {
         mirrorSelectedDisposable?.dispose()
-    }
-
-    fun setMirrorSelected(selectedMirror: Int) {
-        0.until(mirrorList.childCount)
-                .map { index  -> mirrorList.findViewHolderForAdapterPosition(index) as SelectMirrorViewHolder }
-                .forEachIndexed { viewHolderIndex, viewHolder ->
-                    if (viewHolderIndex == selectedMirror) {
-                        viewHolder.setSelected()
-                    } else {
-                        viewHolder.setUnselected()
-                    }
-                }
-
-    }
-
-    fun unselectMirror(index: Int) {
-        (mirrorList.findViewHolderForAdapterPosition(index) as SelectMirrorViewHolder).setUnselected()
     }
 
     fun showConnecting(mirrorName: String) {

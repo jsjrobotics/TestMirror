@@ -73,6 +73,11 @@ class ConnectToMirrorModel @Inject constructor(private val application: Applicat
     }
 
     fun connectToClient(info: NsdServiceInfo) {
+        val mirrorToConnect = savedMirrors.value.firstOrNull{ it.serviceInfo == info}
+        if (mirrorToConnect == null) {
+            ERROR("Unable to find saved mirror to connect to")
+            return
+        }
         connectDisposable = clientStateDispatcher.onOpenEvent
                 .filter{ info == it.socketManager.serviceInfo }
                 .subscribe { state ->
@@ -82,7 +87,7 @@ class ConnectToMirrorModel @Inject constructor(private val application: Applicat
                         handleDisconnected()
                     }
         }
-        application.webSocketService?.connectToClient(info)
+        application.webSocketService?.connectToClient(mirrorToConnect)
     }
 
     private fun handleDisconnected() {

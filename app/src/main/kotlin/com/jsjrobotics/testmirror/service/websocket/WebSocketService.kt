@@ -9,6 +9,7 @@ import android.net.nsd.NsdServiceInfo
 import android.os.IBinder
 import com.jsjrobotics.testmirror.Application
 import com.jsjrobotics.testmirror.BuildConfig
+import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
 import com.jsjrobotics.testmirror.login.LoginModel
 import com.jsjrobotics.testmirror.network.ProtoBufMessageDispatcher
 import com.jsjrobotics.testmirror.network.ProtobufEnvelopeHandler
@@ -61,8 +62,9 @@ class WebSocketService : Service() {
 
     internal fun getConnectedSocketManagers(): List<WebSocketManager> = socketManagers.filter { it.isConnected() }
 
-    internal fun buildWebSocketManager(): WebSocketManager {
+    internal fun buildWebSocketManager(resolvedMirrorData: ResolvedMirrorData): WebSocketManager {
         val manager = WebSocketManager(protobufEnvelopeHandler, clientStateDispatcher)
+        manager.setResolvedData(resolvedMirrorData)
         socketManagers.add(manager)
         return manager
     }
