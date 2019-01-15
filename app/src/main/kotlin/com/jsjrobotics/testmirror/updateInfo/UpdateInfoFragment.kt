@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jsjrobotics.testmirror.DefaultFragment
+import com.jsjrobotics.testmirror.FragmentId
 import javax.inject.Inject
 
 class UpdateInfoFragment : DefaultFragment() {
@@ -18,6 +19,8 @@ class UpdateInfoFragment : DefaultFragment() {
         super.onCreate(savedInstanceState)
         addLifecycleObserver(presenter)
     }
+
+    override fun getFragmentId(): FragmentId = FragmentId.UPDATE_INFO
 
     override fun onStart() {
         super.onStart()

@@ -26,8 +26,4 @@ class SelectMirrorAdapter(private val serviceNames: List<String>) : RecyclerView
     override fun onBindViewHolder(viewHolder: SelectMirrorViewHolder, index: Int) {
         viewHolder.setMirrorName(serviceNames[index], index)
     }
-
-    override fun onViewDetachedFromWindow(viewHolder: SelectMirrorViewHolder) {
-        viewHolder.unbind()
-    }
 }

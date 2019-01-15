@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jsjrobotics.testmirror.DefaultFragment
+import com.jsjrobotics.testmirror.FragmentId
 import javax.inject.Inject
 
 class ProfileFragment : DefaultFragment() {
@@ -13,6 +14,8 @@ class ProfileFragment : DefaultFragment() {
 
     @Inject
     lateinit var presenter: ProfilePresenter
+
+    override fun getFragmentId(): FragmentId = FragmentId.HOME
 
     override fun onStart() {
         super.onStart()

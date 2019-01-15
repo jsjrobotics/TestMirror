@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jsjrobotics.testmirror.DefaultFragment
+import com.jsjrobotics.testmirror.FragmentId
 import javax.inject.Inject
 
 class WelcomeFragment : DefaultFragment() {
@@ -19,6 +20,8 @@ class WelcomeFragment : DefaultFragment() {
         super.onCreate(savedInstanceState)
         addLifecycleObserver(presenter)
     }
+
+    override fun getFragmentId(): FragmentId = FragmentId.WELCOME
 
     override fun onStart() {
         super.onStart()

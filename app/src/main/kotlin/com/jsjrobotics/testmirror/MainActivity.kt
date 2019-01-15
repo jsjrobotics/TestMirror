@@ -50,10 +50,19 @@ class MainActivity : FragmentActivity() {
                 .subscribe {
                     showFragment(it)
                 }
-        val showNavBarDisposable = navController.onShowNavBarRequest.subscribe {
-            setNavigationBarVisibility(it)
+
+        disposables.addAll(navigationDisposable)
+    }
+
+    fun setNavigationBarSelected(fragmentId: FragmentId) {
+        if (fragmentId.isNavBarVisible()) {
+            navigationBar.visibility = View.VISIBLE
+            fragmentId.getNavBarItemId()?.let {
+                navigationBar.selectedItemId = it
+            }
+        } else {
+            navigationBar.visibility = View.GONE
         }
-        disposables.addAll(navigationDisposable, showNavBarDisposable)
     }
 
     override fun onStop() {
@@ -86,16 +95,12 @@ class MainActivity : FragmentActivity() {
                 transaction.addToBackStack(request.backstackTag)
             }
             transaction.commit()
-            setNavigationBarVisibility(request.fragmentId.isNavBarVisible())
+            val navBarVisible = request.fragmentId.isNavBarVisible()
+            navigationBar.visibility = if (navBarVisible) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
         }
-    }
-
-    private fun setNavigationBarVisibility(navBarVisible: Boolean) {
-        val visibility = if (navBarVisible) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
-        navigationBar.visibility = visibility
     }
 }

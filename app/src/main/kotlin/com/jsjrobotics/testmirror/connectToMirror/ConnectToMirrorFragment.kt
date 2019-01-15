@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jsjrobotics.testmirror.DefaultFragment
+import com.jsjrobotics.testmirror.FragmentId
 import javax.inject.Inject
 
 class ConnectToMirrorFragment : DefaultFragment() {
@@ -18,9 +19,18 @@ class ConnectToMirrorFragment : DefaultFragment() {
     @Inject
     lateinit var view : ConnectToMirrorView
 
+    override fun getFragmentId(): FragmentId = FragmentId.CONNECT_TO_MIRROR
+
     override fun onStart() {
         super.onStart()
         presenter.bind(view)
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            presenter.bind(view)
+        }
     }
 
     override fun onStop() {

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jsjrobotics.testmirror.DefaultFragment
+import com.jsjrobotics.testmirror.FragmentId
 import javax.inject.Inject
 
 class BrowseLiveFragment : DefaultFragment() {
@@ -13,6 +14,8 @@ class BrowseLiveFragment : DefaultFragment() {
 
     @Inject
     lateinit var presenter: BrowseLivePresenter
+
+    override fun getFragmentId(): FragmentId = FragmentId.LIVE
 
     override fun onStart() {
         super.onStart()

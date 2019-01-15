@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jsjrobotics.testmirror.DefaultFragment
+import com.jsjrobotics.testmirror.FragmentId
 import javax.inject.Inject
 
 class SignUpFragment : DefaultFragment() {
@@ -14,6 +15,8 @@ class SignUpFragment : DefaultFragment() {
 
     @Inject
     lateinit var presenter: SignUpPresenter
+
+    override fun getFragmentId(): FragmentId = FragmentId.SIGNUP
 
     override fun onStart() {
         super.onStart()

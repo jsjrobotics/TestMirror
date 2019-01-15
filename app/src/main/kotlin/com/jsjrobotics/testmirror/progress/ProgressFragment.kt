@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jsjrobotics.testmirror.DefaultFragment
+import com.jsjrobotics.testmirror.FragmentId
 import javax.inject.Inject
 
 class ProgressFragment : DefaultFragment() {
@@ -13,6 +14,8 @@ class ProgressFragment : DefaultFragment() {
 
     @Inject
     lateinit var presenter: ProgressPresenter
+
+    override fun getFragmentId(): FragmentId = FragmentId.PROGRESS
 
     override fun onStart() {
         super.onStart()

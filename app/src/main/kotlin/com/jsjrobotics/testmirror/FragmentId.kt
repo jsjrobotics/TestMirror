@@ -24,9 +24,24 @@ enum class FragmentId {
     PROGRESS,
     SETTINGS;
 
+    fun getNavBarItemId() : Int? {
+        return when(this) {
+            HOME -> R.id.tab_home
+            LIVE -> R.id.tab_live
+            ON_DEMAND -> R.id.tab_on_demand
+            PROGRESS -> R.id.tab_progress
+            SETTINGS -> R.id.tab_settings
+            else -> null
+        }
+    }
+
     companion object {
         fun isNavBarVisibleFromTag(tag: String?): Boolean? {
-            return FragmentId.values().firstOrNull{ it.tag() == tag}?.isNavBarVisible()
+            return getFragmentIdFromTag(tag)?.isNavBarVisible()
+        }
+
+        fun getFragmentIdFromTag(tag: String?): FragmentId? {
+            return FragmentId.values().firstOrNull{ it.tag() == tag}
         }
 
     }

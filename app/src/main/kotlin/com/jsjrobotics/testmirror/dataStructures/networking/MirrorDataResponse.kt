@@ -13,7 +13,8 @@ data class MirrorDataResponse (@SerializedName("name") val name: String,
                                @SerializedName("ssid") val ssid : String,
                                @SerializedName("band") val band : Float,
                                @SerializedName("proto_version") val protoVersion : String,
-                               @SerializedName("client_id") val clientId : String) : Parcelable {
+                               @SerializedName("client_id") val clientId : String,
+                               @SerializedName("device_id") val deviceId : String?) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readString(),
             parcel.readString(),
@@ -24,8 +25,8 @@ data class MirrorDataResponse (@SerializedName("name") val name: String,
             parcel.readString(),
             parcel.readFloat(),
             parcel.readString(),
-            parcel.readString()) {
-    }
+            parcel.readString(),
+            parcel.readString())
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
@@ -38,6 +39,7 @@ data class MirrorDataResponse (@SerializedName("name") val name: String,
         parcel.writeFloat(band)
         parcel.writeString(protoVersion)
         parcel.writeString(clientId)
+        parcel.writeString(deviceId)
     }
 
     override fun describeContents(): Int {
@@ -53,4 +55,5 @@ data class MirrorDataResponse (@SerializedName("name") val name: String,
             return arrayOfNulls(size)
         }
     }
+
 }

@@ -183,6 +183,8 @@ class ConnectToMirrorView @Inject constructor() : DefaultView(){
     }
 
     fun showPairingError() {
-        Toast.makeText(rootXml.context, R.string.invalid_pairing_code, Toast.LENGTH_SHORT).show()
+        runOnUiThread {
+            Toast.makeText(rootXml.context, R.string.invalid_pairing_code, Toast.LENGTH_SHORT).show()
+        }
     }
 }

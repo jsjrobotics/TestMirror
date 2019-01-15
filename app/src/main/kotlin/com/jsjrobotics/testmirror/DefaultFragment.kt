@@ -3,12 +3,10 @@ package com.jsjrobotics.testmirror
 import android.arch.lifecycle.LifecycleObserver
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import javax.inject.Inject
 
-open class DefaultFragment : Fragment(){
+abstract class DefaultFragment : Fragment(){
 
-    @Inject
-    protected lateinit var navigationController: NavigationController
+    abstract fun getFragmentId() : FragmentId
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,10 +16,7 @@ open class DefaultFragment : Fragment(){
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (!hidden) {
-            val isNavBarVisible = FragmentId.isNavBarVisibleFromTag(tag)
-            isNavBarVisible?.let {
-                navigationController.setNavigationBarVisibility(it)
-            }
+            (activity as MainActivity?)?.setNavigationBarSelected(getFragmentId())
         }
     }
 

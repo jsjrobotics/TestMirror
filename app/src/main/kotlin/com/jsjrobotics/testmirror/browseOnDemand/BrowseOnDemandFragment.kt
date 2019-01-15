@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jsjrobotics.testmirror.DefaultFragment
+import com.jsjrobotics.testmirror.FragmentId
 import javax.inject.Inject
 
 class BrowseOnDemandFragment : DefaultFragment() {
@@ -13,6 +14,8 @@ class BrowseOnDemandFragment : DefaultFragment() {
 
     @Inject
     lateinit var presenter: BrowseOnDemandPresenter
+
+    override fun getFragmentId(): FragmentId = FragmentId.ON_DEMAND
 
     override fun onStart() {
         super.onStart()

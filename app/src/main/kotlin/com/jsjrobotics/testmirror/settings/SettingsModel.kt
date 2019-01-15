@@ -12,6 +12,7 @@ import javax.inject.Singleton
 class SettingsModel @Inject constructor(val application: Application) {
     private val connectedMirrorsReceived : PublishSubject<Map<NsdServiceInfo, RemoteMirrorState>> = PublishSubject.create()
     val onConnectedMirrorsReceived : Observable<Map<NsdServiceInfo, RemoteMirrorState>> = connectedMirrorsReceived
+
     @Suppress("UNCHECKED_CAST")
     fun requestConnectedMirrors() {
         val connectedMirrors : Map<NsdServiceInfo, RemoteMirrorState>? = application.webSocketService?.connectedMirrors as Map<NsdServiceInfo, RemoteMirrorState>?

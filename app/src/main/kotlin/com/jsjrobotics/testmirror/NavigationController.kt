@@ -15,9 +15,6 @@ class NavigationController @Inject constructor() : BottomNavigationView.OnNaviga
     private val showRequest: PublishSubject<FragmentRequest> = PublishSubject.create()
     val onShowRequest: Observable<FragmentRequest> = showRequest
 
-    private val showNavBarRequest: PublishSubject<Boolean> = PublishSubject.create()
-    val onShowNavBarRequest: Observable<Boolean> = showNavBarRequest
-
     fun showLogin() {
         showRequest(FragmentRequest(FragmentId.LOGIN, true))
     }
@@ -83,9 +80,5 @@ class NavigationController @Inject constructor() : BottomNavigationView.OnNaviga
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         selectBottonNavigationItemId(item.itemId)
         return true
-    }
-
-    fun setNavigationBarVisibility(isVisible: Boolean) {
-        showNavBarRequest.onNext(isVisible)
     }
 }
