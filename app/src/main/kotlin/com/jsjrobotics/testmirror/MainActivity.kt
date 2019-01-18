@@ -5,7 +5,8 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentManager
 import android.view.View
-import com.jsjrobotics.testmirror.dataStructures.FragmentRequest
+import com.jsjrobotics.testmirror.dataStructures.AddFragment
+import com.jsjrobotics.testmirror.dataStructures.RemoveFragment
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
@@ -30,7 +31,7 @@ class MainActivity : FragmentActivity() {
         navigationBar = findViewById(R.id.navigation_bar)
         if (savedInstanceState == null) {
             val fragment = navController.currentFragment
-            showFragment(FragmentRequest(fragment, false))
+            showFragment(AddFragment(fragment, false))
         }
     }
 
@@ -48,10 +49,19 @@ class MainActivity : FragmentActivity() {
         super.onStart()
         val navigationDisposable = navController.onShowRequest
                 .subscribe {
-                    showFragment(it)
+                    when (it) {
+                        is AddFragment -> showFragment(it)
+                        is RemoveFragment -> removeFragment(it)
+                    }
                 }
 
         disposables.addAll(navigationDisposable)
+    }
+
+    private fun removeFragment(request: RemoveFragment) {
+        runOnUiThread{
+            supportFragmentManager.popBackStack(request.fragmentId.tag(), FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        }
     }
 
     fun setNavigationBarSelected(fragmentId: FragmentId) {
@@ -70,7 +80,7 @@ class MainActivity : FragmentActivity() {
         disposables.clear()
     }
 
-    private fun showFragment(request: FragmentRequest) {
+    private fun showFragment(request: AddFragment) {
         runOnUiThread{
             if (request.clearBackStack) {
                 val clearTransaction = supportFragmentManager.beginTransaction()

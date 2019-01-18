@@ -8,6 +8,7 @@ import com.jsjrobotics.testmirror.DEBUG
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
 import com.jsjrobotics.testmirror.service.http.MirrorPeerToPeerApi
+import com.jsjrobotics.testmirror.service.http.Paths
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -74,7 +75,7 @@ class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
     }
 
     private fun requestMirrorData(serviceInfo: NsdServiceInfo) {
-        val baseUrl = "http://${serviceInfo.host.hostAddress}:8080/"
+        val baseUrl = Paths.getMirrorStatusAddress(serviceInfo)
         try {
             val result = Retrofit.Builder()
                     .baseUrl(baseUrl)

@@ -1,5 +1,7 @@
 package com.jsjrobotics.testmirror.service.http
 
+import android.net.nsd.NsdServiceInfo
+
 object Paths {
     const val DOMAIN: String = "https://dev.refinemirror.com/api/v1/"
     const val SIGNUP_PATH = "auth/signup"
@@ -12,5 +14,9 @@ object Paths {
 
     fun buildWebSocketAddress(ipAddress: String): String {
         return "ws://$ipAddress:7000/socket"
+    }
+
+    fun getMirrorStatusAddress(serviceInfo: NsdServiceInfo): String {
+        return  "http://${serviceInfo.host.hostAddress}:8080/"
     }
 }

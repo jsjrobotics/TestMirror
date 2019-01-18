@@ -2,7 +2,9 @@ package com.jsjrobotics.testmirror
 
 import android.support.design.widget.BottomNavigationView
 import android.view.MenuItem
+import com.jsjrobotics.testmirror.dataStructures.AddFragment
 import com.jsjrobotics.testmirror.dataStructures.FragmentRequest
+import com.jsjrobotics.testmirror.dataStructures.RemoveFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
@@ -16,44 +18,48 @@ class NavigationController @Inject constructor() : BottomNavigationView.OnNaviga
     val onShowRequest: Observable<FragmentRequest> = showRequest
 
     fun showLogin() {
-        showRequest(FragmentRequest(FragmentId.LOGIN, true))
+        showRequest(AddFragment(FragmentId.LOGIN, true))
     }
 
-    private fun showRequest(fragmentRequest: FragmentRequest) {
+    fun showRequest(fragmentRequest: FragmentRequest) {
         currentFragment = fragmentRequest.fragmentId
         showRequest.onNext(fragmentRequest)
     }
 
+    fun removeRequest(fragmentRequest: FragmentRequest) {
+        showRequest.onNext(fragmentRequest)
+    }
+
     fun showSignUp() {
-        showRequest(FragmentRequest(FragmentId.SIGNUP,true))
+        showRequest(AddFragment(FragmentId.SIGNUP,true))
     }
 
     fun showUpdateInfo() {
-        showRequest(FragmentRequest(FragmentId.UPDATE_INFO, false))
+        showRequest(AddFragment(FragmentId.UPDATE_INFO, false))
     }
 
     fun showProfile(clearBackstack : Boolean) {
-        showRequest(FragmentRequest(FragmentId.HOME, false, clearBackStack = clearBackstack))
+        showRequest(AddFragment(FragmentId.HOME, false, clearBackStack = clearBackstack))
     }
 
-    fun showConnectToMirror(addToBackstack: Boolean, clearBackstack: Boolean) {
-        showRequest(FragmentRequest(FragmentId.CONNECT_TO_MIRROR, addToBackstack = addToBackstack, clearBackStack = clearBackstack))
+    fun showConnectToMirror() {
+        showRequest(AddFragment(FragmentId.CONNECT_TO_MIRROR, true))
     }
 
     fun showLive() {
-        showRequest(FragmentRequest(FragmentId.LIVE, false))
+        showRequest(AddFragment(FragmentId.LIVE, false))
     }
 
     fun showOnDemand() {
-        showRequest(FragmentRequest(FragmentId.ON_DEMAND, false))
+        showRequest(AddFragment(FragmentId.ON_DEMAND, false))
     }
 
     fun showProgress() {
-        showRequest(FragmentRequest(FragmentId.PROGRESS, false))
+        showRequest(AddFragment(FragmentId.PROGRESS, false))
     }
 
     fun showSettings() {
-        showRequest(FragmentRequest(FragmentId.SETTINGS, false))
+        showRequest(AddFragment(FragmentId.SETTINGS, false))
     }
 
     fun selectBottonNavigationItemId(itemId: Int): Boolean {
@@ -80,5 +86,9 @@ class NavigationController @Inject constructor() : BottomNavigationView.OnNaviga
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         selectBottonNavigationItemId(item.itemId)
         return true
+    }
+
+    fun removeConnectToMirrorFragment() {
+        removeRequest(RemoveFragment(FragmentId.CONNECT_TO_MIRROR))
     }
 }

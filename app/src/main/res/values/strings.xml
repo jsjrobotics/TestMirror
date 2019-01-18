@@ -33,5 +33,5 @@
     <string name="mirror">Mirror</string>
     <string name="name">Name</string>
     <string name="wifi_network">WiFi Network</string>
-    <string name="connect_another_mirror">Connect Another Mirror</string>
+    <string name="connect_mirror">Connect Mirror</string>
 </resources>

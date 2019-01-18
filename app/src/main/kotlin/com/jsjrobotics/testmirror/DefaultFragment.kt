@@ -13,6 +13,13 @@ abstract class DefaultFragment : Fragment(){
         Application.inject(this)
     }
 
+    override fun onStart() {
+        super.onStart()
+        if (getFragmentId().isNavBarVisible()) {
+            (activity as MainActivity?)?.setNavigationBarSelected(getFragmentId())
+        }
+    }
+
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (!hidden) {

@@ -14,7 +14,7 @@ class SettingsPresenter @Inject constructor(private val model: SettingsModel,
         view = v
         val connectedDisposable = model.onConnectedMirrorsReceived.subscribe (view::displayConnectedMirrors)
         val connectAnotherDisposable = view.onConnectAnother.subscribe {
-            navigationController.showConnectToMirror(true,false)
+            navigationController.showConnectToMirror()
         }
         disposables.addAll(connectedDisposable, connectAnotherDisposable)
     }
