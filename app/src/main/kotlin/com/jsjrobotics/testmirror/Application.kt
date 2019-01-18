@@ -11,7 +11,7 @@ import android.support.v4.app.Fragment
 import com.jsjrobotics.testmirror.injection.ApplicationComponent
 import com.jsjrobotics.testmirror.injection.ApplicationModule
 import com.jsjrobotics.testmirror.injection.DaggerApplicationComponent
-import com.jsjrobotics.testmirror.service.http.DataPersistenceService
+import com.jsjrobotics.testmirror.service.http.BackendService
 import com.jsjrobotics.testmirror.service.websocket.WebSocketService
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -57,7 +57,7 @@ class Application : android.app.Application(), HasActivityInjector, HasSupportFr
     private val serviceDisconnectedMap : MutableMap <ComponentName, (() -> Unit)> = mutableMapOf()
 
     var injector: ApplicationComponent? = null ; private set
-    var dataPersistenceService: IDataPersistence? = null; private set
+    var backendService: IBackend? = null; private set
     var webSocketService: IWebSocket? = null; private set
 
     private val serviceConnection = object : ServiceConnection {
@@ -69,7 +69,6 @@ class Application : android.app.Application(), HasActivityInjector, HasSupportFr
             serviceDisconnectedMap[componentName]?.invoke()
         }
     }
-
 
     override fun onCreate() {
         super.onCreate()
@@ -88,7 +87,7 @@ class Application : android.app.Application(), HasActivityInjector, HasSupportFr
     override fun supportFragmentInjector(): AndroidInjector<Fragment>  = fragmentInjector
 
     private fun addServiceConnectionListeners() {
-        val dataComponent = ComponentName(this, DataPersistenceService::class.java)
+        val dataComponent = ComponentName(this, BackendService::class.java)
         serviceConnectedMap[dataComponent] = ::onDataServiceConnected
         serviceDisconnectedMap[dataComponent] = ::onDataServiceDisconnected
         val webComponent = ComponentName(this, WebSocketService::class.java)
@@ -97,7 +96,7 @@ class Application : android.app.Application(), HasActivityInjector, HasSupportFr
     }
 
     private fun startDataPersistence() {
-        val intent = Intent(this, DataPersistenceService::class.java)
+        val intent = Intent(this, BackendService::class.java)
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
@@ -111,7 +110,7 @@ class Application : android.app.Application(), HasActivityInjector, HasSupportFr
     }
 
     private fun onDataServiceConnected(service: IBinder) {
-        dataPersistenceService = IDataPersistence.Stub.asInterface(service)
+        backendService = IBackend.Stub.asInterface(service)
     }
 
     private fun onWebSocketServiceDisconnected() {
@@ -119,6 +118,6 @@ class Application : android.app.Application(), HasActivityInjector, HasSupportFr
     }
 
     private fun onDataServiceDisconnected() {
-        dataPersistenceService = null
+        backendService = null
     }
 }

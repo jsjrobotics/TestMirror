@@ -10,11 +10,11 @@ import com.jsjrobotics.testmirror.login.LoginModel
 import com.jsjrobotics.testmirror.service.http.Paths
 import com.jsjrobotics.testmirror.service.http.RefineMirrorApi
 
-class PerformLoginTask(private val getPersistentData: (String) -> CachedProfile?,
-                       private val backend: RefineMirrorApi,
-                       private val callback: IProfileCallback,
-                       private val data: LoginData,
-                       private val loginModel: LoginModel) : Runnable {
+class LoginTask(private val getPersistentData: (String) -> CachedProfile?,
+                private val backend: RefineMirrorApi,
+                private val callback: IProfileCallback,
+                private val data: LoginData,
+                private val loginModel: LoginModel) : Runnable {
     private val offlineLoginEnabled = false
 
     override fun run() {

@@ -10,14 +10,14 @@ import com.jsjrobotics.testmirror.login.LoginModel
 import com.jsjrobotics.testmirror.service.http.RefineMirrorApi
 import java.io.IOException
 
-class PerformUpdateTask(private val getPersistentData: (String) -> CachedProfile?,
-                        private val writePersistentData: (CachedProfile) -> Unit,
-                        private val callback: IProfileCallback,
-                        private val account: Account,
-                        private val updateInfoData: UpdateInfoData,
-                        private val timeSource: () -> Long,
-                        private val backend: RefineMirrorApi,
-                        private val loginModel: LoginModel) : Runnable {
+class UpdateTask(private val getPersistentData: (String) -> CachedProfile?,
+                 private val writePersistentData: (CachedProfile) -> Unit,
+                 private val callback: IProfileCallback,
+                 private val account: Account,
+                 private val updateInfoData: UpdateInfoData,
+                 private val timeSource: () -> Long,
+                 private val backend: RefineMirrorApi,
+                 private val loginModel: LoginModel) : Runnable {
     override fun run() {
 
         if (!updateInfoData.isValid()) {

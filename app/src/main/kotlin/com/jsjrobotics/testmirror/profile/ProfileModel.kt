@@ -16,7 +16,7 @@ class ProfileModel @Inject constructor(val application: Application)  {
     val onProfileUpdated : Observable<Unit> = profileUpdated
 
     init {
-        application.dataPersistenceService?.registerCallback(buildUpdateCallback())
+        application.backendService?.registerCallback(buildUpdateCallback())
     }
 
     private fun buildUpdateCallback(): IProfileCallback {

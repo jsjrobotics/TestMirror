@@ -29,7 +29,7 @@ class LoginPresenter @Inject constructor(val application: Application,
             view.showEnterAllFields()
             return
         }
-        application.dataPersistenceService?.let { service ->
+        application.backendService?.let { service ->
             service.attemptLogin(buildLoginListener(), loginData)
             return
         }

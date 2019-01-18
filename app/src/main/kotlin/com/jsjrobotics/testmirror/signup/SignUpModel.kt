@@ -18,7 +18,7 @@ class SignUpModel @Inject constructor(val application: Application,
     val onSignUpSuccess : Observable<Unit> = signUpSuccess
 
     fun beginSignUp(data: SignUpData): Boolean {
-        application.dataPersistenceService?.let { service ->
+        application.backendService?.let { service ->
             service.attemptSignup(buildSignUpCallback(), data)
             return true
         }

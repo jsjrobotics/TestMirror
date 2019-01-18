@@ -9,13 +9,13 @@ import com.jsjrobotics.testmirror.dataStructures.SignUpData
 import com.jsjrobotics.testmirror.dataStructures.networking.requests.SignUpRequest
 import com.jsjrobotics.testmirror.service.http.RefineMirrorApi
 
-class PerformSignUpTask(private val getPersistentData: (String) -> CachedProfile?,
-                        private val writePersistentData: (SignUpData) -> CachedProfile,
-                        private val updateDataStore: (String, CachedProfile) -> Unit,
-                        private val backend: RefineMirrorApi,
-                        private val resources: Resources,
-                        private val callback: IProfileCallback,
-                        private val data: SignUpData) : Runnable {
+class SignUpTask(private val getPersistentData: (String) -> CachedProfile?,
+                 private val writePersistentData: (SignUpData) -> CachedProfile,
+                 private val updateDataStore: (String, CachedProfile) -> Unit,
+                 private val backend: RefineMirrorApi,
+                 private val resources: Resources,
+                 private val callback: IProfileCallback,
+                 private val data: SignUpData) : Runnable {
     override fun run() {
 
         if (!data.isValid()) {

@@ -2,8 +2,8 @@ import android.content.Intent
 import android.support.test.InstrumentationRegistry
 import android.support.test.rule.ServiceTestRule
 import android.support.test.runner.AndroidJUnit4
-import com.jsjrobotics.testmirror.service.http.DataPersistenceService
-import com.jsjrobotics.testmirror.IDataPersistence
+import com.jsjrobotics.testmirror.service.http.BackendService
+import com.jsjrobotics.testmirror.IBackend
 import org.junit.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
@@ -19,8 +19,8 @@ class DataPersistenceTest {
     @Test
     fun testServiceBinder() {
         val binder = serviceRule.bindService(
-                Intent(InstrumentationRegistry.getTargetContext(), DataPersistenceService::class.java))
-        val service = IDataPersistence.Stub.asInterface(binder)
+                Intent(InstrumentationRegistry.getTargetContext(), BackendService::class.java))
+        val service = IBackend.Stub.asInterface(binder)
         assertNotNull("Returned binder should not be null", service)
     }
 }

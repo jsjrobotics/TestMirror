@@ -20,7 +20,7 @@ class UpdateInfoModel @Inject constructor(val application: Application,
     val onUpdateFailure : Observable<String> = updateFailure
 
     fun saveUpdateInfo(data: UpdateInfoData) {
-        application.dataPersistenceService?.attemptUpdateInfo(buildUpdateReceiver(),
+        application.backendService?.attemptUpdateInfo(buildUpdateReceiver(),
                                                               profileModel.currentAccount,
                                                               data)
     }

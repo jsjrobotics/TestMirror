@@ -1,7 +1,7 @@
 package com.jsjrobotics.testmirror.service.http
 
 object HttpConstants {
-    const val NAME  = "name"
+    const val NAME = "name"
     const val EMAIL = "email"
     const val PASSWORD = "password"
     const val PASSWORD2 = "password2"
@@ -16,4 +16,13 @@ object HttpConstants {
     const val IS_CHILD = "is_child"
     const val IS_PARENT = "is_parent"
     const val IS_PENDING = "is_pending"
+    const val ACCESS_TOKEN = "access_token"
+    const val ACCESS_TOKEN_EXPIRES = "access_token_expires"
+    const val REFRESH_TOKEN = "refresh_token"
+    const val REFRESH_TOKEN_EXPIRES = "refresh_token_expires"
+    const val BROADCAST = "broadcast"
+    const val IS_BOOKMARKED = "is_bookmarked"
+    const val WORKOUT_TYPE_ON_DEMAND = "ondemand"
+    const val SORT_DATE = "sort_date"
+    const val TYPE = "type"
 }

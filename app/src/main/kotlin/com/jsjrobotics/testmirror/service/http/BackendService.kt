@@ -6,32 +6,34 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.IBinder
 import android.os.SystemClock
+import android.support.v4.content.LocalBroadcastManager
 import com.jsjrobotics.testmirror.Application
-import com.jsjrobotics.testmirror.IDataPersistence
+import com.jsjrobotics.testmirror.IBackend
 import com.jsjrobotics.testmirror.IProfileCallback
 import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.dataStructures.*
 import com.jsjrobotics.testmirror.login.LoginModel
 import com.jsjrobotics.testmirror.service.http.Paths.DOMAIN
-import com.jsjrobotics.testmirror.service.http.tasks.PerformLoginTask
-import com.jsjrobotics.testmirror.service.http.tasks.PerformSignUpTask
-import com.jsjrobotics.testmirror.service.http.tasks.PerformUpdateTask
+import com.jsjrobotics.testmirror.service.http.tasks.LoginTask
+import com.jsjrobotics.testmirror.service.http.tasks.OnDemandWorkoutsTask
+import com.jsjrobotics.testmirror.service.http.tasks.SignUpTask
+import com.jsjrobotics.testmirror.service.http.tasks.UpdateTask
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
-class DataPersistenceService : Service() {
+class BackendService : Service() {
 
     companion object {
-        const val SHARED_PREFERENCES_FILE : String = "DataPersistenceService.SharedPreferences"
+        const val SHARED_PREFERENCES_FILE : String = "BackendService.SharedPreferences"
     }
     private val SERVICE_THREAD_COUNT: Int = Runtime.getRuntime().availableProcessors() *2
     private val SOFT_TIME_TO_LIVE: Long = 10 * 1000
     private val HARD_TIME_TO_LIVE: Long = 30 * 1000
     private val cacheSettings = CacheSettings(SOFT_TIME_TO_LIVE, HARD_TIME_TO_LIVE)
-    private val listeners: MutableList<IProfileCallback> = mutableListOf()
+    private val profileCallbackListeners: MutableList<IProfileCallback> = mutableListOf()
     private val dataStore: MutableMap<String, CachedProfile> = hashMapOf()
     private val dataToServe: MutableList<String> = mutableListOf()
     private val timeSource: () -> Long = { SystemClock.uptimeMillis() }
@@ -41,6 +43,8 @@ class DataPersistenceService : Service() {
     @Inject
     protected lateinit var sharedPreferences: SharedPreferences
 
+    @Inject
+    protected lateinit var localBroadcastManager: LocalBroadcastManager
 
     @Inject
     protected lateinit var loginModel: LoginModel
@@ -56,7 +60,7 @@ class DataPersistenceService : Service() {
         backendApi = retrofit.create(RefineMirrorApi::class.java)
     }
 
-    private val binder = object : IDataPersistence.Stub() {
+    private val binder = object : IBackend.Stub() {
         private fun updateDataStore(key: String, value: CachedProfile) {
             dataStore[key] = value
         }
@@ -66,7 +70,7 @@ class DataPersistenceService : Service() {
                 callback?.updateInfoFailure(null)
                 return
             }
-            val task = PerformUpdateTask(::getPersistentData,
+            val task = UpdateTask(::getPersistentData,
                     ::writePersistentData,
                     callback,
                     account,
@@ -82,7 +86,7 @@ class DataPersistenceService : Service() {
                 callback?.signUpFailure(application.getString(R.string.invalid_credentials))
                 return
             }
-            val task = PerformSignUpTask(::getPersistentData,
+            val task = SignUpTask(::getPersistentData,
                     ::writePersistentData,
                     ::updateDataStore,
                     backendApi,
@@ -98,7 +102,7 @@ class DataPersistenceService : Service() {
                 callback?.loginFailure()
                 return
             }
-            val task = PerformLoginTask(::getPersistentData,
+            val task = LoginTask(::getPersistentData,
                     backendApi,
                     callback,
                     data,
@@ -106,6 +110,10 @@ class DataPersistenceService : Service() {
             executor.submit(task)
         }
 
+        override fun getOnDemandWorkout() {
+            val task = OnDemandWorkoutsTask(backendApi, loginModel, localBroadcastManager)
+            executor.submit(task)
+        }
         override fun getProfileData(profile: String?) {
             profile?.let{
                 executor.submit{requestData(it)}
@@ -114,13 +122,13 @@ class DataPersistenceService : Service() {
 
         override fun registerCallback(callback: IProfileCallback?) {
             callback?.let {
-                listeners.add(it)
+                profileCallbackListeners.add(it)
             }
         }
 
         override fun unregisterCallback(callback: IProfileCallback?) {
             callback?.let {
-                listeners.remove(it)
+                profileCallbackListeners.remove(it)
             }
         }
 
@@ -130,7 +138,7 @@ class DataPersistenceService : Service() {
     private fun updateDataStore(email: String, profile: CachedProfile) {
         dataStore[email] = profile
         executor.submit{
-            listeners.forEach {
+            profileCallbackListeners.forEach {
                 it.update(profile.account)
             }
         }
@@ -177,7 +185,7 @@ class DataPersistenceService : Service() {
     }
 
     private fun serveData(cached: CachedProfile) {
-        listeners.forEach {
+        profileCallbackListeners.forEach {
             it.update(cached.account)
         }
     }

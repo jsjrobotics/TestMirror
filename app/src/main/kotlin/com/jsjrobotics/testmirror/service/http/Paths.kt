@@ -8,6 +8,8 @@ object Paths {
     const val LOGIN_PATH = "auth/login"
     const val USER_ME_PATH = "user/me"
     const val AUTHORIZATION_HEADER = "Authorization"
+    const val LISTING_PATH = "listing"
+    const val QUERY_LISTING_TYPE = "types"
     fun buildAuthorizationHeader(apiToken: String) : String {
         return "Bearer $apiToken"
     }
