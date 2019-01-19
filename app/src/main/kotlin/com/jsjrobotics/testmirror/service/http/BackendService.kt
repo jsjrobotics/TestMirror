@@ -17,7 +17,6 @@ import com.jsjrobotics.testmirror.service.http.Paths.DOMAIN
 import com.jsjrobotics.testmirror.service.http.tasks.LoginTask
 import com.jsjrobotics.testmirror.service.http.tasks.OnDemandWorkoutsTask
 import com.jsjrobotics.testmirror.service.http.tasks.SignUpTask
-import com.jsjrobotics.testmirror.service.http.tasks.UpdateTask
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -63,22 +62,6 @@ class BackendService : Service() {
     private val binder = object : IBackend.Stub() {
         private fun updateDataStore(key: String, value: CachedProfile) {
             dataStore[key] = value
-        }
-
-        override fun attemptUpdateInfo(callback: IProfileCallback?, account: Account?, data: UpdateInfoData?) {
-            if (callback == null || data == null || account == null) {
-                callback?.updateInfoFailure(null)
-                return
-            }
-            val task = UpdateTask(::getPersistentData,
-                    ::writePersistentData,
-                    callback,
-                    account,
-                    data,
-                    timeSource,
-                    backendApi,
-                    loginModel)
-            executor.submit(task)
         }
 
         override fun attemptSignup(callback: IProfileCallback?, data: SignUpData?) {

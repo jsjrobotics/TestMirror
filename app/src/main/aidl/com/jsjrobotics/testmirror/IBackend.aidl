@@ -15,6 +15,5 @@ interface IBackend {
     void unregisterCallback(IProfileCallback callback);
     void attemptLogin(IProfileCallback callback, in LoginData data);
     void attemptSignup(IProfileCallback callback, in SignUpData data);
-    void attemptUpdateInfo(IProfileCallback callback, in Account account, in UpdateInfoData data);
     void getOnDemandWorkout();
 }

@@ -13,7 +13,7 @@ abstract class DefaultFragment : Fragment(){
         Application.inject(this)
     }
 
-    override fun onStart() {
+    /*override fun onStart() {
         super.onStart()
         if (getFragmentId().isNavBarVisible()) {
             (activity as MainActivity?)?.setNavigationBarSelected(getFragmentId())
@@ -25,7 +25,7 @@ abstract class DefaultFragment : Fragment(){
         if (!hidden) {
             (activity as MainActivity?)?.setNavigationBarSelected(getFragmentId())
         }
-    }
+    }*/
 
     protected fun addLifecycleObserver(observer: LifecycleObserver) {
         lifecycle.addObserver(observer)

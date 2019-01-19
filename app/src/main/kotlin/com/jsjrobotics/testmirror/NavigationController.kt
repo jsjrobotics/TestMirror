@@ -34,10 +34,6 @@ class NavigationController @Inject constructor() : BottomNavigationView.OnNaviga
         showRequest(AddFragment(FragmentId.SIGNUP,true))
     }
 
-    fun showUpdateInfo() {
-        showRequest(AddFragment(FragmentId.UPDATE_INFO, false))
-    }
-
     fun showProfile(clearBackstack : Boolean) {
         showRequest(AddFragment(FragmentId.HOME, false, clearBackStack = clearBackstack))
     }

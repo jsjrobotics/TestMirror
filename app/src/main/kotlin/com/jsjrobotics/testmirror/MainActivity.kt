@@ -33,6 +33,21 @@ class MainActivity : FragmentActivity() {
             val fragment = navController.currentFragment
             showFragment(AddFragment(fragment, false))
         }
+        supportFragmentManager.addOnBackStackChangedListener {
+            updateNavigationBar()
+        }
+    }
+
+    private fun updateNavigationBar() {
+        val currentFragment = if (supportFragmentManager.backStackEntryCount > 0) {
+            FragmentId.getFragmentIdFromTag(supportFragmentManager.getBackStackEntryAt(0).name)
+        } else {
+            (supportFragmentManager.fragments.lastOrNull() as DefaultFragment?)?.getFragmentId()
+        }
+
+        currentFragment?.let {
+            displayNavigationBar(it.isNavBarVisible())
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -56,6 +71,7 @@ class MainActivity : FragmentActivity() {
                 }
 
         disposables.addAll(navigationDisposable)
+        displayNavigationBar(navController.currentFragment.isNavBarVisible())
     }
 
     private fun removeFragment(request: RemoveFragment) {
@@ -106,11 +122,15 @@ class MainActivity : FragmentActivity() {
             }
             transaction.commit()
             val navBarVisible = request.fragmentId.isNavBarVisible()
-            navigationBar.visibility = if (navBarVisible) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
+            displayNavigationBar(navBarVisible)
+        }
+    }
+
+    private fun displayNavigationBar(navBarVisible: Boolean) {
+        navigationBar.visibility = if (navBarVisible) {
+            View.VISIBLE
+        } else {
+            View.GONE
         }
     }
 }

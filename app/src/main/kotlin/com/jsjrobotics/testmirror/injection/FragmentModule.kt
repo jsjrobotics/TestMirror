@@ -10,7 +10,6 @@ import com.jsjrobotics.testmirror.profile.ProfileFragment
 import com.jsjrobotics.testmirror.progress.ProgressFragment
 import com.jsjrobotics.testmirror.settings.SettingsFragment
 import com.jsjrobotics.testmirror.signup.SignUpFragment
-import com.jsjrobotics.testmirror.updateInfo.UpdateInfoFragment
 import com.jsjrobotics.testmirror.welcome.WelcomeFragment
 import dagger.Binds
 import dagger.Module
@@ -18,19 +17,18 @@ import dagger.android.AndroidInjector
 import dagger.android.support.FragmentKey
 import dagger.multibindings.IntoMap
 
-@Module(subcomponents = arrayOf(
-        LoginFragmentSubcomponent::class,
-        WelcomeFragmentSubcomponent::class,
-        SignUpFragmentSubcomponent::class,
-        ProfileFragmentSubcomponent::class,
-        UpdateInfoFragmentSubcomponent::class,
-        ConnectToMirrorFragmentSubcomponent::class,
-        BrowseLiveFragmentSubcomponent::class,
-        BrowseOnDemandFragmentSubcomponent::class,
-        SettingsFragmentSubcomponent::class,
-        ProgressFragmentSubcomponent::class
+@Module(subcomponents = [
+    LoginFragmentSubcomponent::class,
+    WelcomeFragmentSubcomponent::class,
+    SignUpFragmentSubcomponent::class,
+    ProfileFragmentSubcomponent::class,
+    ConnectToMirrorFragmentSubcomponent::class,
+    BrowseLiveFragmentSubcomponent::class,
+    BrowseOnDemandFragmentSubcomponent::class,
+    SettingsFragmentSubcomponent::class,
+    ProgressFragmentSubcomponent::class
+])
 
-))
 abstract class FragmentModule {
     @Binds
     @IntoMap
@@ -51,11 +49,6 @@ abstract class FragmentModule {
     @IntoMap
     @FragmentKey(ProfileFragment::class)
     internal abstract fun bindProfileFragmentInjectorFactory(builder: ProfileFragmentSubcomponent.Builder): AndroidInjector.Factory<out Fragment>
-
-    @Binds
-    @IntoMap
-    @FragmentKey(UpdateInfoFragment::class)
-    internal abstract fun bindUpdateInfoFragmentInjectorFactory(builder: UpdateInfoFragmentSubcomponent.Builder): AndroidInjector.Factory<out Fragment>
 
     @Binds
     @IntoMap

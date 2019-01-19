@@ -15,7 +15,6 @@ import com.mirror.proto.user.IdentifyResponse
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
@@ -30,8 +29,9 @@ class ConnectToMirrorModel @Inject constructor(private val application: Applicat
     private var mirrorSubscription: Disposable? = null
     private val connectingDisposables : CompositeDisposable = CompositeDisposable()
 
-    private val savedUnconnectedMirrors : BehaviorSubject<Set<ResolvedMirrorData>> = BehaviorSubject.create()
-    val onMirrorDiscovered : Observable<Set<ResolvedMirrorData>> = savedUnconnectedMirrors
+    private val mirrorDiscovered : PublishSubject<Set<ResolvedMirrorData>> = PublishSubject.create()
+    val onMirrorDiscovered : Observable<Set<ResolvedMirrorData>> = mirrorDiscovered
+    private var unconnectedMirrors: Set<ResolvedMirrorData>? = null
 
     private val pairingNeeded : PublishSubject<Boolean> = PublishSubject.create()
     val onPairingNeeded : Observable<Boolean> = pairingNeeded
@@ -70,12 +70,13 @@ class ConnectToMirrorModel @Inject constructor(private val application: Applicat
 
     private fun saveDiscoveredMirrors(mirrors : Set<ResolvedMirrorData>) {
         val connectedMirrors = application.webSocketService?.connectedMirrors?.keys as Set<NsdServiceInfo>? ?: emptySet()
-        val unconnectedMirrors = mirrors.filter { !connectedMirrors.contains(it.serviceInfo) }
-        savedUnconnectedMirrors.onNext(unconnectedMirrors.toSet())
+        val unconnectedMirrors = mirrors.filter { !connectedMirrors.contains(it.serviceInfo) }.toSet()
+        this.unconnectedMirrors = unconnectedMirrors
+        mirrorDiscovered.onNext(unconnectedMirrors)
     }
 
     fun connectToClient(info: NsdServiceInfo) {
-        val mirrorToConnect = savedUnconnectedMirrors.value.firstOrNull{ it.serviceInfo == info}
+        val mirrorToConnect = unconnectedMirrors?.firstOrNull{ it.serviceInfo == info}
         if (mirrorToConnect == null) {
             ERROR("Unable to find saved mirror to connect to")
             return

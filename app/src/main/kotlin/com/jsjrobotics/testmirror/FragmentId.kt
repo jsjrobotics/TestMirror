@@ -9,13 +9,11 @@ import com.jsjrobotics.testmirror.profile.ProfileFragment
 import com.jsjrobotics.testmirror.progress.ProgressFragment
 import com.jsjrobotics.testmirror.settings.SettingsFragment
 import com.jsjrobotics.testmirror.signup.SignUpFragment
-import com.jsjrobotics.testmirror.updateInfo.UpdateInfoFragment
 import com.jsjrobotics.testmirror.welcome.WelcomeFragment
 
 enum class FragmentId {
     LOGIN,
     SIGNUP,
-    UPDATE_INFO,
     WELCOME,
     CONNECT_TO_MIRROR,
     HOME,
@@ -50,7 +48,6 @@ enum class FragmentId {
             LOGIN -> LoginFragment()
             SIGNUP -> SignUpFragment()
             WELCOME -> WelcomeFragment()
-            UPDATE_INFO -> UpdateInfoFragment()
             HOME -> ProfileFragment()
             CONNECT_TO_MIRROR -> ConnectToMirrorFragment()
             LIVE -> BrowseLiveFragment()
@@ -65,7 +62,6 @@ enum class FragmentId {
             LOGIN -> LoginFragment.TAG
             SIGNUP -> SignUpFragment.TAG
             WELCOME -> WelcomeFragment.TAG
-            UPDATE_INFO -> UpdateInfoFragment.TAG
             HOME -> ProfileFragment.TAG
             CONNECT_TO_MIRROR -> ConnectToMirrorFragment.TAG
             LIVE -> BrowseLiveFragment.TAG
