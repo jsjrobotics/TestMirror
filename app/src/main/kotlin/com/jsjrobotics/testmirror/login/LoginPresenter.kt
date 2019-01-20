@@ -13,7 +13,7 @@ class LoginPresenter @Inject constructor(val application: Application,
     private lateinit var view: LoginView
     private val disposables = CompositeDisposable()
 
-    fun init(v: LoginView) {
+    fun init(v: LoginView, onLoginSuccess: () -> Unit) {
         view = v
         val loginDisposable = v.onLoginClick()
                 .subscribe{
@@ -21,7 +21,8 @@ class LoginPresenter @Inject constructor(val application: Application,
                     attemptLogin(it)
                 }
 
-        disposables.add(loginDisposable)
+        val loginSuccessDisposable = model.onLoginSuccess.subscribe{ onLoginSuccess.invoke()}
+        disposables.addAll(loginDisposable, loginSuccessDisposable)
     }
 
     private fun attemptLogin(loginData: LoginData) {

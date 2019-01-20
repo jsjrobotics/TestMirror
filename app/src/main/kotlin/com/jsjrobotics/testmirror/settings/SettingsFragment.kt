@@ -1,11 +1,13 @@
 package com.jsjrobotics.testmirror.settings
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jsjrobotics.testmirror.DefaultFragment
 import com.jsjrobotics.testmirror.FragmentId
+import com.jsjrobotics.testmirror.activities.ConnectMirrorActivity
 import javax.inject.Inject
 
 class SettingsFragment : DefaultFragment() {
@@ -19,7 +21,7 @@ class SettingsFragment : DefaultFragment() {
 
     override fun onStart() {
         super.onStart()
-        presenter.init(view)
+        presenter.init(view, this::showConnectMirrorActivity)
         presenter.loadData()
     }
 
@@ -30,6 +32,10 @@ class SettingsFragment : DefaultFragment() {
         }
     }
 
+    private fun showConnectMirrorActivity() {
+        val intent = Intent(context, ConnectMirrorActivity::class.java)
+        startActivity(intent)
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         container?.let {parent ->
             view.init(inflater, parent)

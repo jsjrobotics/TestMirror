@@ -127,7 +127,6 @@ class ConnectToMirrorModel @Inject constructor(private val application: Applicat
     private fun notifyConnected() {
         connectionSuccess.onNext(true)
         mirrorStateDispatcher.onConnectedToMirror()
-        navigationController.removeConnectToMirrorFragment()
     }
 
 

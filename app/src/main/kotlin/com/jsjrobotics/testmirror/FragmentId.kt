@@ -34,10 +34,6 @@ enum class FragmentId {
     }
 
     companion object {
-        fun isNavBarVisibleFromTag(tag: String?): Boolean? {
-            return getFragmentIdFromTag(tag)?.isNavBarVisible()
-        }
-
         fun getFragmentIdFromTag(tag: String?): FragmentId? {
             return FragmentId.values().firstOrNull{ it.tag() == tag}
         }
@@ -69,16 +65,5 @@ enum class FragmentId {
             PROGRESS -> ProgressFragment.TAG
             SETTINGS -> SettingsFragment.TAG
         }
-    }
-
-    fun isNavBarVisible(): Boolean {
-        val fragmentsWithNavBar = listOf(
-                HOME,
-                LIVE,
-                ON_DEMAND,
-                PROGRESS,
-                SETTINGS
-        )
-        return fragmentsWithNavBar.contains(this)
     }
 }

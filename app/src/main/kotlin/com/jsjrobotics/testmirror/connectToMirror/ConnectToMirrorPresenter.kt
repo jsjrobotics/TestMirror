@@ -24,7 +24,7 @@ class ConnectToMirrorPresenter @Inject constructor(
 
     }
 
-    fun bind(v: ConnectToMirrorView) {
+    fun bind(v: ConnectToMirrorView, onConnectionSuccess: () -> Unit) {
         view = v
         val displayPairingDisposable = model.onPairingNeeded.subscribe { view.showPairingInput() }
         val pairingErrorDisposable = model.onPairingError.subscribe { view.showPairingError()}
@@ -32,6 +32,7 @@ class ConnectToMirrorPresenter @Inject constructor(
         val rescanDisposable = view.onRescanButtonClicked.subscribe {
             startMirrorSearch()
         }
+        val onConnectDisposable = model.onConnectionSuccess.subscribe { onConnectionSuccess.invoke() }
         val mirrorSelectedDisposable = view.onMirrorSelected.subscribe { selectedMirrorIndex ->
             val chosenMirror = displayedMirrors[selectedMirrorIndex]
             if (chosenMirror == selectedMirror) {
@@ -59,7 +60,8 @@ class ConnectToMirrorPresenter @Inject constructor(
                 displayPairingDisposable,
                 pariingCodeDisposable,
                 pairingErrorDisposable,
-                rescanDisposable)
+                rescanDisposable,
+                onConnectDisposable)
         startMirrorSearch()
     }
 

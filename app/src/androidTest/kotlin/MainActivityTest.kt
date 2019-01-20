@@ -8,7 +8,7 @@ import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import android.support.v4.app.Fragment
-import com.jsjrobotics.testmirror.MainActivity
+import com.jsjrobotics.testmirror.activities.MainActivity
 import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.signup.SignUpFragment
 import com.jsjrobotics.testmirror.welcome.WelcomeFragment

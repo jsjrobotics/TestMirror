@@ -27,14 +27,11 @@ class ConnectToMirrorFragment : DefaultFragment() {
 
     override fun onStart() {
         super.onStart()
-        presenter.bind(view)
+        presenter.bind(view, this::onConnectSuccess)
     }
 
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        if (hidden) {
-            navigationController.removeConnectToMirrorFragment()
-        }
+    private fun onConnectSuccess() {
+        activity?.finish()
     }
 
     override fun onStop() {
