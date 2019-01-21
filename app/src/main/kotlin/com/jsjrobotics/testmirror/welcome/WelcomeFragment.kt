@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.jsjrobotics.testmirror.DefaultFragment
 import com.jsjrobotics.testmirror.FragmentId
+import com.jsjrobotics.testmirror.activities.DefaultActivity
+import com.jsjrobotics.testmirror.dataStructures.AddFragment
 import javax.inject.Inject
 
 class WelcomeFragment : DefaultFragment() {
@@ -25,7 +27,8 @@ class WelcomeFragment : DefaultFragment() {
 
     override fun onStart() {
         super.onStart()
-        presenter.init(view)
+        val requestShowFragment : (AddFragment) -> Unit = {(activity as DefaultActivity?)?.showFragment(it)}
+        presenter.init(view, requestShowFragment)
     }
 
     override fun onDestroy() {

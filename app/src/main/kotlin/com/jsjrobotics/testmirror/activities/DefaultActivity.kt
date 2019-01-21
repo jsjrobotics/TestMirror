@@ -4,33 +4,16 @@ import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentManager
 import com.jsjrobotics.testmirror.Application
-import com.jsjrobotics.testmirror.NavigationController
 import com.jsjrobotics.testmirror.dataStructures.AddFragment
 import com.jsjrobotics.testmirror.dataStructures.RemoveFragment
 import io.reactivex.disposables.CompositeDisposable
-import javax.inject.Inject
 
 abstract class DefaultActivity : FragmentActivity() {
     private val disposables: CompositeDisposable = CompositeDisposable()
-    @Inject
-    protected lateinit var navController: NavigationController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Application.inject(this)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        val navigationDisposable = navController.onShowRequest
-                .subscribe {
-                    when (it) {
-                        is AddFragment -> showFragment(it)
-                        is RemoveFragment -> removeFragment(it)
-                    }
-                }
-
-        disposables.addAll(navigationDisposable)
     }
 
     override fun onStop() {
@@ -38,7 +21,7 @@ abstract class DefaultActivity : FragmentActivity() {
         disposables.clear()
     }
 
-    protected fun showFragment(request: AddFragment) {
+    fun showFragment(request: AddFragment) {
         runOnUiThread{
             if (request.clearBackStack) {
                 val clearTransaction = supportFragmentManager.beginTransaction()

@@ -1,14 +1,15 @@
 package com.jsjrobotics.testmirror.signup
 
-import com.jsjrobotics.testmirror.*
+import com.jsjrobotics.testmirror.Application
+import com.jsjrobotics.testmirror.DefaultProfileCallback
+import com.jsjrobotics.testmirror.IProfileCallback
+import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.dataStructures.SignUpData
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
-import javax.inject.Singleton
 
-class SignUpModel @Inject constructor(val application: Application,
-                                      val navigationController: NavigationController ) {
+class SignUpModel @Inject constructor(val application: Application) {
 
     private val signUpFailure : PublishSubject<String> = PublishSubject.create()
     val onSignUpFailure : Observable<String> = signUpFailure
@@ -33,7 +34,6 @@ class SignUpModel @Inject constructor(val application: Application,
 
             override fun signUpSuccess() {
                 signUpSuccess.onNext(Unit)
-                navigationController.showLogin()
             }
         }
     }

@@ -11,7 +11,7 @@ class WorkoutListingViewHolder(view: View) : RecyclerView.ViewHolder(view){
     private var trainerName: TextView = itemView.findViewById(R.id.trainer_name)
 
     fun bind(listingResponseData: ListingResponseData) {
-        type.text = listingResponseData.template.name
+        type.text = listingResponseData.template.channel.name
         trainerName.text = listingResponseData.template.trainer.displayName
 
     }

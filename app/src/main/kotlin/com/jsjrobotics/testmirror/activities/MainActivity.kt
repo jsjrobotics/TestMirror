@@ -8,8 +8,6 @@ import com.jsjrobotics.testmirror.R
 import com.jsjrobotics.testmirror.dataStructures.AddFragment
 
 class MainActivity : DefaultActivity(), BottomNavigationView.OnNavigationItemSelectedListener{
-    private lateinit var navigationBar: BottomNavigationView
-
     private lateinit var bottomNavigation: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,30 +15,30 @@ class MainActivity : DefaultActivity(), BottomNavigationView.OnNavigationItemSel
         setContentView(R.layout.activity_main)
         bottomNavigation = findViewById(R.id.navigation_bar)
         bottomNavigation.setOnNavigationItemSelectedListener(this)
-        navigationBar = findViewById(R.id.navigation_bar)
         if (savedInstanceState == null) {
-            showFragment(AddFragment(FragmentId.HOME, false, containerId = R.id.current_fragment))
+            bottomNavigation.selectedItemId = FragmentId.HOME.getNavBarItemId()!!
         }
+
     }
 
-    fun showProfile(clearBackstack : Boolean) {
-        navController.showRequest(AddFragment(FragmentId.HOME, false, clearBackStack = clearBackstack, containerId = R.id.current_fragment))
+    private fun showProfile(clearBackstack : Boolean) {
+        showFragment(AddFragment(FragmentId.HOME, false, clearBackStack = clearBackstack, containerId = R.id.current_fragment))
     }
 
-    fun showLive() {
-        navController.showRequest(AddFragment(FragmentId.LIVE, false, containerId = R.id.current_fragment))
+    private fun showLive() {
+        showFragment(AddFragment(FragmentId.LIVE, false, containerId = R.id.current_fragment))
     }
 
-    fun showOnDemand() {
-        navController.showRequest(AddFragment(FragmentId.ON_DEMAND, false, containerId = R.id.current_fragment))
+    private fun showOnDemand() {
+        showFragment(AddFragment(FragmentId.ON_DEMAND, false, containerId = R.id.current_fragment))
     }
 
-    fun showProgress() {
-        navController.showRequest(AddFragment(FragmentId.PROGRESS, false, containerId = R.id.current_fragment))
+    private fun showProgress() {
+        showFragment(AddFragment(FragmentId.PROGRESS, false, containerId = R.id.current_fragment))
     }
 
-    fun showSettings() {
-        navController.showRequest(AddFragment(FragmentId.SETTINGS, false, containerId = R.id.current_fragment))
+    private fun showSettings() {
+        showFragment(AddFragment(FragmentId.SETTINGS, false, containerId = R.id.current_fragment))
     }
 
 
