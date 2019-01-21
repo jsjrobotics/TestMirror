@@ -8,7 +8,7 @@ import com.jsjrobotics.testmirror.dataStructures.SignUpData
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
-class SignUpPresenter @Inject constructor(val model: SignUpModel) : DefaultPresenter(){
+class SignUpPresenter @Inject constructor(private val model: SignUpModel) : DefaultPresenter(){
     private lateinit var view: SignUpView
     private val disposables = CompositeDisposable()
 

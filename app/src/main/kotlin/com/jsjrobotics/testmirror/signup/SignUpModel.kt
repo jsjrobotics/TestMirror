@@ -7,7 +7,6 @@ import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
 class SignUpModel @Inject constructor(val application: Application,
                                       val navigationController: NavigationController ) {
 

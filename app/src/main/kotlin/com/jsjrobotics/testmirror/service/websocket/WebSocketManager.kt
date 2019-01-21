@@ -2,6 +2,7 @@ package com.jsjrobotics.testmirror.service.websocket
 
 import android.net.nsd.NsdServiceInfo
 import com.jsjrobotics.testmirror.ERROR
+import com.jsjrobotics.testmirror.MirrorStateDispatcher
 import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
 import com.jsjrobotics.testmirror.network.ProtobufEnvelopeHandler
 import com.jsjrobotics.testmirror.service.RemoteMirrorState
@@ -18,7 +19,7 @@ import javax.inject.Inject
  * to Singleton dispatchers
  */
 class WebSocketManager @Inject constructor(private val protobufEnvelopeHandler : ProtobufEnvelopeHandler,
-                                           private val clientStateDispatcher : ClientStateDispatcher) {
+                                           private val mirrorStateDispatcher : MirrorStateDispatcher) {
     private var client : WebSocketClient? = null
     var identityRequestSent: Boolean = false
     private val clientObserverDisposables = CompositeDisposable()
@@ -29,11 +30,11 @@ class WebSocketManager @Inject constructor(private val protobufEnvelopeHandler :
         disconnectFromClient()
         serviceInfo = info
         val uri = URI(Paths.buildWebSocketAddress(info.host.hostAddress))
-        val handleOpen : (Boolean) -> Unit = { clientStateDispatcher.handleOpenEvent(this) }
+        val handleOpen : (Boolean) -> Unit = { mirrorStateDispatcher.handleOpenEvent(this) }
         val openError : (Throwable) -> Unit = { reportClientError("OnOpenEvent", it)}
         val handleClose : (Boolean) -> Unit = {
             handleCloseEvent()
-            clientStateDispatcher.handleCloseEvent(this)
+            mirrorStateDispatcher.handleCloseEvent(this)
         }
         val closeError : (Throwable) -> Unit = { reportClientError("OnCloseEvent", it)}
         val messageError : (Throwable) -> Unit = { reportClientError("OnMessageEvent", it)}

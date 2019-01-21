@@ -14,7 +14,7 @@ class OnDemandWorkoutsTask (private val backend: RefineMirrorApi,
                             private val loginModel: LoginModel,
                             private val localBroadcastManager: LocalBroadcastManager) : Runnable {
     override fun run() {
-        val token = loginModel.loggedInToken ?: ""
+        val token = loginModel.requestToken
         if (token.isEmpty()) {
             ERROR("NO login token")
             return

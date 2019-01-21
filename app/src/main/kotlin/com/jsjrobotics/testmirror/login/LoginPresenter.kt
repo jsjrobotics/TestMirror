@@ -12,7 +12,7 @@ class LoginPresenter @Inject constructor(val application: Application,
                                          val model: LoginModel) : DefaultPresenter(){
     private lateinit var view: LoginView
     private val disposables = CompositeDisposable()
-
+    private lateinit var onLoginSuccess : () -> Unit
     fun init(v: LoginView, onLoginSuccess: () -> Unit) {
         view = v
         val loginDisposable = v.onLoginClick()
@@ -20,9 +20,9 @@ class LoginPresenter @Inject constructor(val application: Application,
                     view.disableLogin()
                     attemptLogin(it)
                 }
-
-        val loginSuccessDisposable = model.onLoginSuccess.subscribe{ onLoginSuccess.invoke()}
-        disposables.addAll(loginDisposable, loginSuccessDisposable)
+        this.onLoginSuccess = onLoginSuccess
+        disposables.addAll(loginDisposable)
+        model.registerUpdateCallback()
     }
 
     private fun attemptLogin(loginData: LoginData) {
@@ -47,6 +47,7 @@ class LoginPresenter @Inject constructor(val application: Application,
                 view.showToast(R.string.login_successful)
                 account?.let {
                     model.successfulLogin(it)
+                    onLoginSuccess.invoke()
                 }
             }
         }
@@ -55,5 +56,7 @@ class LoginPresenter @Inject constructor(val application: Application,
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     protected fun clearDisposables() {
         disposables.clear()
+        onLoginSuccess = {}
+        model.unregister()
     }
 }

@@ -4,11 +4,9 @@ import android.net.nsd.NsdServiceInfo
 import com.jsjrobotics.testmirror.Application
 import com.jsjrobotics.testmirror.ERROR
 import com.jsjrobotics.testmirror.MirrorStateDispatcher
-import com.jsjrobotics.testmirror.NavigationController
 import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
 import com.jsjrobotics.testmirror.network.DnsServiceListener
 import com.jsjrobotics.testmirror.network.ProtoBufMessageDispatcher
-import com.jsjrobotics.testmirror.service.websocket.ClientStateDispatcher
 import com.jsjrobotics.testmirror.service.websocket.tasks.ClientState
 import com.mirror.proto.oobe.PairResponse
 import com.mirror.proto.user.IdentifyResponse
@@ -20,8 +18,6 @@ import javax.inject.Inject
 
 class ConnectToMirrorModel @Inject constructor(private val application: Application,
                                                private val dnsServiceListener: DnsServiceListener,
-                                               private val clientStateDispatcher: ClientStateDispatcher,
-                                               private val navigationController: NavigationController,
                                                private val mirrorStateDispatcher: MirrorStateDispatcher,
                                                private val protoBufMessageDispatcher: ProtoBufMessageDispatcher) {
 
@@ -81,7 +77,7 @@ class ConnectToMirrorModel @Inject constructor(private val application: Applicat
             ERROR("Unable to find saved mirror to connect to")
             return
         }
-        connectDisposable = clientStateDispatcher.onOpenEvent
+        connectDisposable = mirrorStateDispatcher.onOpenEvent
                 .filter{ info == it.socketManager.serviceInfo }
                 .subscribe { state ->
                     if (state.isConnected) {

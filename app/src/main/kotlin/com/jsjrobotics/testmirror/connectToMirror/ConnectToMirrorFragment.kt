@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.jsjrobotics.testmirror.DefaultFragment
 import com.jsjrobotics.testmirror.FragmentId
-import com.jsjrobotics.testmirror.NavigationController
 import javax.inject.Inject
 
 class ConnectToMirrorFragment : DefaultFragment() {
@@ -16,9 +15,6 @@ class ConnectToMirrorFragment : DefaultFragment() {
     }
     @Inject
     lateinit var presenter : ConnectToMirrorPresenter
-
-    @Inject
-    lateinit var navigationController: NavigationController
 
     @Inject
     lateinit var view : ConnectToMirrorView

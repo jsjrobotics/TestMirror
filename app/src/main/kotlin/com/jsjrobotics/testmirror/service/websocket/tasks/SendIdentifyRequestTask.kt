@@ -12,7 +12,7 @@ class SendIdentifyRequestTask(private val socketManager: WebSocketManager,
                               private val loginModel: LoginModel) : MirrorWebSocketTask() {
     override fun run() {
         val invalidAccount = profileModel.currentAccount == null
-        val invalidToken = loginModel.loggedInToken == null
+        val invalidToken = loginModel.requestToken == null
         if (invalidAccount || invalidToken) {
             ERROR("Not sending IdentifyRequest due to invalid state")
             return
@@ -20,7 +20,7 @@ class SendIdentifyRequestTask(private val socketManager: WebSocketManager,
         val request = IdentifyRequest.Builder()
                 .name(profileModel.currentAccount?.fullName)
                 .email(profileModel.currentAccount?.userEmail)
-                .token(loginModel.loggedInToken)
+                .token(loginModel.requestToken)
                 .environment(Environment.STAGING)
                 .id(profileModel.currentAccount?.uuid)
                 .build()

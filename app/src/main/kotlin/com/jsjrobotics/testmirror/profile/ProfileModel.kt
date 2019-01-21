@@ -3,20 +3,25 @@ package com.jsjrobotics.testmirror.profile
 import com.jsjrobotics.testmirror.Application
 import com.jsjrobotics.testmirror.DefaultProfileCallback
 import com.jsjrobotics.testmirror.IProfileCallback
+import com.jsjrobotics.testmirror.SharedPreferencesManager
 import com.jsjrobotics.testmirror.dataStructures.Account
-import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ProfileModel @Inject constructor(val application: Application)  {
-    var currentAccount: Account? = null ; private set
-    private val profileUpdated : PublishSubject<Unit> = PublishSubject.create()
-    val onProfileUpdated : Observable<Unit> = profileUpdated
+class ProfileModel @Inject constructor(private val application: Application,
+                                       private val preferencesManager: SharedPreferencesManager)  {
+    val updateCallback = buildUpdateCallback()
 
-    init {
-        application.backendService?.registerCallback(buildUpdateCallback())
+    var currentAccount: Account? = preferencesManager.getAccount() ; set (value) {
+        field = value
+        preferencesManager.setAccount(value)
+    }
+
+    fun registerCallback() {
+        application.backendService?.registerCallback(updateCallback)
+    }
+
+    fun unregister() {
+        application.backendService?.unregisterCallback(updateCallback)
     }
 
     private fun buildUpdateCallback(): IProfileCallback {
@@ -26,7 +31,6 @@ class ProfileModel @Inject constructor(val application: Application)  {
                     currentAccount?.let { current ->
                         if (current.userEmail == accountUpdate.userEmail) {
                             currentAccount = accountUpdate
-                            profileUpdated.onNext(Unit)
                         }
                     }
                 }
@@ -36,5 +40,6 @@ class ProfileModel @Inject constructor(val application: Application)  {
 
     fun setAccount(account: Account) {
         currentAccount = account
+        preferencesManager.setAccount(account)
     }
 }

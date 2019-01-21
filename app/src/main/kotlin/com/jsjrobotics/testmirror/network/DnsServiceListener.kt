@@ -17,7 +17,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Singleton
 
 
 
@@ -26,7 +25,6 @@ import javax.inject.Singleton
  * Subscribing to onServiceInfoDiscovered gives all resolved Mirror services at burst intervals.
  * The set of resolved services is broadcast each time one is added or removed.
  */
-@Singleton
 class DnsServiceListener @Inject constructor(val nsdManager: NsdManager) {
 
     private var discoveryListener: NsdManager.DiscoveryListener? = null

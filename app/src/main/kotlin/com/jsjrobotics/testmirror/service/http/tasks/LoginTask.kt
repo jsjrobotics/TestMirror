@@ -45,7 +45,7 @@ class LoginTask(private val getPersistentData: (String) -> CachedProfile?,
             val bodyResponse = result.body()
             if (result.isSuccessful && bodyResponse != null) {
                 val requestToken = Paths.buildAuthorizationHeader(bodyResponse.data.apiToken)
-                loginModel.loggedInToken = requestToken
+                loginModel.requestToken = requestToken
                 val account = getUserData(requestToken)
                 account?.let {
                     callback.loginSuccess(it)

@@ -1,26 +1,28 @@
 package com.jsjrobotics.testmirror.settings
 
-import com.jsjrobotics.testmirror.NavigationController
+import android.net.nsd.NsdServiceInfo
+import com.jsjrobotics.testmirror.Application
+import com.jsjrobotics.testmirror.service.RemoteMirrorState
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
-class SettingsPresenter @Inject constructor(private val model: SettingsModel,
-                                            private val navigationController: NavigationController){
+class SettingsPresenter @Inject constructor(private val application: Application){
     private lateinit var view: SettingsView
 
     private val disposables = CompositeDisposable()
 
     fun init(v: SettingsView, launchConnectMirror : () -> Unit) {
         view = v
-        val connectedDisposable = model.onConnectedMirrorsReceived.subscribe (view::displayConnectedMirrors)
         val connectAnotherDisposable = view.onConnectAnother.subscribe {
             launchConnectMirror.invoke()
         }
-        disposables.addAll(connectedDisposable, connectAnotherDisposable)
+        disposables.addAll(connectAnotherDisposable)
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun loadData() {
-        model.requestConnectedMirrors()
+        val connectedMirrors = application.webSocketService?.connectedMirrors as Map<NsdServiceInfo, RemoteMirrorState>?
+        view.displayConnectedMirrors(connectedMirrors ?: emptyMap())
     }
 
 }
