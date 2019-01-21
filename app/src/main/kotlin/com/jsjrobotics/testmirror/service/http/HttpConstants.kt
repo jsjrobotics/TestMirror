@@ -25,4 +25,5 @@ object HttpConstants {
     const val WORKOUT_TYPE_ON_DEMAND = "ondemand"
     const val SORT_DATE = "sort_date"
     const val TYPE = "type"
+    const val TEMPLATE = "template"
 }

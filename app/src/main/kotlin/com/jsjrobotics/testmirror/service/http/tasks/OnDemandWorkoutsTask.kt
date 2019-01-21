@@ -19,7 +19,7 @@ class OnDemandWorkoutsTask (private val backend: RefineMirrorApi,
             ERROR("NO login token")
             return
         }
-        val request = backend.getListing(token, HttpConstants.WORKOUT_TYPE_ON_DEMAND)
+        val request = backend.getListing(token, HttpConstants.WORKOUT_TYPE_ON_DEMAND, order = "desc", limit = 25, offset = 0)
         try {
             val result = request.execute()
             val intent = Intent(IntentConstants.ON_DEMAND_WORKOUTS_ACTION)

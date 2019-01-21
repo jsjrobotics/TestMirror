@@ -10,6 +10,9 @@ object Paths {
     const val AUTHORIZATION_HEADER = "Authorization"
     const val LISTING_PATH = "listing"
     const val QUERY_LISTING_TYPE = "types"
+    const val QUERY_ORDER = "order"
+    const val LIMIT = "limit"
+    const val OFFSET = "offset"
     fun buildAuthorizationHeader(apiToken: String) : String {
         return "Bearer $apiToken"
     }

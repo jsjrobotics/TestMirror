@@ -23,6 +23,9 @@ interface RefineMirrorApi {
 
     @GET(Paths.LISTING_PATH)
     fun getListing(@Header(Paths.AUTHORIZATION_HEADER) userkey : String,
-                   @Query(Paths.QUERY_LISTING_TYPE) vararg types: String) : Call<ListingResponse>
+                   @Query(Paths.QUERY_LISTING_TYPE) vararg types: String,
+                   @Query(Paths.QUERY_ORDER) order: String? = null,
+                   @Query(Paths.LIMIT) limit : Int? = null,
+                   @Query(Paths.OFFSET) offset: Int? = null) : Call<ListingResponse>
 
 }

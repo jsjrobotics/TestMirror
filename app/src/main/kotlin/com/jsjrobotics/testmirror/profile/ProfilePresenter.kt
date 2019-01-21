@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.support.v4.content.LocalBroadcastManager
 import com.jsjrobotics.testmirror.Application
-import com.jsjrobotics.testmirror.DEBUG
 import com.jsjrobotics.testmirror.DefaultPresenter
 import com.jsjrobotics.testmirror.IntentConstants
 import com.jsjrobotics.testmirror.dataStructures.networking.responses.ListingResponseData
@@ -28,9 +27,14 @@ class ProfilePresenter @Inject constructor(val application: Application,
         disposables.add(view.onRefreshClick
                 .observeOn(Schedulers.io())
                 .subscribe{
-                    sendScreenRequest()
-                    application.backendService?.getOnDemandWorkout()
+                    loadWorkouts()
                 })
+        loadWorkouts()
+    }
+
+    private fun loadWorkouts() {
+        application.backendService?.getOnDemandWorkout()
+        view.disableRefresh()
     }
 
     fun sendScreenRequest() {
@@ -60,8 +64,9 @@ class ProfilePresenter @Inject constructor(val application: Application,
                 val workoutData = intent?.getBundleExtra(IntentConstants.BUNDLE_EXTRA)
                         ?.getSerializable(IntentConstants.EXTRA_WORKOUTS) as List<ListingResponseData>?
                 workoutData?.let {
-                    DEBUG("Received data")
+                    view.showListings(it)
                 }
+                view.enableRefresh()
             }
 
         }
