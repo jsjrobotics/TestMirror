@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import com.jsjrobotics.testmirror.ConnectedMirrorMap
 import com.jsjrobotics.testmirror.R
+import com.jsjrobotics.testmirror.runOnUiThread
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
@@ -32,6 +33,8 @@ class SettingsView @Inject constructor(){
 
 
     fun displayConnectedMirrors(mirrorMap : ConnectedMirrorMap ) {
-        connectedMirrors.adapter = ConnectedMirrorAdapter(mirrorMap)
+        runOnUiThread {
+            connectedMirrors.adapter = ConnectedMirrorAdapter(mirrorMap)
+        }
     }
 }

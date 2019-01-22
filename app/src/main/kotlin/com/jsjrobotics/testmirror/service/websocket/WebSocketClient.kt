@@ -22,10 +22,12 @@ class WebSocketClient(uri: URI) : WebSocketClient(uri) {
     val onErrorEvent : Observable<Exception> = errorEvent
 
     override fun onOpen(handshakedata: ServerHandshake?) {
+        DEBUG("onOpenCloseEvent: $this")
         openEvent.onNext(true)
     }
 
     override fun onClose(code: Int, reason: String?, remote: Boolean) {
+        DEBUG("onCloseEvent: $this")
         closeEvent.onNext(true)
     }
 

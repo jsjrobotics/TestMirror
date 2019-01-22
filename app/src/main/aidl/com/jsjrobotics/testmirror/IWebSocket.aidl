@@ -8,6 +8,7 @@ interface IWebSocket {
     void sendPairingCode(in NsdServiceInfo info, String code);
     void sendScreenRequest(String screenName);
     void sendIdentifyRequest(in NsdServiceInfo info);
+    void sendPreWorkoutRequest(String uuid, String variantId, String workoutData);
     //@Nullable Map<NsdServiceInfo, RemoteMirrorState>
     Map getConnectedMirrors();
 }

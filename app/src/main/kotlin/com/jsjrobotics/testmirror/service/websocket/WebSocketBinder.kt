@@ -7,6 +7,7 @@ import com.jsjrobotics.testmirror.dataStructures.ResolvedMirrorData
 import com.jsjrobotics.testmirror.login.LoginModel
 import com.jsjrobotics.testmirror.profile.ProfileModel
 import com.jsjrobotics.testmirror.service.RemoteMirrorState
+import com.jsjrobotics.testmirror.service.websocket.tasks.PreWorkoutRequestTask
 import com.jsjrobotics.testmirror.service.websocket.tasks.ScreenRequestTask
 import com.jsjrobotics.testmirror.service.websocket.tasks.SendIdentifyRequestTask
 import java.util.concurrent.Executors
@@ -32,6 +33,16 @@ class WebSocketBinder(private val service: WebSocketService,
                         profileModel,
                         loginModel).run()
             }
+        }
+    }
+
+    override fun sendPreWorkoutRequest(uuid: String?, variantId: String?, workoutData: String?) {
+        executor.execute {
+            service.getConnectedSocketManagers()
+                    .forEach {
+                        PreWorkoutRequestTask(it, uuid, variantId, workoutData)
+                                .run()
+                    }
         }
     }
 

@@ -55,7 +55,12 @@ class WebSocketService : Service() {
                 it.identityRequestSent = false
             }
         }
-        disposables.add(identifyResponseDisposable)
+        val onMirrorCloseDisposable = mirrorStateDispatcher.onOpenCloseEvent.subscribe {
+            if (!it.isConnected) {
+                socketManagers.remove(it.socketManager)
+            }
+        }
+        disposables.addAll(identifyResponseDisposable, onMirrorCloseDisposable)
         if (BuildConfig.DEBUG) {
             application.registerReceiver(buildDebugReceiver(), buildDebugIntentFilter())
         }

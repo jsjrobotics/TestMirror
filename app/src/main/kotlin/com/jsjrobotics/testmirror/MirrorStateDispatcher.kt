@@ -12,7 +12,7 @@ class MirrorStateDispatcher @Inject constructor() {
     fun onConnectedToMirror() { }
 
     private val clientStateEvent : PublishSubject<ClientState> = PublishSubject.create()
-    val onOpenEvent : Observable<ClientState> = clientStateEvent
+    val onOpenCloseEvent : Observable<ClientState> = clientStateEvent
 
     fun handleOpenEvent(webSocketManager: WebSocketManager) {
         clientStateEvent.onNext(ClientState(webSocketManager, true))

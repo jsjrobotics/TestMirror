@@ -24,26 +24,32 @@ class ProfilePresenter @Inject constructor(val application: Application,
     fun init(v: ProfileView) {
         view = v
         registerReceiver()
-        disposables.add(view.onRefreshClick
+        val refreshDisposable = view.onRefreshClick
                 .observeOn(Schedulers.io())
                 .subscribe{
                     loadWorkouts()
-                })
+                }
+        val selectWorkoutDisposable = view.onViewClicked.subscribe(this::loadPreWorkout)
+        disposables.addAll(refreshDisposable, selectWorkoutDisposable)
         loadWorkouts()
     }
 
+    private fun loadPreWorkout(listing: ListingResponseData) {
+        application.webSocketService?.sendPreWorkoutRequest(listing.uuid, "0", "")
+    }
     private fun loadWorkouts() {
         application.backendService?.getOnDemandWorkout()
         view.disableRefresh()
     }
 
-    fun sendScreenRequest() {
+    fun sendDashboardScreenRequest() {
         application.webSocketService?.sendScreenRequest(MirrorScreen.DASHBOARD.name)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     protected fun clearDisposables() {
         disposables.clear()
+        view.unsubscribe()
         unregisterReceiver()
     }
 

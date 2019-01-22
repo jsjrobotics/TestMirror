@@ -10,10 +10,10 @@ class WorkoutListingViewHolder(view: View) : RecyclerView.ViewHolder(view){
     private var type: TextView = itemView.findViewById(R.id.type)
     private var trainerName: TextView = itemView.findViewById(R.id.trainer_name)
 
-    fun bind(listingResponseData: ListingResponseData) {
+    fun bind(listingResponseData: ListingResponseData, onClick : () -> Unit) {
         type.text = listingResponseData.template.channel.name
         trainerName.text = listingResponseData.template.trainer.displayName
-
+        itemView.setOnClickListener{ onClick.invoke()}
     }
 
 }

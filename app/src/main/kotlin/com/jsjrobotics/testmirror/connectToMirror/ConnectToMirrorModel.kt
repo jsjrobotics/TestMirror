@@ -77,7 +77,7 @@ class ConnectToMirrorModel @Inject constructor(private val application: Applicat
             ERROR("Unable to find saved mirror to connect to")
             return
         }
-        connectDisposable = mirrorStateDispatcher.onOpenEvent
+        connectDisposable = mirrorStateDispatcher.onOpenCloseEvent
                 .filter{ info == it.socketManager.serviceInfo }
                 .subscribe { state ->
                     if (state.isConnected) {

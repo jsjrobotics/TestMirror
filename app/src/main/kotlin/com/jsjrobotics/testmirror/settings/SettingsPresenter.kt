@@ -21,8 +21,12 @@ class SettingsPresenter @Inject constructor(private val application: Application
 
     @Suppress("UNCHECKED_CAST")
     fun loadData() {
-        val connectedMirrors = application.webSocketService?.connectedMirrors as Map<NsdServiceInfo, RemoteMirrorState>?
-        view.displayConnectedMirrors(connectedMirrors ?: emptyMap())
+        Thread {
+            // Running on the main thread freezes ui
+            val connectedMirrors = application.webSocketService?.connectedMirrors as Map<NsdServiceInfo, RemoteMirrorState>?
+            view.displayConnectedMirrors(connectedMirrors ?: emptyMap())
+        }.start()
+
     }
 
 }

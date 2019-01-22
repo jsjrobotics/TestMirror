@@ -22,6 +22,13 @@ class ProfileFragment : DefaultFragment() {
         presenter.init(view)
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            presenter.sendDashboardScreenRequest()
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         container?.let {parent ->
             view.init(inflater, parent)
