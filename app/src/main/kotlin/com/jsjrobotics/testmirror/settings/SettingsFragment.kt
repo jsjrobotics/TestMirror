@@ -18,10 +18,13 @@ class SettingsFragment : DefaultFragment() {
     lateinit var presenter: SettingsPresenter
 
     override fun getFragmentId(): FragmentId = FragmentId.SETTINGS
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        presenter.init(view, this::showConnectMirrorActivity)
+    }
 
     override fun onStart() {
         super.onStart()
-        presenter.init(view, this::showConnectMirrorActivity)
         presenter.loadData()
     }
 
