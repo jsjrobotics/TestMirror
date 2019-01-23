@@ -31,11 +31,13 @@ class WebSocketClient(uri: URI) : WebSocketClient(uri) {
         closeEvent.onNext(true)
     }
 
-    override fun onMessage(message: String?) { /* Unused*/ }
+    override fun onMessage(message: String?) {
+        DEBUG("onMessage $message")
+    }
 
     override fun onMessage(bytes: ByteBuffer) {
         val envelope = MessageAdapter.decode(bytes.array())
-        DEBUG(envelope.toString())
+        DEBUG("onMessage ${envelope.toString()}")
         messageEvent.onNext(envelope)
     }
 

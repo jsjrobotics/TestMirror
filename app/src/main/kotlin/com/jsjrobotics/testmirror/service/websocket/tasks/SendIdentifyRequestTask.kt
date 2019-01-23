@@ -23,6 +23,7 @@ class SendIdentifyRequestTask(private val socketManager: WebSocketManager,
                 .token(loginModel.requestToken)
                 .environment(Environment.STAGING)
                 .id(profileModel.currentAccount?.uuid)
+                .device_id("Look ma an Android device id")
                 .build()
         socketManager.send(request)
         socketManager.identityRequestSent = true

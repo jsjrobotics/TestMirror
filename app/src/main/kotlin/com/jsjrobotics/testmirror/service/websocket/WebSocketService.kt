@@ -19,6 +19,7 @@ import com.squareup.wire.Message
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
+// Manages a list of websockets
 class WebSocketService : Service() {
     @Inject
     protected lateinit var protobufEnvelopeHandler : ProtobufEnvelopeHandler
